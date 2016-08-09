@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://cdn.zoomcharts-cloud.com/1/latest/zoomcharts.d.ts",
+    "raw": "registry:global/zoomcharts#1.13.0+20160320212320",
+    "typings": "https://cdn.zoomcharts-cloud.com/1/latest/zoomcharts.d.ts"
+  }
+}
