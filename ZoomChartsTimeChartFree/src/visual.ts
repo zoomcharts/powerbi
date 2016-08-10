@@ -1,5 +1,21 @@
 
 module powerbi.extensibility.visual {
+    export function logExceptions(): MethodDecorator {
+        return function (target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<Function>)
+            : TypedPropertyDescriptor<Function> {
+            return {
+                value: function () {
+                    try {
+                        return descriptor.value.apply(this, arguments);
+                    } catch (e) {
+                        console.error(e);
+                        throw e;
+                    }
+                }
+            }
+        }
+    }
+
     export class Visual implements IVisual {
         private target: HTMLElement;
         private chart: ZoomCharts.TimeChart;
@@ -47,9 +63,11 @@ module powerbi.extensibility.visual {
             });
         }
 
+        @logExceptions()
         public update(options: VisualUpdateOptions) {
         }
 
+        @logExceptions()
         public destroy(): void {
             this.target = null;
             if (this.chart) {
