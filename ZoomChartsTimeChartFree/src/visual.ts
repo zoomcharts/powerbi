@@ -49,6 +49,7 @@ module powerbi.extensibility.visual {
                 return;
 
             this.ZC = zc;
+            
             this.chart = new zc.TimeChart({
                 container: this.target,
                 data:
@@ -65,6 +66,41 @@ module powerbi.extensibility.visual {
 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
+            console.log(options);
+
+            let dataView = options.dataViews[0];
+            if (!dataView) {
+                console.warn("No data received");
+                return;
+            }
+
+            if (!dataView.categorical) {
+                console.warn("non-categorical data retrieved");
+                return;
+            }
+
+            if (!dataView.categorical.values) {
+                console.warn("no value field selected");
+                return;
+            }
+            
+            console.log("grouped", dataView.categorical.values.grouped());
+
+            let times = dataView.categorical.categories[0].values;
+            let values = dataView.categorical.values.grouped();
+            
+            let result: Array<(string|Date|number)[]> = new Array(times.length); 
+            for (let i = 0; i < times.length; i++) {
+                let x: Array<string|Date|number> = new Array(values.length + 1);
+                x[0] = times[i];
+                
+                for (let j = 0; j < values.length; j++)
+                    x[j + 1] = values[j].values[0].values[i];
+                
+                result[i] = x;
+            }
+
+            console.log("DATA", result);
         }
 
         @logExceptions()
