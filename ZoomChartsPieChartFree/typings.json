@@ -1,0 +1,7 @@
+{
+  "globalDependencies": {
+    "moment": "registry:dt/moment#2.8.0+20160316155526",
+    "moment-node": "registry:dt/moment-node#2.11.1+20160511043338",
+    "zoomcharts": "registry:global/zoomcharts#1.13.0+20160320212320"
+  }
+}
