@@ -21,6 +21,7 @@ module powerbi.extensibility.visual {
         private chart: ZoomCharts.PieChart;
         private ZC: typeof ZoomCharts;
         private host: IVisualHost;
+        private pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -56,9 +57,7 @@ module powerbi.extensibility.visual {
                 container: this.target,
                 data:
                 [{
-                    preloaded: {
-                        subvalues: []
-                    },
+                    preloaded: this.pendingData,
                     sortField: "value"
                 }],
                 interaction: {
@@ -66,6 +65,8 @@ module powerbi.extensibility.visual {
                 },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
             });
+
+            this.pendingData = null;
         }
 
         @logExceptions()
@@ -113,55 +114,67 @@ module powerbi.extensibility.visual {
                         */
 
             let root: ZoomCharts.Configuration.PieChartDataObjectRoot = {
+                id: "",
                 subvalues: [],
-                extra: {
-                    idBuilder: this.host.createSelectionIdBuilder()
-                }
+                extra: []
             };
 
             let values = dataView.categorical.values[0].values;
 
-            let parentObjects: Array<ZoomCharts.Configuration.PieChartDataObject> = new Array(values.length);
+            let catCount = dataView.categorical.categories.length;
+            let ids: Array<visuals.ISelectionId> = new Array(values.length);
+            let parentObjects: Array<ZoomCharts.Configuration.PieChartDataObject[]> = new Array(values.length);
             let grouper: ZoomCharts.Dictionary<ZoomCharts.Configuration.PieChartDataObject>;
-            for (let i = 0; i < values.length; i++)
-                parentObjects[i] = <any>root;
+            for (let i = 0; i < values.length; i++) {
+                parentObjects[i] = new Array(catCount);
+                parentObjects[i][0] = <any>root;
+                ids[i] = this.host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[0], i).createSelectionId();
+            }
 
-            for (let c = 0; c < dataView.categorical.categories.length; c++) {
-                let expandable = c < dataView.categorical.categories.length - 1;
+            for (let c = 0; c < catCount; c++) {
+                let expandable = c < catCount - 1;
                 let categories = dataView.categorical.categories[c];
                 let grouper = Object.create(null);
                 for (let i = 0; i < values.length; i++) {
-                    let parent = parentObjects[i];
-                    let idObj = (<ISelectionIdBuilder>parent.extra.idBuilder).withCategory(categories, i);
-                    let idVal = idObj.createSelectionId().getKey();
+                    for (let x = 0; x < c; x++) {
+                        parentObjects[i][c].extra.push(i);
+                    }
+
+                    let parent = parentObjects[i][c];
+                    let idVal = parent.id + categories.values[i];
 
                     let obj = grouper[idVal];
                     if (!obj) {
-                        console.log(categories.values[i], idVal);
+                        //console.log(categories.values[i], idVal);
                         obj = {
                             value: values[i],
                             name: categories.values[i],
                             id: idVal,
                             subvalues: [],
-                            style: {  
+                            style: {
                                 expandable: expandable
                             },
-                            extra: {
-                                idBuilder: idObj
-                            }
+                            extra: [i]
                         };
-                        parent.value += values[i];
+                        parent.value += <number>values[i];
                         parent.subvalues.push(obj);
                         grouper[idVal] = obj;
                     } else {
                         obj.value += values[i];
+                        obj.extra.push(i);
                     }
-                    
-                    parentObjects[i] = obj;
+
+                    if (expandable)
+                        parentObjects[i][c + 1] = obj;
                 }
             }
 
-            this.chart.replaceData(root);
+            if (this.chart) {
+                this.chart.replaceData(root);
+            } else {
+                this.pendingData = root;
+            }
+
             console.log(root.subvalues);
         }
 
