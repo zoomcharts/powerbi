@@ -7,9 +7,9 @@ module powerbi.extensibility.visual {
         private static _started = false;
         private static _zc: typeof ZoomCharts = null;
 
-        public static RootUrl = "https://cdn.zoomcharts-cloud.com/1/15/latest/";
+        public static RootUrl = "https://cdn.zoomcharts-cloud.com/1/16/3/";
 
-        public static CacheKey = "ZoomChartsLoader 1/15/latest";
+        public static CacheKey = "ZoomChartsLoader 1/16/3";
 
         public static ensure(success: (zc: typeof ZoomCharts) => void, fail: () => void) {
             let instance: typeof ZoomChartsLoader = (<any>window)[this.CacheKey];

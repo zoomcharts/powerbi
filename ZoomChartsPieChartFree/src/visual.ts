@@ -63,16 +63,50 @@ module powerbi.extensibility.visual {
                 interaction: {
                     resizing: { enabled: false }
                 },
+                events: {
+                    onClick: (e, args) => {
+                        let slice = args.clickSlice;
+                        if (e.ctrlKey && slice) {
+                            let sel = args.selection;
+                            if (slice.selected) {
+                                sel.splice(sel.indexOf(slice), 1);
+                            } else {
+                                sel.push(slice);
+                            }
+                            this.chart.selection(sel);
+                            e.preventDefault();
+                        }
+                    },
+                    onSelectionChange: (e, args) => this.updateSelection(args),
+                    onChartUpdate: (e, args) => this.updateSelection(args),
+                },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
             });
 
             this.pendingData = null;
         }
 
+        private updateSelection(args: ZoomCharts.Configuration.PieChartChartEventArguments) {
+            let selman = this.host.createSelectionManager();
+            let selectedSlices = (args.selection || []).map(o => o.data);
+            if (!selectedSlices.length && args.pie.id) {
+                selectedSlices = args.pie.data.values;
+            }
+
+            if (selectedSlices.length) {
+                let sel: visuals.ISelectionId[] = [];
+                for (let i = 0; i < selectedSlices.length; i++) {
+                    sel = sel.concat(selectedSlices[i].extra);
+                }
+                console.log("Updating selection", sel);
+                selman.select(sel, false);
+            } else {
+                selman.clear();
+            }
+        }
+
         @logExceptions()
         public update(options: VisualUpdateOptions) {
-            console.log(options);
-
             let dataView = options.dataViews[0];
             if (!dataView) {
                 console.warn("No data received");
@@ -93,25 +127,6 @@ module powerbi.extensibility.visual {
                 console.warn("no value field selected");
                 return;
             }
-            /*            
-                        console.log("grouped", dataView.categorical.values.grouped());
-            
-                        let times = dataView.categorical.categories[0].values;
-                        let values = dataView.categorical.values.grouped();
-                        
-                        let result: Array<(string|Date|number)[]> = new Array(times.length); 
-                        for (let i = 0; i < times.length; i++) {
-                            let x: Array<string|Date|number> = new Array(values.length + 1);
-                            x[0] = times[i];
-                            
-                            for (let j = 0; j < values.length; j++)
-                                x[j + 1] = values[j].values[0].values[i];
-                            
-                            result[i] = x;
-                        }
-            
-                        console.log("DATA", result);
-                        */
 
             let root: ZoomCharts.Configuration.PieChartDataObjectRoot = {
                 id: "",
@@ -123,11 +138,10 @@ module powerbi.extensibility.visual {
 
             let catCount = dataView.categorical.categories.length;
             let ids: Array<visuals.ISelectionId> = new Array(values.length);
-            let parentObjects: Array<ZoomCharts.Configuration.PieChartDataObject[]> = new Array(values.length);
+            let parentObjects: Array<ZoomCharts.Configuration.PieChartDataObject> = new Array(values.length);
             let grouper: ZoomCharts.Dictionary<ZoomCharts.Configuration.PieChartDataObject>;
             for (let i = 0; i < values.length; i++) {
-                parentObjects[i] = new Array(catCount);
-                parentObjects[i][0] = <any>root;
+                parentObjects[i] = <any>root;
                 ids[i] = this.host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[0], i).createSelectionId();
             }
 
@@ -136,12 +150,8 @@ module powerbi.extensibility.visual {
                 let categories = dataView.categorical.categories[c];
                 let grouper = Object.create(null);
                 for (let i = 0; i < values.length; i++) {
-                    for (let x = 0; x < c; x++) {
-                        parentObjects[i][c].extra.push(i);
-                    }
-
-                    let parent = parentObjects[i][c];
-                    let idVal = parent.id + categories.values[i];
+                    let parent = parentObjects[i];
+                    let idVal = parent.id + "\ufdd0" + categories.values[i];
 
                     let obj = grouper[idVal];
                     if (!obj) {
@@ -154,18 +164,17 @@ module powerbi.extensibility.visual {
                             style: {
                                 expandable: expandable
                             },
-                            extra: [i]
+                            extra: [ids[i]]
                         };
                         parent.value += <number>values[i];
                         parent.subvalues.push(obj);
                         grouper[idVal] = obj;
                     } else {
+                        obj.extra.push(ids[i]);
                         obj.value += values[i];
-                        obj.extra.push(i);
                     }
 
-                    if (expandable)
-                        parentObjects[i][c + 1] = obj;
+                    parentObjects[i] = obj;
                 }
             }
 
@@ -174,8 +183,6 @@ module powerbi.extensibility.visual {
             } else {
                 this.pendingData = root;
             }
-
-            console.log(root.subvalues);
         }
 
         @logExceptions()
