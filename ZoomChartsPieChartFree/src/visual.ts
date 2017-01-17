@@ -1,3 +1,4 @@
+/// <reference path="data.ts" />
 
 module powerbi.extensibility.visual {
     export function logExceptions(): MethodDecorator {
@@ -22,6 +23,7 @@ module powerbi.extensibility.visual {
         private ZC: typeof ZoomCharts;
         private host: IVisualHost;
         private pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
+        private updateTimer: number;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -77,8 +79,11 @@ module powerbi.extensibility.visual {
                             e.preventDefault();
                         }
                     },
-                    onSelectionChange: (e, args) => this.updateSelection(args),
-                    onChartUpdate: (e, args) => this.updateSelection(args),
+                    onSelectionChange: (e, args) => this.updateSelection(args, 200),
+                    onChartUpdate: (e, args) => {
+                        if (args.origin === "user")
+                            this.updateSelection(args, 500);
+                    }
                 },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
             });
@@ -86,98 +91,31 @@ module powerbi.extensibility.visual {
             this.pendingData = null;
         }
 
-        private updateSelection(args: ZoomCharts.Configuration.PieChartChartEventArguments) {
+        private updateSelection(args: ZoomCharts.Configuration.PieChartChartEventArguments, delay: number) {
+            if (this.updateTimer) window.clearTimeout(this.updateTimer);
+
             let selman = this.host.createSelectionManager();
             let selectedSlices = (args.selection || []).map(o => o.data);
             if (!selectedSlices.length && args.pie.id) {
                 selectedSlices = args.pie.data.values;
             }
 
-            if (selectedSlices.length) {
-                let sel: visuals.ISelectionId[] = [];
-                for (let i = 0; i < selectedSlices.length; i++) {
-                    sel = sel.concat(selectedSlices[i].extra);
+            window.setTimeout(() => {
+                if (selectedSlices.length) {
+                    let sel: visuals.ISelectionId[] = [];
+                    for (let i = 0; i < selectedSlices.length; i++) {
+                        sel = sel.concat(selectedSlices[i].extra);
+                    }
+                    selman.select(sel, false);
+                } else {
+                    selman.clear();
                 }
-                console.log("Updating selection", sel);
-                selman.select(sel, false);
-            } else {
-                selman.clear();
-            }
+            }, delay);
         }
 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
-            let dataView = options.dataViews[0];
-            if (!dataView) {
-                console.warn("No data received");
-                return;
-            }
-
-            if (!dataView.categorical) {
-                console.warn("non-categorical data retrieved");
-                return;
-            }
-
-            if (!dataView.categorical.categories) {
-                console.warn("no category field selected");
-                return;
-            }
-
-            if (!dataView.categorical.values) {
-                console.warn("no value field selected");
-                return;
-            }
-
-            let root: ZoomCharts.Configuration.PieChartDataObjectRoot = {
-                id: "",
-                subvalues: [],
-                extra: []
-            };
-
-            let values = dataView.categorical.values[0].values;
-
-            let catCount = dataView.categorical.categories.length;
-            let ids: Array<visuals.ISelectionId> = new Array(values.length);
-            let parentObjects: Array<ZoomCharts.Configuration.PieChartDataObject> = new Array(values.length);
-            let grouper: ZoomCharts.Dictionary<ZoomCharts.Configuration.PieChartDataObject>;
-            for (let i = 0; i < values.length; i++) {
-                parentObjects[i] = <any>root;
-                ids[i] = this.host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[0], i).createSelectionId();
-            }
-
-            for (let c = 0; c < catCount; c++) {
-                let expandable = c < catCount - 1;
-                let categories = dataView.categorical.categories[c];
-                let grouper = Object.create(null);
-                for (let i = 0; i < values.length; i++) {
-                    let parent = parentObjects[i];
-                    let idVal = parent.id + "\ufdd0" + categories.values[i];
-
-                    let obj = grouper[idVal];
-                    if (!obj) {
-                        //console.log(categories.values[i], idVal);
-                        obj = {
-                            value: values[i],
-                            name: categories.values[i],
-                            id: idVal,
-                            subvalues: [],
-                            style: {
-                                expandable: expandable
-                            },
-                            extra: [ids[i]]
-                        };
-                        parent.value += <number>values[i];
-                        parent.subvalues.push(obj);
-                        grouper[idVal] = obj;
-                    } else {
-                        obj.extra.push(ids[i]);
-                        obj.value += values[i];
-                    }
-
-                    parentObjects[i] = obj;
-                }
-            }
-
+            let root = Data.convert(this.host, options);
             if (this.chart) {
                 this.chart.replaceData(root);
             } else {
