@@ -61,18 +61,27 @@ module powerbi.extensibility.visual {
                             },
                             extra: [ids[i]]
                         };
-                        parent.value += <number>values[i];
+                        parent.value += <number>values[i] || 0;
                         parent.subvalues.push(obj);
                         grouper[idVal] = obj;
                     } else {
                         obj.extra.push(ids[i]);
-                        obj.value += <number>values[i];
+                        obj.value += <number>values[i] || 0;
+                    }
+
+                    // support for multiples values (in FacetChart)
+                    for (let v = 1; v < dataView.categorical.values.length; v++) {
+                        let aValues = dataView.categorical.values[v];
+                        let k = "value" + v.toFixed(0);
+                        if (!obj[k])
+                            obj[k] = <number>aValues.values[i] || 0;
+                        else
+                            obj[k] += <number>aValues.values[i] || 0;
                     }
 
                     parentObjects[i] = obj;
                 }
             }
-
             return root;
         }
     }

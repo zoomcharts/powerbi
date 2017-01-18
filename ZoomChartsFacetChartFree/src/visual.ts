@@ -17,10 +17,11 @@ module powerbi.extensibility.visual {
 
     export class Visual implements IVisual {
         private target: HTMLElement;
-        private chart: ZoomCharts.PieChart;
+        private chart: ZoomCharts.FacetChart;
         private ZC: typeof ZoomCharts;
         private host: IVisualHost;
         private pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
+        private pendingSettings: ZoomCharts.Configuration.FacetChartSettings = {};
         private updateTimer: number;
 
         constructor(options: VisualConstructorOptions) {
@@ -53,14 +54,14 @@ module powerbi.extensibility.visual {
 
             this.ZC = zc;
 
-            this.chart = new zc.PieChart({
+            this.chart = new zc.FacetChart({
                 container: this.target,
                 data:
                 [{
                     preloaded: this.pendingData,
-                    sortField: "value"
                 }],
                 interaction: {
+                    selection: { enabled: true },
                     resizing: { enabled: false }
                 },
                 events: {
@@ -73,16 +74,55 @@ module powerbi.extensibility.visual {
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
             });
 
+            this.chart.replaceSettings(this.pendingSettings);
+
+            this.pendingSettings = null;
             this.pendingData = null;
         }
 
-        private updateSelection(args: ZoomCharts.Configuration.PieChartChartEventArguments, delay: number) {
-            if (this.updateTimer) window.clearTimeout(this.updateTimer);
+        private createSeries(options: VisualUpdateOptions) {
+            let dataView = options.dataViews[0];
+            if (!dataView || !dataView.categorical)
+                return;
 
+            let values = dataView.categorical.values;
+            if (!values || !values.length)
+                return;
+
+            let series: ZoomCharts.Configuration.FacetChartSettingsSeriesColumns[] = [];
+            for (let i = 0; i < values.length; i++) {
+                let column = values[i];
+                let istr = i.toFixed(0);
+                series.push({
+                    type: "columns",
+                    id: "s" + istr,
+                    name: column.source.displayName,
+                    data: { field: i === 0 ? "value" : ("value" + istr) },
+                    style: {
+                        fillColor: this.host.colorPalette.getColor("zc-fc-color-" + istr).value,
+                        gradient: 0,
+                    }
+                });
+            }
+
+            let settings: ZoomCharts.Configuration.FacetChartSettings = {
+                series: series,
+                legend: { enabled: series.length > 1 },
+            }
+
+            if (this.chart) {
+                this.chart.replaceSettings(settings);
+            } else {
+                this.pendingSettings = settings;
+            }
+        }
+
+        private updateSelection(args: ZoomCharts.Configuration.FacetChartChartEventArguments, delay: number) {
+            if (this.updateTimer) window.clearTimeout(this.updateTimer);
             let selman = this.host.createSelectionManager();
             let selectedSlices = (args.selection || []).map(o => o.data);
-            if (!selectedSlices.length && args.pie.id) {
-                selectedSlices = args.pie.data.values;
+            if (!selectedSlices.length && args.facet.id) {
+                selectedSlices = args.facet.data.values;
             }
 
             window.setTimeout(() => {
@@ -100,11 +140,14 @@ module powerbi.extensibility.visual {
 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
-            let root = Data.convert(this.host, options);
-            if (this.chart) {
-                this.chart.replaceData(root);
-            } else {
-                this.pendingData = root;
+            if (options.type & VisualUpdateType.Data) {
+                this.createSeries(options);
+                let root = Data.convert(this.host, options);
+                if (this.chart) {
+                    this.chart.replaceData(root);
+                } else {
+                    this.pendingData = root;
+                }
             }
         }
 
