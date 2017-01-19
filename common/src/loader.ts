@@ -32,8 +32,7 @@ module powerbi.extensibility.visual {
             
             this._started = true;
 
-            // powerbi web app at the time of the development included moment version 2.8.3 which is not supported by ZoomCharts
-            let counter = 3;
+            let counter = 1;
             let reqMoment = new XMLHttpRequest();
             let reqMomentTz = new XMLHttpRequest();
             let reqZoomCharts = new XMLHttpRequest();
@@ -73,17 +72,6 @@ module powerbi.extensibility.visual {
                 }
             };
 
-            reqMoment.open("GET", this.RootUrl + "assets/moment.js");
-            reqMoment.onload = complete;
-            reqMoment.onerror = error;
-            reqMoment.send();
-
-            reqMomentTz.open("GET", this.RootUrl + "assets/moment-tz.js");
-            reqMomentTz.onload = complete
-            reqMomentTz.onerror = error;
-            reqMomentTz.send();
-
-            // load the 1.15 version. Fixing the version reduces the chance an upgrade breaks the visual
             reqZoomCharts.open("GET", this.RootUrl + "zoomcharts.js");
             reqZoomCharts.onload = complete
             reqZoomCharts.onerror = error;

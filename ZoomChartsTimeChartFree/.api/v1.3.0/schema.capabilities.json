@@ -1,5 +1,5 @@
 {
-    "PBI_API_VERSION": "v1.2.0",
+    "PBI_API_VERSION": "v1.3.0",
     "type": "object",
     "properties": {
         "dataRoles": {
@@ -847,7 +847,7 @@
                 "text": {
                     "type": "boolean",
                     "description": "A text value that will be displayed to the user as a text input"
-                },
+                },		
                 "scripting": {		
                     "type": "object",		
                     "description": "A text value that will be displayed to the user as a script",		
@@ -857,7 +857,7 @@
                             "description": "A source code"		
                         }		
                     }		
-                },                
+                },
                 "geography": {
                     "type": "object",
                     "description": "Geographical data",

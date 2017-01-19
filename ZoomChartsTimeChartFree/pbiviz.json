@@ -2,14 +2,14 @@
   "visual": {
     "name": "ZoomChartsTimeChartFree",
     "displayName": "ZoomChartsTimeChartFree",
-    "guid": "PBI_CV_33C9F325_D337_408C_98D4_E1D4E1EAD702",
+    "guid": "PBI_CV_33C9F325_D337_408C_98D4_E1D4E1EAD705",
     "visualClassName": "Visual",
     "version": "1.0.0",
     "description": "",
     "supportUrl": "",
     "gitHubUrl": ""
   },
-  "apiVersion": "1.2.0",
+  "apiVersion": "1.3.0",
   "author": {
     "name": "",
     "email": ""
