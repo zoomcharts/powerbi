@@ -7,6 +7,7 @@ module powerbi.extensibility.visual {
                     try {
                         return descriptor.value.apply(this, arguments);
                     } catch (e) {
+                        alert(e.toString() + e.stack);
                         console.error(e);
                         throw e;
                     }
@@ -21,6 +22,7 @@ module powerbi.extensibility.visual {
         private ZC: typeof ZoomCharts;
         private host: IVisualHost;
         private dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 0, unit: "d", values: [] };
+        private dataIds: ISelectionId[] = [];
         private pendingSettings: ZoomCharts.Configuration.TimeChartSettings = {};
         private updateTimer: number;
         private lastTimeRange: [number, number] = [null, null];
@@ -165,7 +167,7 @@ module powerbi.extensibility.visual {
                         if (t < time[0]) continue;
                         if (t >= time[1]) break;
 
-                        ids.push(this.dataObj.extra[v[v.length - 1]]);
+                        ids.push(this.dataIds[v[v.length - 1]]);
                     }
 
                     selman.select(ids, false);
@@ -178,20 +180,21 @@ module powerbi.extensibility.visual {
             if (options.type & VisualUpdateType.Data) {
                 this.createSeries(options);
                 let root = Data.convert(this.host, options);
-                this.dataObj = root;
+                this.dataObj = root.data;
+                this.dataIds = root.ids;
 
                 if (this.chart) {
                     this.chart.replaceSettings({
                         data: [{
-                            units: [root.unit],
-                            preloaded: root
+                            units: [root.data.unit],
+                            preloaded: root.data
                         }]
                     });
-                    this.chart.replaceData(root);
+                    this.chart.replaceData(root.data);
 
                     let ct = this.chart.time();
                     if (ct[0] !== null) {
-                        this.chart.time(Math.max(ct[0], <number>root.from), Math.min(ct[1], <number>root.to), false);
+                        this.chart.time(Math.max(ct[0], <number>root.data.from), Math.min(ct[1], <number>root.data.to), false);
                     }
                 }
             }

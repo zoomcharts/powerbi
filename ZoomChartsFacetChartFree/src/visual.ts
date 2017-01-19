@@ -7,6 +7,7 @@ module powerbi.extensibility.visual {
                     try {
                         return descriptor.value.apply(this, arguments);
                     } catch (e) {
+                        alert(e.toString() + e.stack);
                         console.error(e);
                         throw e;
                     }

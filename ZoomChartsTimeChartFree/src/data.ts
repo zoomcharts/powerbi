@@ -6,35 +6,35 @@ module powerbi.extensibility.visual {
                 to: 0,
                 unit: "d",
                 values: [],
-                extra: null
             };
+            let ids: Array<visuals.ISelectionId>;
 
             let dataView = options.dataViews[0];
             if (!dataView) {
                 console.warn("No data received");
-                return root;
+                return {data: root, ids: ids };
             }
 
             if (!dataView.categorical) {
                 console.warn("non-categorical data retrieved");
-                return root;
+                return {data: root, ids: ids };
             }
 
             if (!dataView.categorical.categories) {
                 console.warn("no category field selected");
-                return root;
+                return {data: root, ids: ids };
             }
 
             if (!dataView.categorical.values) {
                 console.warn("no value field selected");
-                return root;
+                return {data: root, ids: ids };
             }
 
             let timeCat = dataView.categorical.categories[0];
             let times = timeCat.values;
             let valueCat = dataView.categorical.values;
+            ids = new Array(times.length);
 
-            let ids: Array<visuals.ISelectionId> = new Array(times.length);
             for (let i = 0; i < times.length; i++) {
                 ids[i] = host.createSelectionIdBuilder().withCategory(timeCat, i).createSelectionId();
             }
@@ -49,8 +49,9 @@ module powerbi.extensibility.visual {
             for (let i = 0; i < times.length; i++) {
                 let x = new Array<number>(valueCat.length + 2);
                 x[x.length - 1] = i;
-
                 let d = <Date>times[i];
+                if (!d) continue;
+
                 if (d.getSeconds() !== 0) hasSeconds = true;
                 if (d.getMinutes() !== 0) hasMinutes = true;
                 if (d.getHours() !== 0) hasHours = true;
@@ -61,7 +62,7 @@ module powerbi.extensibility.visual {
 
                 for (let v = 0; v < valueCat.length; v++) {
                     let aValues = valueCat[v];
-                    x[v + 1] = <number>aValues.values[i];
+                    x[v + 1] = <number>aValues.values[i] || 0;
                 }
 
                 root.values.push(x);
@@ -69,20 +70,21 @@ module powerbi.extensibility.visual {
 
             if (!hasSeconds && !hasMinutes && !hasHours) {
                 // normalize to UTC as the dates are given in the local timezone
+                let ii = 0;
                 for (let i = 0; i < times.length; i++) {
                     let d = <Date>times[i];
-                    root.values[i][0] = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+                    if (!d) continue;
+                    root.values[ii][0] = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+                    ii++;
                 }
             }
 
             root.values.sort((a,b) => <number>a[0] - <number>b[0]);
 
-            root.extra = ids;
             root.unit = hasSeconds ? "s" : hasMinutes ? "m" : hasHours ? "h" : hasDays ? "d" : hasMonths ? "M" : "y";
             root.from = root.values[0][0];
             root.to = <number> root.values[root.values.length - 1][0] + 1;
-
-            return root;
+            return {data: root, ids: ids };
         }
     }
 }
