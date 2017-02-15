@@ -1,6 +1,6 @@
 module powerbi.extensibility.visual {
     export class Data {
-        public static convert(host: IVisualHost, options: VisualUpdateOptions) {
+        public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             let root: ZoomCharts.Configuration.PieChartDataObjectRoot = {
                 id: "",
                 subvalues: [],
@@ -9,24 +9,26 @@ module powerbi.extensibility.visual {
 
             let dataView = options.dataViews[0];
             if (!dataView) {
-                console.warn("No data received");
+                displayMessage(target, "Please select the data fields for the visual.", "Incorrect data", false);
                 return root;
             }
 
             if (!dataView.categorical) {
-                console.warn("non-categorical data retrieved");
+                displayMessage(target, "The visual did not receive categorical data.", "Incorrect data", false);
                 return root;
             }
 
             if (!dataView.categorical.categories) {
-                console.warn("no category field selected");
+                displayMessage(target, "Please select the category field for the visual.", "Incorrect data", false);
                 return root;
             }
 
             if (!dataView.categorical.values) {
-                console.warn("no value field selected");
+                displayMessage(target, "Please select at least one value field for the visual.", "Incorrect data", false);
                 return root;
             }
+
+            hideMessage(target);
 
             let values = dataView.categorical.values[0].values;
 

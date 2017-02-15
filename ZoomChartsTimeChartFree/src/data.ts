@@ -1,9 +1,9 @@
 module powerbi.extensibility.visual {
     export class Data {
-        public static convert(host: IVisualHost, options: VisualUpdateOptions) {
+        public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             let root: ZoomCharts.Configuration.TimeChartDataObject = {
                 from: 0,
-                to: 0,
+                to: 1,
                 unit: "d",
                 values: [],
             };
@@ -11,24 +11,26 @@ module powerbi.extensibility.visual {
 
             let dataView = options.dataViews[0];
             if (!dataView) {
-                console.warn("No data received");
+                displayMessage(target, "Please select the data fields for the visual.", "Incorrect data", false);
                 return {data: root, ids: ids };
             }
 
             if (!dataView.categorical) {
-                console.warn("non-categorical data retrieved");
+                displayMessage(target, "The visual did not receive categorical data.", "Incorrect data", false);
                 return {data: root, ids: ids };
             }
 
             if (!dataView.categorical.categories) {
-                console.warn("no category field selected");
+                displayMessage(target, "Please select the `Date` field for the visual.", "Incorrect data", false);
                 return {data: root, ids: ids };
             }
 
             if (!dataView.categorical.values) {
-                console.warn("no value field selected");
+                displayMessage(target, "Please select at least one value field for the visual.", "Incorrect data", false);
                 return {data: root, ids: ids };
             }
+
+            hideMessage(target);
 
             let timeCat = dataView.categorical.categories[0];
             let times = timeCat.values;
@@ -51,6 +53,11 @@ module powerbi.extensibility.visual {
                 x[x.length - 1] = i;
                 let d = <Date>times[i];
                 if (!d) continue;
+
+                if (!d.getSeconds) {
+                    displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type.", "Incorrect date", false);
+                    return {data: root, ids:ids};
+                }
 
                 if (d.getSeconds() !== 0) hasSeconds = true;
                 if (d.getMinutes() !== 0) hasMinutes = true;
@@ -82,8 +89,8 @@ module powerbi.extensibility.visual {
             root.values.sort((a,b) => <number>a[0] - <number>b[0]);
 
             root.unit = hasSeconds ? "s" : hasMinutes ? "m" : hasHours ? "h" : hasDays ? "d" : hasMonths ? "M" : "y";
-            root.from = root.values[0][0];
-            root.to = <number> root.values[root.values.length - 1][0] + 1;
+            root.from = root.dataLimitFrom = root.values[0][0];
+            root.to = root.dataLimitTo = <number> root.values[root.values.length - 1][0] + 1;
             return {data: root, ids: ids };
         }
     }

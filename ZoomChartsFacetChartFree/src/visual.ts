@@ -1,21 +1,4 @@
 module powerbi.extensibility.visual {
-    export function logExceptions(): MethodDecorator {
-        return function (target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<Function>)
-            : TypedPropertyDescriptor<Function> {
-            return {
-                value: function () {
-                    try {
-                        return descriptor.value.apply(this, arguments);
-                    } catch (e) {
-                        alert(e.toString() + e.stack);
-                        console.error(e);
-                        throw e;
-                    }
-                }
-            }
-        }
-    }
-
     export class Visual implements IVisual {
         private target: HTMLElement;
         private chart: ZoomCharts.FacetChart;
@@ -41,10 +24,7 @@ module powerbi.extensibility.visual {
             this.target.innerHTML = "Loading ZoomCharts. Please wait...";
 
             ZoomChartsLoader.ensure((zc) => this.createChart(zc), () => {
-                if (this.target) {
-                    this.target.innerHTML = "Cannot load ZoomCharts library. This visual requires internet connectivity.";
-                    this.target.style.color = "red";
-                }
+                displayMessage(this.target, "Cannot load ZoomCharts library. This visual requires internet connectivity.", "Error", true);
             });
         }
 
@@ -143,7 +123,7 @@ module powerbi.extensibility.visual {
         public update(options: VisualUpdateOptions) {
             if (options.type & VisualUpdateType.Data) {
                 this.createSeries(options);
-                let root = Data.convert(this.host, options);
+                let root = Data.convert(this.host, this.target, options);
                 if (this.chart) {
                     this.chart.replaceData(root);
                 } else {

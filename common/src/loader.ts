@@ -9,7 +9,7 @@ module powerbi.extensibility.visual {
 
         public static RootUrl = "https://cdn.zoomcharts-cloud.com/1/nightly/";
 
-        public static CacheKey = "ZoomChartsLoader 1/nightly";
+        public static CacheKey = "ZoomChartsLoader 1/17";
 
         public static ensure(success: (zc: typeof ZoomCharts) => void, fail: () => void) {
             let instance: typeof ZoomChartsLoader = (<any>window)[this.CacheKey];
@@ -19,7 +19,7 @@ module powerbi.extensibility.visual {
         private static ensureInternal(success: (zc: typeof ZoomCharts) => void, fail: () => void) {
             if (this._loaded) {
                 // defer the callback
-                window.setTimeout(this._failed ? fail : () => success(this._zc), 1000);
+                window.setTimeout(this._failed ? fail : () => success(this._zc), 1);
                 return;
             }
 
@@ -41,14 +41,25 @@ module powerbi.extensibility.visual {
                 console.error("Failed to load ZoomCharts assets.");
                 this._loaded = true;
                 this._failed = true;
-                this._failCallbacks.forEach(a => a());
+                if (this._failCallbacks) {
+                    this._failCallbacks.forEach(a => a());
+                }
                 this._failCallbacks = null;
                 this._successCallbacks = null;
             };
 
-            let complete = () => {
+            let self = this;
+            let complete: (/*this: XMLHttpRequest*/) => void = function(/*this: XMLHttpRequest*/) {
+                if (this.status !== 200) {
+                    error();
+                    return;
+                }
+
                 counter--;
                 if (counter === 0) {
+                    // using the eval() might no longer be needed but it was before the custom visual was
+                    // isolated in its own iframe. This approach allows not to replace the global moment
+                    // library with the one that is bundled with ZoomCharts.
                     var zc = eval(`
                         (function() {
                             function Temp() { 
@@ -63,12 +74,12 @@ module powerbi.extensibility.visual {
                         })();
                     `);
 
-                    this._loaded = true;
-                    this._failed = false;
-                    this._zc = zc;
-                    this._successCallbacks.forEach(a => a(zc));
-                    this._failCallbacks = null;
-                    this._successCallbacks = null;
+                    self._loaded = true;
+                    self._failed = false;
+                    self._zc = zc;
+                    self._successCallbacks.forEach(a => a(zc));
+                    self._failCallbacks = null;
+                    self._successCallbacks = null;
                 }
             };
 
