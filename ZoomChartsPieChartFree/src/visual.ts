@@ -20,7 +20,7 @@ module powerbi.extensibility.visual {
 
             this.chart = null;
 
-            this.target.innerHTML = "Loading ZoomCharts. Please wait...";
+            // this.target.innerHTML = "Loading ZoomCharts. Please wait...";
 
             ZoomChartsLoader.ensure((zc) => this.createChart(zc), () => {
                 displayMessage(this.target, "Cannot load ZoomCharts library. This visual requires internet connectivity.", "Error", true);
@@ -34,8 +34,12 @@ module powerbi.extensibility.visual {
 
             this.ZC = zc;
 
+            let chartContainer = document.createElement("div");
+            chartContainer.className = "chart-container";
+            this.target.appendChild(chartContainer);
+
             this.chart = new zc.PieChart({
-                container: this.target,
+                container: chartContainer,
                 data:
                 [{
                     preloaded: this.pendingData,
