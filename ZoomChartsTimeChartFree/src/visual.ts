@@ -1,4 +1,13 @@
 module powerbi.extensibility.visual {
+    window.ZoomChartsLicense = "ZCF-1flw35m2i-16: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects (for TimeChart); upgrades until: 2017-05-01";
+    window.ZoomChartsLicenseKey = "a671b3607cdc11e81b69ac41a98e80b8d7d134e6e834930b54"+
+        "3b978d98d1e679a1ec56ede724c97252a5cd94d27c0129f38b4af1002ecdef996676c51eb3fdc"+
+        "5c156f1bfd5971f0c642761663f9b715212065e192c4cbf87216d7f30a6e9367a8bf258620fde"+
+        "f18c23919de1f642db2a8fa906397f88c2134338f8b6f1642426ede96350e17cac4da7f441eea"+
+        "3a9b532fff6732f3ab2c8f45a95fb68cd53e328c3f1e07263392dcfcabb358d011e6e8ac9405c"+
+        "f887e415529648be0b5b0c2e66d96ecf21b19c769d8e78be039b086ad105f32677c529360bd62"+
+        "7f0ae333ea1ae18b4a978795c2bb6997263a1c88b3f3dff99c9a7300b8fdf3ee6958120538b83";
+
     export class Visual implements IVisual {
         private target: HTMLElement;
         private chart: ZoomCharts.TimeChart;
@@ -167,6 +176,7 @@ module powerbi.extensibility.visual {
             if (options.type & VisualUpdateType.Data) {
                 this.createSeries(options);
                 let root = Data.convert(this.host, this.target, options);
+                let lastDataObj = this.dataObj;
                 this.dataObj = root.data;
                 this.dataIds = root.ids;
 
@@ -179,9 +189,13 @@ module powerbi.extensibility.visual {
                     });
                     this.chart.replaceData(root.data);
 
-                    let ct = this.chart.time();
-                    if (ct[0] !== null) {
-                        this.chart.time(Math.max(ct[0], <number>root.data.from), Math.min(ct[1], <number>root.data.to), false);
+                    if (lastDataObj && lastDataObj.dataLimitTo === 1) {
+                        this.chart.time(<number>root.data.from, <number>root.data.to, false);
+                    } else {
+                        let ct = this.chart.time();
+                        if (ct[0] !== null) {
+                            this.chart.time(Math.max(ct[0], <number>root.data.from), Math.min(ct[1], <number>root.data.to), false);
+                        }
                     }
                 }
             }

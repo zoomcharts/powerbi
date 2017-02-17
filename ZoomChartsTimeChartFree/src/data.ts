@@ -4,6 +4,8 @@ module powerbi.extensibility.visual {
             let root: ZoomCharts.Configuration.TimeChartDataObject = {
                 from: 0,
                 to: 1,
+                dataLimitFrom: 0,
+                dataLimitTo: 1,
                 unit: "d",
                 values: [],
             };
@@ -11,7 +13,7 @@ module powerbi.extensibility.visual {
 
             let dataView = options.dataViews[0];
             if (!dataView) {
-                displayMessage(target, "Please select the data fields for the visual.", "Incorrect data", false);
+                displayMessage(target, "Either the data loading is taking longer than usual or the data fields for the visual are not properly configured.", "Incorrect data", false);
                 return {data: root, ids: ids };
             }
 
