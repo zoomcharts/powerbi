@@ -1,4 +1,13 @@
 module powerbi.extensibility.visual {
+    window.ZoomChartsLicense = "ZCF-0wv4bd3ok-1: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects (for FacetChart); upgrades until: 2017-05-01";
+    window.ZoomChartsLicenseKey = "345b24c88605cdfa34a5bc681c42aac9b54851728097b0b013"+
+        "7960735433eb2f5201f7c69f90dfba123f82cf59803f4f4ccbafedbd714d16af660b86c9053bd"+
+        "403965dc5e013bdb8f9535fa278bd84d0affc07e4023b69d427f49eda6cae218b38bbe09835d7"+
+        "a51f1c7e0a88128e0c074d1b2bf03aea9578508be3f6b0726defd9a06ba4cfc5b80dbceb259ac"+
+        "c0ffe462666d784a482ace1b58938addf2ec178d384cc1b3a0a81280ae77265f5eb24b4375469"+
+        "190937a5a218ea6225dd882e23683709148406505ab06bab34995e571aab75331910bb4b0798c"+
+        "10006be5ac7f2834eab114085703bb029af9210c0ad8b512a4526b91693ff40844d4774c37831";
+
     export class Visual implements IVisual {
         private target: HTMLElement;
         private chart: ZoomCharts.FacetChart;
