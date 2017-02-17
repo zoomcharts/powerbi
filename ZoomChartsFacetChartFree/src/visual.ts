@@ -56,6 +56,9 @@ module powerbi.extensibility.visual {
                             this.updateSelection(args, 500);
                     }
                 },
+                toolbar: {
+                    export: false
+                },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
             });
 

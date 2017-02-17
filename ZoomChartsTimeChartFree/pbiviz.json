@@ -6,8 +6,8 @@
     "visualClassName": "Visual",
     "version": "1.0.0",
     "description": "",
-    "supportUrl": "",
-    "gitHubUrl": ""
+    "supportUrl": "https://zoomcharts.com/en/microsoft-powerbi-custom-visual/",
+    "gitHubUrl": "https://github.com/zoomcharts/powerbi/tree/master/ZoomChartsTimeChartFree"
   },
   "apiVersion": "1.3.0",
   "author": {

@@ -73,6 +73,9 @@ module powerbi.extensibility.visual {
                             this.updateSelection(args, 500);
                     }
                 },
+                toolbar: {
+                    export: false
+                },
                 timeAxis: {
                     timeZone: "local"
                 },
