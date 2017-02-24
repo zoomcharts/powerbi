@@ -1,11 +1,11 @@
 {
   "visual": {
     "name": "ZoomChartsFacetChartFree",
-    "displayName": "ZoomChartsFacetChartFree",
+    "displayName": "Drill-Down Column Chart by ZoomCharts",
     "guid": "PBI_CV_33C9F325_D337_408C_98D4_E1D4E1EAD704",
     "visualClassName": "Visual",
     "version": "1.0.0",
-    "description": "",
+    "description": "ZoomCharts Column chart provides standard column chart functionality with additional interactive features. By default, it would show a subset of data to make the labels legible - rest of the data can be accessed either by scrolling the chart by clicking and dragging the mouse (or using touch on touch-enabled devices) to left or right. If you drag the mouse up or down, it will change the width of the columns showing more or less columns in the same viewport. If you have added multiple “Category” fields, drill-down will be enabled - clicking on any column will take you to the next level. Clicking “Zoom-out” button will take you back to the previous level. Clicking on any column acts as a filter for rest of your dashboard. On touch devices you can use multi-touch gestures such as pinch to change aggregation level quickly. Additional styling and settings are available in the paid version.",
     "supportUrl": "https://zoomcharts.com/en/microsoft-powerbi-custom-visual/",
     "gitHubUrl": "https://github.com/zoomcharts/powerbi/tree/master/ZoomChartsFacetChartFree"
   },
