@@ -62,8 +62,13 @@ module powerbi.extensibility.visual {
                         // isolated in its own iframe. This approach allows not to replace the global moment
                         // library with the one that is bundled with ZoomCharts.
                         globals = eval(`
+                        var w = window.window;
                         (function() {
                             function Temp() { 
+                                // workaround for some issues coming from the wrapped window object.
+                                // window.window seems to refer to the real/original window object.
+                                var window = w;
+
                                 ${reqGlobalize.responseText};
                                 ${reqZoomCharts.responseText};
                                 this.ZoomCharts = ZoomCharts;
