@@ -1,6 +1,16 @@
 module powerbi.extensibility.visual {
     let isDebugVisual = /plugin=[^&]*_DEBUG&/.test(document.location.toString());
 
+    try {
+        Number(window.devicePixelRatio);
+    } catch (e) {
+        console.warn("Cannot read window.devicePixelRatio. Applying workaround. See https://github.com/Microsoft/PowerBI-visuals-tools/issues/81", e);
+
+        Object.defineProperty(window, "devicePixelRatio", {
+            get: () => 1
+        });
+    }
+
     export function logExceptions(): MethodDecorator {
         return function (target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<Function>)
             : TypedPropertyDescriptor<Function> {
