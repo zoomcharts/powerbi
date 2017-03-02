@@ -16,6 +16,7 @@ module powerbi.extensibility.visual {
         private pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
         private updateTimer: number;
         private formatString: string = "#,0.00";
+        private formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -57,9 +58,13 @@ module powerbi.extensibility.visual {
                 }],
                 info: {
                     contentsFunction: (data, slice) => {
+                        let f = this.formatter;
+                        if (!f) return "";
+console.log(this.formatString, data.value, powerbi.extensibility.utils.formatting.valueFormatter.format(data.value, this.formatString));
                         return data.name 
                         + " - " 
-                        + powerbi.formattingService.formatValue(data.value, this.formatString)
+                        + "`" + this.formatString + "`"
+                        + f.format(data.value)
                         + " (" 
                         + slice.percent.toFixed(1) 
                         + "%)";
@@ -109,6 +114,7 @@ module powerbi.extensibility.visual {
 
             if (root.subvalues.length) {
                 this.formatString = options.dataViews[0].categorical.values[0].source.format;
+                this.formatter = powerbi.extensibility.utils.formatting.valueFormatter.create({format: this.formatString});
             }
 
             if (this.chart) {
