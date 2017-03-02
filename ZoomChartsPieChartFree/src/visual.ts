@@ -60,7 +60,6 @@ module powerbi.extensibility.visual {
                     contentsFunction: (data, slice) => {
                         let f = this.formatter;
                         if (!f) return "";
-console.log(this.formatString, data.value, powerbi.extensibility.utils.formatting.valueFormatter.format(data.value, this.formatString));
                         return data.name 
                         + " - " 
                         + "`" + this.formatString + "`"
