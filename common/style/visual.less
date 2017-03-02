@@ -3,6 +3,11 @@
     image-rendering: auto !important;
 }
 
+.DVSL-info-center, .DVSL-info-left, .DVSL-info-right {
+    /* on Chrome this forces the info popup text to be sharper when the visual is zoomed */
+    transform: perspective(1px) translateZ(0);
+}
+
 .chart-container {
     position: fixed;
     top: 0;

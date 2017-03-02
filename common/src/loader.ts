@@ -29,12 +29,11 @@ module powerbi.extensibility.visual {
             if (this._started) {
                 return;
             }
-            
+
             this._started = true;
 
-            let counter = 1;
-            let reqMoment = new XMLHttpRequest();
-            let reqMomentTz = new XMLHttpRequest();
+            let counter = 2;
+            let reqGlobalize = new XMLHttpRequest();
             let reqZoomCharts = new XMLHttpRequest();
 
             let error = () => {
@@ -49,7 +48,7 @@ module powerbi.extensibility.visual {
             };
 
             let self = this;
-            let complete: (/*this: XMLHttpRequest*/) => void = function(/*this: XMLHttpRequest*/) {
+            let complete: (/*this: XMLHttpRequest*/) => void = function (/*this: XMLHttpRequest*/) {
                 if (this.status !== 200) {
                     error();
                     return;
@@ -57,34 +56,46 @@ module powerbi.extensibility.visual {
 
                 counter--;
                 if (counter === 0) {
-                    // using the eval() might no longer be needed but it was before the custom visual was
-                    // isolated in its own iframe. This approach allows not to replace the global moment
-                    // library with the one that is bundled with ZoomCharts.
-                    var zc = eval(`
+                    let globals: any;
+                    try {
+                        // using the eval() might no longer be needed but it was before the custom visual was
+                        // isolated in its own iframe. This approach allows not to replace the global moment
+                        // library with the one that is bundled with ZoomCharts.
+                        globals = eval(`
                         (function() {
                             function Temp() { 
-                                ${reqMoment.responseText};
-                                ${reqMomentTz.responseText}; 
+                                ${reqGlobalize.responseText};
                                 ${reqZoomCharts.responseText};
-                                ZoomCharts.Internal.TimeChart.moment = this.moment;
-
-                                this.zc = ZoomCharts;
+                                this.ZoomCharts = ZoomCharts;
                             };
-                            return new Temp().zc;
+                            return new Temp();
                         })();
                     `);
+                    } catch (e) {
+                        console.error(e);
+                        error();
+                        return;
+                    }
+
+                    // assign to the implicit global so that powerbi formatter code can use it.
+                    Globalize = globals.Globalize;
 
                     self._loaded = true;
                     self._failed = false;
-                    self._zc = zc;
-                    self._successCallbacks.forEach(a => a(zc));
+                    self._zc = globals.ZoomCharts;
+                    self._successCallbacks.forEach(a => a(self._zc));
                     self._failCallbacks = null;
                     self._successCallbacks = null;
                 }
             };
 
+            reqGlobalize.open("GET", "https://cdnjs.cloudflare.com/ajax/libs/globalize/0.1.1/globalize.min.js");
+            reqGlobalize.onload = complete;
+            reqGlobalize.onerror = error;
+            reqGlobalize.send();
+
             reqZoomCharts.open("GET", this.RootUrl + "zoomcharts.js");
-            reqZoomCharts.onload = complete
+            reqZoomCharts.onload = complete;
             reqZoomCharts.onerror = error;
             reqZoomCharts.send();
         }
