@@ -19,6 +19,8 @@ module powerbi.extensibility.visual {
         private formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
 
         constructor(options: VisualConstructorOptions) {
+            console.log(powerbi.extensibility.utils.formatting.valueFormatter.format(13594034.895999994, "\\$#,0;(\\$#,0);\\$#,0"));
+
             this.target = options.element;
             this.host = options.host;
 
@@ -62,7 +64,6 @@ module powerbi.extensibility.visual {
                         if (!f) return "";
                         return data.name 
                         + " - " 
-                        + "`" + this.formatString + "`"
                         + f.format(data.value)
                         + " (" 
                         + slice.percent.toFixed(1) 

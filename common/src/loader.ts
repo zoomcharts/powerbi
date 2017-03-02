@@ -32,8 +32,7 @@ module powerbi.extensibility.visual {
 
             this._started = true;
 
-            let counter = 2;
-            let reqGlobalize = new XMLHttpRequest();
+            let counter = 1;
             let reqZoomCharts = new XMLHttpRequest();
 
             let error = () => {
@@ -64,7 +63,6 @@ module powerbi.extensibility.visual {
                         globals = eval(`
                         (function() {
                             function Temp() { 
-                                ${reqGlobalize.responseText};
                                 ${reqZoomCharts.responseText};
                                 this.ZoomCharts = ZoomCharts;
                             };
@@ -77,9 +75,6 @@ module powerbi.extensibility.visual {
                         return;
                     }
 
-                    // assign to the implicit global so that powerbi formatter code can use it.
-                    Globalize = globals.Globalize;
-
                     self._loaded = true;
                     self._failed = false;
                     self._zc = globals.ZoomCharts;
@@ -88,11 +83,6 @@ module powerbi.extensibility.visual {
                     self._successCallbacks = null;
                 }
             };
-
-            reqGlobalize.open("GET", "https://cdnjs.cloudflare.com/ajax/libs/globalize/0.1.1/globalize.min.js");
-            reqGlobalize.onload = complete;
-            reqGlobalize.onerror = error;
-            reqGlobalize.send();
 
             reqZoomCharts.open("GET", this.RootUrl + "zoomcharts.js");
             reqZoomCharts.onload = complete;
