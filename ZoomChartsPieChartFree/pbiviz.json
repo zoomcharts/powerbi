@@ -17,7 +17,15 @@
   "assets": {
     "icon": "assets/icon.png"
   },
-  "externalJS": [],
+  "externalJS": [
+    "../common/src/lodash.min.js",
+    "../common/src/globalize.js",
+    "../common/src/globalize.culture.en-US.js",
+    "../common/src/powerbi-visuals-utils-dataviewutils.js",
+    "../common/src/powerbi-visuals-utils-typeutils.js",
+    "../common/src/powerbi-visuals-utils-svgutils.js",
+    "../common/src/powerbi-visuals-utils-formattingutils.js"
+  ],
   "style": "../common/style/visual.less",
   "capabilities": "capabilities.json"
 }

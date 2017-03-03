@@ -5,11 +5,3 @@
 declare module ZoomCharts {
     export var Internal: any;
 }
-
-declare module powerbi {
-    export class formattingService {
-        public static formatValue(value: number, format: string);
-    }
-}
-
-declare var Globalize: any;
