@@ -19,10 +19,9 @@ module powerbi.extensibility.visual {
         private formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
 
         constructor(options: VisualConstructorOptions) {
-            console.log(powerbi.extensibility.utils.formatting.valueFormatter.format(13594034.895999994, "\\$#,0;(\\$#,0);\\$#,0"));
-
             this.target = options.element;
             this.host = options.host;
+            this.formatter = powerbi.extensibility.utils.formatting.valueFormatter.create({format: this.formatString});
 
             // workaround for the host not calling `destroy()` when the visual is reloaded:
             if ((<any>this.target).__zc_visual) {

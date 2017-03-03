@@ -18,7 +18,9 @@
     "icon": "assets/icon.png"
   },
   "externalJS": [
+    "../common/src/lodash.min.js",
     "../common/src/globalize.js",
+    "../common/src/globalize.culture.en-US.js",
     "../common/src/powerbi-visuals-utils-dataviewutils.js",
     "../common/src/powerbi-visuals-utils-typeutils.js",
     "../common/src/powerbi-visuals-utils-svgutils.js",
