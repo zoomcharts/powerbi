@@ -18,10 +18,19 @@ module powerbi.extensibility.visual {
         private pendingSettings: ZoomCharts.Configuration.TimeChartSettings = {};
         private updateTimer: number;
         private lastTimeRange: [number, number] = [null, null];
+        private colors: IColorPalette;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
             this.host = options.host;
+
+            this.colors = this.host.colorPalette;
+            
+            // if possible, use our own color palette because the default gets its colorIndex reset
+            // to 0 when data changes. This results in the colors repeating as new series are added
+            // see https://github.com/Microsoft/PowerBI-visuals/issues/141 
+            if ((<any>extensibility).createColorPalette && (<any>this.colors).colors)
+                this.colors = (<any>extensibility).createColorPalette((<any>this.colors).colors);
 
             // workaround for the host not calling `destroy()` when the visual is reloaded:
             if ((<any>this.target).__zc_visual) {
@@ -58,6 +67,13 @@ module powerbi.extensibility.visual {
                     preloaded: this.dataObj,
                     suppressWarnings: true
                 }],
+                info: {
+                    valueFormatterFunction: (values, series) => {
+                        return powerbi.extensibility.utils.formatting.valueFormatter.format(
+                            values[series.data.aggregation], 
+                            series.extra.format);
+                    }
+                },
                 interaction: {
                     selection: { enabled: true },
                     resizing: { enabled: false }
@@ -109,13 +125,15 @@ module powerbi.extensibility.visual {
             for (let i = 0; i < values.length; i++) {
                 let column = values[i];
                 let istr = i.toFixed(0);
+                let color = this.colors.getColor("zc-tc-color-" + istr);
                 series.push({
                     type: "columns",
                     id: "s" + istr,
                     name: column.source.displayName,
+                    extra: { format: column.source.format },
                     data: { index: i + 1 },
                     style: {
-                        fillColor: this.host.colorPalette.getColor("zc-tc-color-" + istr).value,
+                        fillColor: color.value,
                         gradient: 0,
                     }
                 });

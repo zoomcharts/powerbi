@@ -16,10 +16,18 @@ module powerbi.extensibility.visual {
         private pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
         private pendingSettings: ZoomCharts.Configuration.FacetChartSettings = {};
         private updateTimer: number;
+        private colors: IColorPalette;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
             this.host = options.host;
+
+            // if possible, use our own color palette because the default gets its colorIndex reset
+            // to 0 when data changes. This results in the colors repeating as new 
+            this.colors = this.host.colorPalette;
+            
+            if ((<any>extensibility).createColorPalette && (<any>this.colors).colors)
+                this.colors = (<any>extensibility).createColorPalette((<any>this.colors).colors);
 
             // workaround for the host not calling `destroy()` when the visual is reloaded:
             if ((<any>this.target).__zc_visual) {
@@ -54,6 +62,14 @@ module powerbi.extensibility.visual {
                 [{
                     preloaded: this.pendingData,
                 }],
+                info: {
+                    valueFormatterFunction: (values, series) => {
+                        return powerbi.extensibility.utils.formatting.valueFormatter.format(
+                            values[series.data.aggregation], 
+                            series.extra.format);
+                        
+                    }
+                },
                 interaction: {
                     selection: { enabled: true },
                     resizing: { enabled: false }
@@ -90,13 +106,15 @@ module powerbi.extensibility.visual {
             for (let i = 0; i < values.length; i++) {
                 let column = values[i];
                 let istr = i.toFixed(0);
+                let color = this.colors.getColor("zc-fc-color-" + istr);
                 series.push({
                     type: "columns",
                     id: "s" + istr,
                     name: column.source.displayName,
+                    extra: { format: column.source.format },
                     data: { field: i === 0 ? "value" : ("value" + istr) },
                     style: {
-                        fillColor: this.host.colorPalette.getColor("zc-fc-color-" + istr).value,
+                        fillColor: color.value,
                         gradient: 0,
                     }
                 });
