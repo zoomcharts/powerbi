@@ -94,8 +94,8 @@ module powerbi.extensibility.visual {
                     },
                     onSelectionChange: (e, args) => this.updateSelection(args, 200),
                     onChartUpdate: (e, args) => {
-                        if (args.origin === "user")
-                            this.updateSelection(args, 500);
+                        //if (args.origin === "user")
+                        //    this.updateSelection(args, 500);
                     }
                 },
                 toolbar: {
@@ -158,8 +158,8 @@ module powerbi.extensibility.visual {
                 let selman = this.host.createSelectionManager();
 
                 var time = this.chart.selection();
-                if (time[0] == null)
-                    time = this.chart.targetTime();
+                //if (time[0] == null)
+                //    time = this.chart.targetTime();
 
                 if (time[0] == null || !this.dataObj)
                     return;
@@ -206,7 +206,9 @@ module powerbi.extensibility.visual {
                         }]
                     });
                     this.chart.replaceData(root.data);
+                    this.chart.time(<number>root.data.from, <number>root.data.to, false);
 
+                    /*
                     if (lastDataObj && lastDataObj.dataLimitTo === 1) {
                         this.chart.time(<number>root.data.from, <number>root.data.to, false);
                     } else {
@@ -215,6 +217,7 @@ module powerbi.extensibility.visual {
                             this.chart.time(Math.max(ct[0], <number>root.data.from), Math.min(ct[1], <number>root.data.to), false);
                         }
                     }
+                    */
                 }
             }
         }
