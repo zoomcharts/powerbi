@@ -75,6 +75,10 @@ module powerbi.extensibility.visual {
                     resizing: { enabled: false }
                 },
                 events: {
+                    onClick: (e, args) => {
+                        if ((e.ctrlKey || e.shiftKey) && args.clickSlice && args.clickSlice.id === null)
+                            e.preventDefault();
+                    },
                     onSelectionChange: (e, args) => this.updateSelection(args, 200),
                     onChartUpdate: (e, args) => {
                         if (args.origin === "user" && args.pie.id !== this.lastChartUpdatePieId) {
