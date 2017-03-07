@@ -126,6 +126,7 @@ module powerbi.extensibility.visual {
 
             if (this.chart) {
                 this.chart.replaceData(root);
+                this.chart.home();
             } else {
                 this.pendingData = root;
             }
