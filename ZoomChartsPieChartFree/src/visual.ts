@@ -17,6 +17,7 @@ module powerbi.extensibility.visual {
         private updateTimer: number;
         private formatString: string = "#,0.00";
         private formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
+        private lastChartUpdatePieId = "";
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -76,8 +77,10 @@ module powerbi.extensibility.visual {
                 events: {
                     onSelectionChange: (e, args) => this.updateSelection(args, 200),
                     onChartUpdate: (e, args) => {
-                        if (args.origin === "user")
+                        if (args.origin === "user" && args.pie.id !== this.lastChartUpdatePieId) {
+                            this.lastChartUpdatePieId = args.pie.id;
                             this.updateSelection(args, 500);
+                        }
                     }
                 },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
