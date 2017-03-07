@@ -62,6 +62,8 @@ module powerbi.extensibility.visual {
                         // library with the one that is bundled with ZoomCharts.
                         globals = eval(`
                         var w = window.window;
+                        w.ZoomChartsLicense = window.ZoomChartsLicense;
+                        w.ZoomChartsLicenseKey = window.ZoomChartsLicenseKey;
                         (function() {
                             function Temp() { 
                                 // workaround for some issues coming from the wrapped window object.
