@@ -30,6 +30,7 @@ module powerbi.extensibility.visual {
 
             hideMessage(target);
 
+            const formatter = powerbi.extensibility.utils.formatting.formattingService;
             let values = dataView.categorical.values[0].values;
 
             let catCount = dataView.categorical.categories.length;
@@ -47,14 +48,15 @@ module powerbi.extensibility.visual {
                 grouper = Object.create(null);
                 for (let i = 0; i < values.length; i++) {
                     let parent = parentObjects[i];
-                    let idVal = parent.id + "\ufdd0" + categories.values[i];
+                    let catValue = formatter.formatValue(categories.values[i], categories.source.format);
+                    let idVal = parent.id + "\ufdd0" + catValue;
 
                     let obj = grouper[idVal];
                     if (!obj) {
                         //console.log(categories.values[i], idVal);
                         obj = {
                             value: <number>values[i],
-                            name: "" + categories.values[i],
+                            name: "" + catValue,
                             id: idVal,
                             subvalues: [],
                             style: {
