@@ -160,7 +160,7 @@ module powerbi.extensibility.visual {
                 let root = Data.convert(this.host, this.target, options);
                 if (this.chart) {
                     this.chart.replaceData(root);
-                    this.chart.home();
+                    this.chart.setPie("");
                 } else {
                     this.pendingData = root;
                 }
