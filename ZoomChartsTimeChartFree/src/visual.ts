@@ -200,6 +200,7 @@ module powerbi.extensibility.visual {
                 this.dataIds = root.ids;
 
                 if (this.chart) {
+                    let sel = this.chart.selection();
                     this.chart.replaceSettings({
                         data: [{
                             units: [root.data.unit],
@@ -209,6 +210,7 @@ module powerbi.extensibility.visual {
                     this.chart.replaceData(root.data);
                     this.chart.time(<number>root.data.from, <number>root.data.to, false);
 
+                    this.chart.selection(sel[0], sel[1]);
                     /*
                     if (lastDataObj && lastDataObj.dataLimitTo === 1) {
                         this.chart.time(<number>root.data.from, <number>root.data.to, false);
