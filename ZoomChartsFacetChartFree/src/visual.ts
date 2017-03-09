@@ -64,6 +64,7 @@ module powerbi.extensibility.visual {
                 }],
                 info: {
                     valueFormatterFunction: (values, series) => {
+                        if (!values) return "-";
                         return powerbi.extensibility.utils.formatting.valueFormatter.format(
                             values[series.data.aggregation], 
                             series.extra.format);

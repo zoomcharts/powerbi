@@ -1,5 +1,6 @@
 # ignored files and folders
 
+*/.vs/
 */.tmp/
 */dist/
 */debug.log
