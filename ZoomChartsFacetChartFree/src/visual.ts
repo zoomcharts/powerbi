@@ -58,6 +58,7 @@ module powerbi.extensibility.visual {
 
             this.chart = new zc.FacetChart({
                 container: chartContainer,
+                advanced: { themeCSSClass: "DVSL-flat" },
                 data:
                 [{
                     preloaded: this.pendingData,
