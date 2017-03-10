@@ -1,12 +1,13 @@
 module powerbi.extensibility.visual {
-    window.ZoomChartsLicense = "ZCF-1flw35m2i-16: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects (for TimeChart); upgrades until: 2017-05-01";
-    window.ZoomChartsLicenseKey = "a671b3607cdc11e81b69ac41a98e80b8d7d134e6e834930b54"+
-        "3b978d98d1e679a1ec56ede724c97252a5cd94d27c0129f38b4af1002ecdef996676c51eb3fdc"+
-        "5c156f1bfd5971f0c642761663f9b715212065e192c4cbf87216d7f30a6e9367a8bf258620fde"+
-        "f18c23919de1f642db2a8fa906397f88c2134338f8b6f1642426ede96350e17cac4da7f441eea"+
-        "3a9b532fff6732f3ab2c8f45a95fb68cd53e328c3f1e07263392dcfcabb358d011e6e8ac9405c"+
-        "f887e415529648be0b5b0c2e66d96ecf21b19c769d8e78be039b086ad105f32677c529360bd62"+
-        "7f0ae333ea1ae18b4a978795c2bb6997263a1c88b3f3dff99c9a7300b8fdf3ee6958120538b83";
+    window.ZoomChartsLicense = "ZCF-6sag05711-16: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects (for TimeChart); upgrades until: 2018-08-03";
+    window.ZoomChartsLicenseKey = "1cd1965a013d1e8a15f110c4dc59c697e3bbb77e91246c4b0f"+
+        "73d1f42480151f3908185151424f0e48b9dda27e4f6bbf0f54c39542b7d44c88f9ef6766f5264"+
+        "8fb585623d85ebeb8bd7a8847f4a14d50c57c7c8d3176d5f84f69c4f2c50b1ed555387ccd67b7"+
+        "75af8147d5b6778690a67cc114a18ca8ee110c71e91a495045b5a966a435f8f6fff4fdf1b3878"+
+        "e58c97b826a00d5e9e7d3a08813b25c70bb1d34e7f6e3be673348df3993798d40934f0e1b2656"+
+        "fd65d19327c0a85eddf4ba91d2be1f86329aa709f8283ce7517c35cdcb70f4140fa37c2b85bbf"+
+        "c541360474c494ee8126f44dc88b1aba5567e47c72c324748128c7c8b540fd964b45f7437a025";
+
 
     export class Visual implements IVisual {
         private target: HTMLElement;

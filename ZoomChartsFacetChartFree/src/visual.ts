@@ -1,12 +1,12 @@
 module powerbi.extensibility.visual {
-    window.ZoomChartsLicense = "ZCF-0wv4bd3ok-1: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects (for FacetChart); upgrades until: 2017-05-01";
-    window.ZoomChartsLicenseKey = "345b24c88605cdfa34a5bc681c42aac9b54851728097b0b013"+
-        "7960735433eb2f5201f7c69f90dfba123f82cf59803f4f4ccbafedbd714d16af660b86c9053bd"+
-        "403965dc5e013bdb8f9535fa278bd84d0affc07e4023b69d427f49eda6cae218b38bbe09835d7"+
-        "a51f1c7e0a88128e0c074d1b2bf03aea9578508be3f6b0726defd9a06ba4cfc5b80dbceb259ac"+
-        "c0ffe462666d784a482ace1b58938addf2ec178d384cc1b3a0a81280ae77265f5eb24b4375469"+
-        "190937a5a218ea6225dd882e23683709148406505ab06bab34995e571aab75331910bb4b0798c"+
-        "10006be5ac7f2834eab114085703bb029af9210c0ad8b512a4526b91693ff40844d4774c37831";
+    window.ZoomChartsLicense = "ZCF-x33yuxzf8-1: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects (for FacetChart); upgrades until: 2018-03-08"
+    window.ZoomChartsLicenseKey = "4d3a4d47a253044154dcc81b3970e97057e98542f68762a0d0"+
+        "c5f065e2215d1fe11a000c36e4ae45cc3123a0a41fad4a72c7e80c20d62a6b616d3d740a7af16"+
+        "78605d1b2f605266351e6ad4ba76d46a302729d8fab5ae5ac2aa5ee8aef72b01a67fa2a0d5178"+
+        "0b399473aee9f077fbe8dc2fdff07676681917f731315452f6128eeae611c07173ad88133a838"+
+        "a91ff41e50041d3652f26029d19d0b9732dcf704cdd7d00e9b8c70a339951ac25d0af23f25be9"+
+        "4df5437f9ce6751f029e8204525f331da03848621da09ed9e1652735effd07a3013d4820086df"+
+        "e9c4f0233be80bbbf2cd4d5ecdafad6331f6961035ae8959e6515d7686ddb97cfff9885657bd9";
 
     export class Visual implements IVisual {
         private target: HTMLElement;
