@@ -20,11 +20,12 @@ module powerbi.extensibility.visual {
         private updateTimer: number;
         private lastTimeRange: [number, number] = [null, null];
         private colors: IColorPalette;
+        private selectionManager: ISelectionManager;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
             this.host = options.host;
-
+            this.selectionManager = options.host.createSelectionManager();
             this.colors = this.host.colorPalette;
             
             // if possible, use our own color palette because the default gets its colorIndex reset
@@ -157,7 +158,7 @@ module powerbi.extensibility.visual {
             if (this.updateTimer) window.clearTimeout(this.updateTimer);
 
             window.setTimeout(() => {
-                let selman = this.host.createSelectionManager();
+                let selman = this.selectionManager;
 
                 var time = this.chart.selection();
                 //if (time[0] == null)
@@ -186,7 +187,13 @@ module powerbi.extensibility.visual {
                         ids.push(this.dataIds[v[v.length - 1]]);
                     }
 
-                    selman.select(ids, false);
+                    let cursel = selman.getSelectionIds();
+                    if (!arraysEqual(cursel, ids, (a: any, b: any) => a.key === b.key)) {
+                        selman.clear();
+                        selman.select(ids, false);
+                    } else if (isDebugVisual) {
+                        console.log("Selection not being updated because getSelectionIds() matches the requested selection. It is possible that the selection is not actually being applied in some cases because of what seems to be a bug in PowerBI.");
+                    }
                 }
             }, delay);
         }
@@ -201,6 +208,8 @@ module powerbi.extensibility.visual {
                 this.dataIds = root.ids;
 
                 if (this.chart) {
+                    let sel = this.chart.selection();
+
                     this.chart.replaceSettings({
                         data: [{
                             units: [root.data.unit],
@@ -208,7 +217,10 @@ module powerbi.extensibility.visual {
                         }]
                     });
                     this.chart.replaceData(root.data);
-                    this.chart.time(<number>root.data.from, <number>root.data.to, false);
+
+                    let unit = new this.ZC.Internal.TimeChart.TimeStep(root.data.unit, 1);
+                    this.chart.time(<number>root.data.from, unit.add(<number>root.data.to, 1), false);
+                    this.chart.selection(sel[0], sel[1]);
 
                     /*
                     if (lastDataObj && lastDataObj.dataLimitTo === 1) {

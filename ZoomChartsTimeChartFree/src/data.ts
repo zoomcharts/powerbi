@@ -1,6 +1,10 @@
 module powerbi.extensibility.visual {
     export class Data {
         public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
+            if (isDebugVisual) {
+                console.log("Chart data update called", options);
+            }
+
             let root: ZoomCharts.Configuration.TimeChartDataObject = {
                 from: 0,
                 to: 1,
