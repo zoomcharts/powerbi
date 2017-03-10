@@ -58,12 +58,14 @@ module powerbi.extensibility.visual {
 
             this.chart = new zc.FacetChart({
                 container: chartContainer,
+                advanced: { themeCSSClass: "DVSL-flat" },
                 data:
                 [{
                     preloaded: this.pendingData,
                 }],
                 info: {
                     valueFormatterFunction: (values, series) => {
+                        if (!values) return "-";
                         return powerbi.extensibility.utils.formatting.valueFormatter.format(
                             values[series.data.aggregation], 
                             series.extra.format);

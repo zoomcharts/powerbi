@@ -59,7 +59,6 @@ module powerbi.extensibility.visual {
                     preloaded: this.pendingData,
                     sortField: "value"
                 }],
-                toolbar: {enabled: true, export: true},
                 info: {
                     contentsFunction: (data, slice) => {
                         let f = this.formatter;
