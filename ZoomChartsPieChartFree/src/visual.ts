@@ -110,7 +110,14 @@ module powerbi.extensibility.visual {
                     for (let i = 0; i < selectedSlices.length; i++) {
                         sel = sel.concat(selectedSlices[i].extra);
                     }
-                    selman.select(sel, false);
+                    
+                    let cursel = selman.getSelectionIds();
+                    if (!arraysEqual(cursel, sel, (a: any, b: any) => a.key === b.key)) {
+                        selman.clear();
+                        selman.select(sel, false);
+                    } else if (isDebugVisual) {
+                        console.log("Selection not being updated because getSelectionIds() matches the requested selection. It is possible that the selection is not actually being applied in some cases because of what seems to be a bug in PowerBI.");
+                    }
                 } else {
                     selman.clear();
                 }

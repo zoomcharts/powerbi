@@ -4470,7 +4470,7 @@ declare module ZoomCharts {
         /** Updates the chart settings but instead of merging some settings that are arrays or dictionaries (such as `data`)
         these collections are replaced completely. For example, this allows removal of series or value axis within TimeChart. */
         public replaceSettings(changes: Configuration.FacetChartSettings): this;
-        public selection(selected: Array<string | Configuration.FacetChartItem>): Array<Configuration.FacetChartItem>;
+        public selection(selected?: Array<string | Configuration.FacetChartItem>): Array<Configuration.FacetChartItem>;
         public setPie(pieId: string | Array<string>, offset?: number, count?: number): this;
         /** Lists the predefined themes for the chart. These can be used within the settings objects or via the `customize()` method:
         

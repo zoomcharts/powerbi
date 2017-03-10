@@ -17,13 +17,15 @@ module powerbi.extensibility.visual {
         private pendingSettings: ZoomCharts.Configuration.FacetChartSettings = {};
         private updateTimer: number;
         private colors: IColorPalette;
+        private selectionManager: ISelectionManager;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
             this.host = options.host;
+            this.selectionManager = options.host.createSelectionManager();
 
             // if possible, use our own color palette because the default gets its colorIndex reset
-            // to 0 when data changes. This results in the colors repeating as new 
+            // to 0 when data changes. This results in the colors repeating as new series are added
             this.colors = this.host.colorPalette;
             
             if ((<any>extensibility).createColorPalette && (<any>this.colors).colors)
@@ -136,7 +138,7 @@ module powerbi.extensibility.visual {
 
         private updateSelection(args: ZoomCharts.Configuration.FacetChartChartEventArguments, delay: number) {
             if (this.updateTimer) window.clearTimeout(this.updateTimer);
-            let selman = this.host.createSelectionManager();
+            let selman = this.selectionManager;
             let selectedSlices = (args.selection || []).map(o => o.data);
             if (!selectedSlices.length && args.facet.id) {
                 selectedSlices = args.facet.data.values;
@@ -148,7 +150,14 @@ module powerbi.extensibility.visual {
                     for (let i = 0; i < selectedSlices.length; i++) {
                         sel = sel.concat(selectedSlices[i].extra);
                     }
-                    selman.select(sel, false);
+
+                    let cursel = selman.getSelectionIds();
+                    if (!arraysEqual(cursel, sel, (a: any, b: any) => a.key === b.key)) {
+                        selman.clear();
+                        selman.select(sel, false);
+                    } else if (isDebugVisual) {
+                        console.log("Selection not being updated because getSelectionIds() matches the requested selection. It is possible that the selection is not actually being applied in some cases because of what seems to be a bug in PowerBI.");
+                    }
                 } else {
                     selman.clear();
                 }
@@ -162,7 +171,6 @@ module powerbi.extensibility.visual {
                 let root = Data.convert(this.host, this.target, options);
                 if (this.chart) {
                     this.chart.replaceData(root);
-                    this.chart.setPie("");
                 } else {
                     this.pendingData = root;
                 }
