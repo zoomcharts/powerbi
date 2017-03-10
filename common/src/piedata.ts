@@ -1,6 +1,10 @@
 module powerbi.extensibility.visual {
     export class Data {
         public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
+            if (isDebugVisual) {
+                console.log("Chart data update called", options);
+            }
+
             let root: ZoomCharts.Configuration.PieChartDataObjectRoot = {
                 id: "",
                 subvalues: [],
@@ -31,7 +35,7 @@ module powerbi.extensibility.visual {
             hideMessage(target);
 
             const formatter = powerbi.extensibility.utils.formatting.formattingService;
-            let values = dataView.categorical.values[0].values;
+            let values = dataView.categorical.values[0].highlights || dataView.categorical.values[0].values;
 
             let catCount = dataView.categorical.categories.length;
             let ids: Array<visuals.ISelectionId> = new Array(values.length);
@@ -55,7 +59,7 @@ module powerbi.extensibility.visual {
                     if (!obj) {
                         //console.log(categories.values[i], idVal);
                         obj = {
-                            value: <number>values[i],
+                            value: <number>values[i] || 0,
                             name: "" + catValue,
                             id: idVal,
                             subvalues: [],
@@ -75,17 +79,18 @@ module powerbi.extensibility.visual {
 
                     // support for multiples values (in FacetChart)
                     for (let v = 1; v < dataView.categorical.values.length; v++) {
-                        let aValues = dataView.categorical.values[v];
+                        let aValues = dataView.categorical.values[v].highlights || dataView.categorical.values[v].values;
                         let k = "value" + v.toFixed(0);
                         if (!obj[k])
-                            obj[k] = <number>aValues.values[i] || 0;
+                            obj[k] = <number>aValues[i] || 0;
                         else
-                            obj[k] += <number>aValues.values[i] || 0;
+                            obj[k] += <number>aValues[i] || 0;
                     }
 
                     parentObjects[i] = obj;
                 }
             }
+
             return root;
         }
     }

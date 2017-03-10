@@ -1,5 +1,5 @@
 module powerbi.extensibility.visual {
-    let isDebugVisual = /plugin=[^&]*_DEBUG&/.test(document.location.toString());
+    export let isDebugVisual = /plugin=[^&]*_DEBUG&/.test(document.location.toString()) || (document.location.search || "").indexOf("unmin") > -1;
 
     try {
         Number(window.devicePixelRatio);

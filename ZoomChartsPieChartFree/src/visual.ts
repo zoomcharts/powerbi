@@ -19,10 +19,12 @@ module powerbi.extensibility.visual {
         private formatString: string = "#,0.00";
         private formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
         private lastChartUpdatePieId = "";
+        private selectionManager: ISelectionManager;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
             this.host = options.host;
+            this.selectionManager = options.host.createSelectionManager();
             this.formatter = powerbi.extensibility.utils.formatting.valueFormatter.create({format: this.formatString});
 
             // workaround for the host not calling `destroy()` when the visual is reloaded:
@@ -96,7 +98,7 @@ module powerbi.extensibility.visual {
         private updateSelection(args: ZoomCharts.Configuration.PieChartChartEventArguments, delay: number) {
             if (this.updateTimer) window.clearTimeout(this.updateTimer);
 
-            let selman = this.host.createSelectionManager();
+            let selman = this.selectionManager;
             let selectedSlices = (args.selection || []).map(o => o.data);
             if (!selectedSlices.length && args.pie.id) {
                 selectedSlices = args.pie.data.values;
@@ -117,18 +119,19 @@ module powerbi.extensibility.visual {
 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
-            let root = Data.convert(this.host, this.target, options);
+            if (options.type & VisualUpdateType.Data) {
+                let root = Data.convert(this.host, this.target, options);
 
-            if (root.subvalues.length) {
-                this.formatString = options.dataViews[0].categorical.values[0].source.format;
-                this.formatter = powerbi.extensibility.utils.formatting.valueFormatter.create({format: this.formatString});
-            }
+                if (root.subvalues.length) {
+                    this.formatString = options.dataViews[0].categorical.values[0].source.format;
+                    this.formatter = powerbi.extensibility.utils.formatting.valueFormatter.create({format: this.formatString});
+                }
 
-            if (this.chart) {
-                this.chart.replaceData(root);
-                this.chart.home();
-            } else {
-                this.pendingData = root;
+                if (this.chart) {
+                    this.chart.replaceData(root);
+                } else {
+                    this.pendingData = root;
+                }
             }
         }
 
