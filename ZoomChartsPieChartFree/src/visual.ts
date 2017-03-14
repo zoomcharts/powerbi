@@ -10,16 +10,16 @@ module powerbi.extensibility.visual {
 
 
     export class Visual implements IVisual {
-        private target: HTMLElement;
-        private chart: ZoomCharts.PieChart;
-        private ZC: typeof ZoomCharts;
-        private host: IVisualHost;
-        private pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
-        private updateTimer: number;
-        private formatString: string = "#,0.00";
-        private formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
-        private lastChartUpdatePieId = "";
-        private selectionManager: ISelectionManager;
+        protected target: HTMLElement;
+        protected chart: ZoomCharts.PieChart;
+        protected ZC: typeof ZoomCharts;
+        protected host: IVisualHost;
+        protected pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
+        protected updateTimer: number;
+        protected formatString: string = "#,0.00";
+        protected formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
+        protected lastChartUpdatePieId = "";
+        protected selectionManager: ISelectionManager;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -43,7 +43,7 @@ module powerbi.extensibility.visual {
             });
         }
 
-        private createChart(zc: typeof ZoomCharts) {
+        protected createChart(zc: typeof ZoomCharts) {
             // check if the visual is destroyed before chart is created.
             if (!this.target)
                 return;
