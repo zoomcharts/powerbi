@@ -1,5 +1,5 @@
 module powerbi.extensibility.visual {
-    let isDebugVisual = /plugin=[^&]*_DEBUG&/.test(document.location.toString());
+    export let isDebugVisual = /plugin=[^&]*_DEBUG&/.test(document.location.toString()) || (document.location.search || "").indexOf("unmin") > -1;
 
     try {
         Number(window.devicePixelRatio);
@@ -34,7 +34,7 @@ module powerbi.extensibility.visual {
     }
 
     export function hideMessage(target: HTMLElement) {
-                if (!target)
+        if (!target)
             return;
 
         let container = <HTMLElement>target.getElementsByClassName("message-overlay")[0];
@@ -60,5 +60,15 @@ module powerbi.extensibility.visual {
         if (title) html += "<h3>" + title + "</h3>";
         if (message) html += "<p>" + message + "</p>";
         container.innerHTML = html;
+    }
+
+    export function arraysEqual<T>(a1: T[], a2: T[], equality: (a: T, b: T) => boolean = (a, b) => a === b) {
+        if (a1 === a2) return true;
+        if (!Array.isArray(a1) || !Array.isArray(a2)) return false;
+        if (a1.length !== a2.length) return false;
+        for (let i = 0; i < a1.length; i++) {
+            if (!equality(a1[i], a2[i])) return false;
+        }
+        return true;
     }
 }
