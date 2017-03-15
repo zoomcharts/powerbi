@@ -48,6 +48,10 @@ module powerbi.extensibility.visual {
                 ids[i] = host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[0], i).createSelectionId();
             }
 
+            if (catCount > 0) {
+                root.name = dataView.categorical.categories[0].source.displayName;
+            }
+
             for (let c = 0; c < catCount; c++) {
                 let expandable = c < catCount - 1;
                 let categories = dataView.categorical.categories[c];

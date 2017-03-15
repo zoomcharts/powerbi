@@ -19,6 +19,7 @@ module powerbi.extensibility.visual {
         protected colors: IColorPalette;
         protected selectionManager: ISelectionManager;
         protected setLegendState = true;
+        protected series: ZoomCharts.Configuration.FacetChartSettingsSeries[] = [];
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -83,9 +84,13 @@ module powerbi.extensibility.visual {
                             this.updateSelection(args, 500);
                     }
                 },
+                valueAxisDefault: {
+                    enabled: false
+                },
                 valueAxis: {
                     "primary": {
-                        side: "left"
+                        side: "left",
+                        enabled: true
                     }
                 },
                 toolbar: {
@@ -127,6 +132,8 @@ module powerbi.extensibility.visual {
                     }
                 });
             }
+
+            this.series = series;
 
             let settings: ZoomCharts.Configuration.FacetChartSettings = {
                 series: series,
