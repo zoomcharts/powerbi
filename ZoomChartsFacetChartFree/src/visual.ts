@@ -9,15 +9,16 @@ module powerbi.extensibility.visual {
         "e9c4f0233be80bbbf2cd4d5ecdafad6331f6961035ae8959e6515d7686ddb97cfff9885657bd9";
 
     export class Visual implements IVisual {
-        private target: HTMLElement;
-        private chart: ZoomCharts.FacetChart;
-        private ZC: typeof ZoomCharts;
-        private host: IVisualHost;
-        private pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
-        private pendingSettings: ZoomCharts.Configuration.FacetChartSettings = {};
-        private updateTimer: number;
-        private colors: IColorPalette;
-        private selectionManager: ISelectionManager;
+        protected target: HTMLElement;
+        protected chart: ZoomCharts.FacetChart;
+        protected ZC: typeof ZoomCharts;
+        protected host: IVisualHost;
+        protected pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
+        protected pendingSettings: ZoomCharts.Configuration.FacetChartSettings = {};
+        protected updateTimer: number;
+        protected colors: IColorPalette;
+        protected selectionManager: ISelectionManager;
+        protected setLegendState = true;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -44,7 +45,7 @@ module powerbi.extensibility.visual {
             });
         }
 
-        private createChart(zc: typeof ZoomCharts) {
+        protected createChart(zc: typeof ZoomCharts) {
             // check if the visual is destroyed before chart is created.
             if (!this.target)
                 return;
@@ -82,6 +83,11 @@ module powerbi.extensibility.visual {
                             this.updateSelection(args, 500);
                     }
                 },
+                valueAxis: {
+                    "primary": {
+                        side: "left"
+                    }
+                },
                 toolbar: {
                     export: false
                 },
@@ -91,10 +97,10 @@ module powerbi.extensibility.visual {
             this.chart.replaceSettings(this.pendingSettings);
 
             this.pendingSettings = null;
-            this.pendingData = null;
+            //this.pendingData = null;
         }
 
-        private createSeries(options: VisualUpdateOptions) {
+        protected createSeries(options: VisualUpdateOptions, legendState: boolean = null) {
             let dataView = options.dataViews[0];
             if (!dataView || !dataView.categorical)
                 return;
@@ -114,6 +120,7 @@ module powerbi.extensibility.visual {
                     name: column.source.displayName,
                     extra: { format: column.source.format },
                     data: { field: i === 0 ? "value" : ("value" + istr) },
+                    valueAxis: "primary",
                     style: {
                         fillColor: color.value,
                         gradient: 0,
@@ -123,7 +130,7 @@ module powerbi.extensibility.visual {
 
             let settings: ZoomCharts.Configuration.FacetChartSettings = {
                 series: series,
-                legend: { enabled: series.length > 1 },
+                legend: this.setLegendState ? { enabled: series.length > 1 } : void 0,
             }
 
             if (this.chart) {
@@ -133,7 +140,7 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private updateSelection(args: ZoomCharts.Configuration.FacetChartChartEventArguments, delay: number) {
+        protected updateSelection(args: ZoomCharts.Configuration.FacetChartChartEventArguments, delay: number) {
             if (this.updateTimer) window.clearTimeout(this.updateTimer);
             let selman = this.selectionManager;
             let selectedSlices = (args.selection || []).map(o => o.data);
@@ -168,6 +175,7 @@ module powerbi.extensibility.visual {
                 let root = Data.convert(this.host, this.target, options);
                 if (this.chart) {
                     this.chart.replaceData(root);
+                    this.pendingData = root;
                 } else {
                     this.pendingData = root;
                 }
