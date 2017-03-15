@@ -11,6 +11,15 @@ module powerbi.extensibility.visual {
         });
     }
 
+    export function createColorPalette(host: IVisualHost) {
+        let cp = host.colorPalette;
+            
+        if ((<any>extensibility).createColorPalette && (<any>cp).colors)
+            cp = (<any>extensibility).createColorPalette((<any>cp).colors);
+
+        return cp;
+    }
+
     export function logExceptions(): MethodDecorator {
         return function (target: Object, propertyKey: string, descriptor: TypedPropertyDescriptor<Function>)
             : TypedPropertyDescriptor<Function> {
@@ -70,5 +79,23 @@ module powerbi.extensibility.visual {
             if (!equality(a1[i], a2[i])) return false;
         }
         return true;
+    }
+
+    export class ColorPaletteWrapper {
+        private cache: ZoomCharts.Dictionary<IColorInfo> = Object.create(null);
+
+        public constructor(private inner: IColorPalette) {
+        }
+
+        public getColor(key: string) {
+            let c = this.cache[key];
+            if (c) return c;
+
+            return this.cache[key] = this.inner.getColor(key);
+        }
+
+        public setColor(key: string, value: IColorInfo) {
+            this.cache[key] = value;
+        }
     }
 }

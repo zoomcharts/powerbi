@@ -26,10 +26,7 @@ module powerbi.extensibility.visual {
 
             // if possible, use our own color palette because the default gets its colorIndex reset
             // to 0 when data changes. This results in the colors repeating as new series are added
-            this.colors = this.host.colorPalette;
-            
-            if ((<any>extensibility).createColorPalette && (<any>this.colors).colors)
-                this.colors = (<any>extensibility).createColorPalette((<any>this.colors).colors);
+            this.colors = createColorPalette(this.host);
 
             // workaround for the host not calling `destroy()` when the visual is reloaded:
             if ((<any>this.target).__zc_visual) {

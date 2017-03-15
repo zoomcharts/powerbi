@@ -1,5 +1,7 @@
 module powerbi.extensibility.visual {
     export class Data {
+        private static palettes: ZoomCharts.Dictionary<ColorPaletteWrapper> = {};
+
         public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             if (isDebugVisual) {
                 console.log("Chart data update called", options);
@@ -50,14 +52,25 @@ module powerbi.extensibility.visual {
                 let expandable = c < catCount - 1;
                 let categories = dataView.categorical.categories[c];
                 grouper = Object.create(null);
+
+                let colorPalette = this.palettes[categories.source.queryName] || (this.palettes[categories.source.queryName] = new ColorPaletteWrapper(createColorPalette(host)));
+
                 for (let i = 0; i < values.length; i++) {
                     let parent = parentObjects[i];
                     let catValue = formatter.formatValue(categories.values[i], categories.source.format);
                     let idVal = parent.id + "\ufdd0" + catValue;
+                    let localId = categories.source.queryName + "\ufdd0" + catValue;
 
                     let obj = grouper[idVal];
                     if (!obj) {
-                        //console.log(categories.values[i], idVal);
+                        let color = getColor(categories, i, "colors" + (c + 1).toFixed(0));
+                        if (color) {
+                            // reserve the color if "revert to default" is clicked.
+                            colorPalette.getColor(localId);
+                        } else {
+                            color = colorPalette.getColor(localId);
+                        }
+
                         obj = {
                             value: <number>values[i] || 0,
                             name: "" + catValue,
@@ -65,10 +78,12 @@ module powerbi.extensibility.visual {
                             subvalues: [],
                             style: {
                                 expandable: expandable,
-                                fillColor: host.colorPalette.getColor(ids[i].getKey()).value
+                                fillColor: color.value
                             },
                             extra: [ids[i]]
                         };
+                        obj.extra.category = categories.source.queryName;
+                        obj.extra.categoryName = categories.source.displayName;
                         parent.value += <number>values[i] || 0;
                         parent.subvalues.push(obj);
                         grouper[idVal] = obj;
@@ -93,5 +108,29 @@ module powerbi.extensibility.visual {
 
             return root;
         }
+
+        public static enumerateSlices(objectName: string, depth: number, parent: ZoomCharts.Configuration.PieChartDataObjectCommon, result: VisualObjectInstance[], seenKeys: ZoomCharts.Dictionary<boolean>) {
+            if (!parent.subvalues)
+                return;
+
+            for (let v of parent.subvalues) {
+                if (depth === 0) {
+                    let key = v.extra.category + "/" + v.name;
+                    if (seenKeys[key])
+                        continue;
+                    seenKeys[key] = true;
+
+                    result.push({
+                        objectName: objectName,
+                        displayName: v.name,
+                        properties: { fill: { solid: { color: v.style.fillColor } } },
+                        selector: v.extra[0].getSelector()
+                    });
+                } else {
+                    this.enumerateSlices(objectName, depth - 1, v, result, seenKeys);
+                }
+            }
+        }
     }
+    
 }

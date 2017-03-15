@@ -92,7 +92,7 @@ module powerbi.extensibility.visual {
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
             });
 
-            this.pendingData = null;
+            //this.pendingData = null;
         }
 
         private updateSelection(args: ZoomCharts.Configuration.PieChartChartEventArguments, delay: number) {
@@ -136,6 +136,7 @@ module powerbi.extensibility.visual {
 
                 if (this.chart) {
                     this.chart.replaceData(root);
+                    this.pendingData = root;
                 } else {
                     this.pendingData = root;
                 }
