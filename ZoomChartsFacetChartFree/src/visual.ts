@@ -117,20 +117,29 @@ module powerbi.extensibility.visual {
             let series: ZoomCharts.Configuration.FacetChartSettingsSeriesColumns[] = [];
             for (let i = 0; i < values.length; i++) {
                 let column = values[i];
-                let istr = i.toFixed(0);
-                let color = this.colors.getColor("zc-fc-color-" + istr);
-                series.push({
-                    type: "columns",
-                    id: "s" + istr,
-                    name: column.source.displayName,
-                    extra: { format: column.source.format },
-                    data: { field: i === 0 ? "value" : ("value" + istr) },
-                    valueAxis: "primary",
-                    style: {
-                        fillColor: color.value,
-                        gradient: 0,
+                let istr = (i + 1).toFixed(0);
+
+                for (let role in column.source.roles) {
+                    if (role !== "Values") {
+                        istr = role.substr(6);
                     }
-                });
+
+                    let color = this.colors.getColor("zc-fc-color-" + istr);
+                    series.push({
+                        type: "columns",
+                        id: "s" + istr,
+                        name: column.source.displayName,
+                        extra: { format: column.source.format },
+                        data: { field: i === 0 ? "value" : ("value" + i.toFixed(0)) },
+                        valueAxis: "primary",
+                        style: {
+                            fillColor: color.value,
+                            gradient: 0,
+                        }
+                    });
+                }
+
+                series.sort((a,b) => a.id.localeCompare(b.id));
             }
 
             this.series = series;
