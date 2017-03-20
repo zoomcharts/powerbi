@@ -91,7 +91,15 @@ module powerbi.extensibility.visual {
                     "primary": {
                         side: "left",
                         enabled: true
+                    },
+                    "secondary": {
+                        side: "right",
+                        enabled: false
                     }
+                },
+                facetAxis: {
+                    defaultUnitWidth: 10,
+                    maxUnitWidth: 200
                 },
                 toolbar: {
                     export: false
@@ -103,6 +111,9 @@ module powerbi.extensibility.visual {
 
             this.pendingSettings = null;
             //this.pendingData = null;
+        }
+
+        protected updateSeries(istr: string, series: ZoomCharts.Configuration.FacetChartSettingsSeries) {
         }
 
         protected createSeries(options: VisualUpdateOptions, legendState: boolean = null) {
@@ -125,7 +136,7 @@ module powerbi.extensibility.visual {
                     }
 
                     let color = this.colors.getColor("zc-fc-color-" + istr);
-                    series.push({
+                    let s = <ZoomCharts.Configuration.FacetChartSettingsSeriesColumns>{
                         type: "columns",
                         id: "s" + istr,
                         name: column.source.displayName,
@@ -136,7 +147,10 @@ module powerbi.extensibility.visual {
                             fillColor: color.value,
                             gradient: 0,
                         }
-                    });
+                    };
+                    this.updateSeries(istr, s);
+
+                    series.push(s);
                 }
 
                 series.sort((a,b) => a.id.localeCompare(b.id));
@@ -190,7 +204,9 @@ module powerbi.extensibility.visual {
                 this.createSeries(options);
                 let root = Data.convert(this.host, this.target, options);
                 if (this.chart) {
+                    let state = (<any>this.chart)._impl.scrolling.getState();
                     this.chart.replaceData(root);
+                    this.chart.setPie(state.idArray, state.offset, state.count);
                     this.pendingData = root;
                 } else {
                     this.pendingData = root;
