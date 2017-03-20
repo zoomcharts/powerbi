@@ -61,7 +61,7 @@ module powerbi.extensibility.visual {
                 if (!d) continue;
 
                 if (!d.getSeconds) {
-                    displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type.", "Incorrect date", false);
+                    displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type.", "Incorrect data", false);
                     return {data: root, ids:ids};
                 }
 
@@ -75,6 +75,12 @@ module powerbi.extensibility.visual {
 
                 for (let v = 0; v < valueCat.length; v++) {
                     let aValues = valueCat[v];
+
+                    if (typeof aValues.values[i] !== "number") {
+                        displayMessage(target, "Please select a numerical field as the value for the visual or change the aggregation of it to `Count`.", "Incorrect data", false);
+                        return {data: root, ids: ids };
+                    }
+
                     x[v + 1] = <number>aValues.values[i] || 0;
                 }
 

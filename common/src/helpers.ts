@@ -80,6 +80,19 @@ module powerbi.extensibility.visual {
         }
         return true;
     }
+    
+    export function getColor(category: DataViewCategoricalColumn, rowIndex: number, objectName: string): IColorInfo {
+        if (!category.objects) return null;
+        let a = category.objects[rowIndex];
+        if (!a) return null;
+        let b = a[objectName];
+        if (!b) return null;
+        let c = b["fill"];
+        if (!c) return null;
+        let d = c["solid"];
+        if (!d) return null;
+        return { value: d.color };
+    }
 
     export class ColorPaletteWrapper {
         private cache: ZoomCharts.Dictionary<IColorInfo> = Object.create(null);
