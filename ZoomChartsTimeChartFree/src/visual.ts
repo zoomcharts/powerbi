@@ -10,29 +10,28 @@ module powerbi.extensibility.visual {
 
 
     export class Visual implements IVisual {
-        private target: HTMLElement;
-        private chart: ZoomCharts.TimeChart;
-        private ZC: typeof ZoomCharts;
-        private host: IVisualHost;
-        private dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 0, unit: "d", values: [] };
-        private dataIds: ISelectionId[] = [];
-        private pendingSettings: ZoomCharts.Configuration.TimeChartSettings = {};
-        private updateTimer: number;
-        private lastTimeRange: [number, number] = [null, null];
-        private colors: IColorPalette;
-        private selectionManager: ISelectionManager;
+        protected target: HTMLElement;
+        protected chart: ZoomCharts.TimeChart;
+        protected ZC: typeof ZoomCharts;
+        protected host: IVisualHost;
+        protected dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 0, unit: "d", values: [] };
+        protected dataIds: ISelectionId[] = [];
+        protected pendingSettings: ZoomCharts.Configuration.TimeChartSettings = {};
+        protected updateTimer: number;
+        protected lastTimeRange: [number, number] = [null, null];
+        protected colors: IColorPalette;
+        protected selectionManager: ISelectionManager;
+        protected setLegendState = true;
+        protected series: ZoomCharts.Configuration.FacetChartSettingsSeries[] = [];
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
             this.host = options.host;
             this.selectionManager = options.host.createSelectionManager();
-            this.colors = this.host.colorPalette;
-            
+
             // if possible, use our own color palette because the default gets its colorIndex reset
             // to 0 when data changes. This results in the colors repeating as new series are added
-            // see https://github.com/Microsoft/PowerBI-visuals/issues/141 
-            if ((<any>extensibility).createColorPalette && (<any>this.colors).colors)
-                this.colors = (<any>extensibility).createColorPalette((<any>this.colors).colors);
+            this.colors = createColorPalette(this.host);
 
             // workaround for the host not calling `destroy()` when the visual is reloaded:
             if ((<any>this.target).__zc_visual) {
@@ -50,7 +49,7 @@ module powerbi.extensibility.visual {
             });
         }
 
-        private createChart(zc: typeof ZoomCharts) {
+        protected createChart(zc: typeof ZoomCharts) {
             // check if the visual is destroyed before chart is created.
             if (!this.target)
                 return;
@@ -91,7 +90,11 @@ module powerbi.extensibility.visual {
 
                         let du = this.chart.displayUnit();
                         if (this.dataObj && args.hoverStart && du === "1 " + this.dataObj.unit) {
-                            this.chart.selection(args.hoverStart, args.hoverEnd);
+                            if (args.selectionStart === args.hoverStart && args.selectionEnd === args.hoverEnd) {
+                                this.chart.selection(null, null);
+                            } else {
+                                this.chart.selection(args.hoverStart, args.hoverEnd);
+                            }
                             e.preventDefault();
                         }
                     },
@@ -107,6 +110,19 @@ module powerbi.extensibility.visual {
                 timeAxis: {
                     timeZone: "local"
                 },
+                valueAxisDefault: {
+                    enabled: false
+                },
+                valueAxis: {
+                    "primary": {
+                        side: "left",
+                        enabled: true
+                    },
+                    "secondary": {
+                        side: "right",
+                        enabled: false
+                    }
+                },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
             });
 
@@ -115,7 +131,10 @@ module powerbi.extensibility.visual {
             this.pendingSettings = null;
         }
 
-        private createSeries(options: VisualUpdateOptions) {
+        protected updateSeries(istr: string, series: ZoomCharts.Configuration.TimeChartSettingsSeries) {
+        }
+
+        protected createSeries(options: VisualUpdateOptions, legendState: boolean = null) {
             let dataView = options.dataViews[0];
             if (!dataView || !dataView.categorical)
                 return;
@@ -127,24 +146,39 @@ module powerbi.extensibility.visual {
             let series: ZoomCharts.Configuration.TimeChartSettingsSeriesColumns[] = [];
             for (let i = 0; i < values.length; i++) {
                 let column = values[i];
-                let istr = i.toFixed(0);
-                let color = this.colors.getColor("zc-tc-color-" + istr);
-                series.push({
-                    type: "columns",
-                    id: "s" + istr,
-                    name: column.source.displayName,
-                    extra: { format: column.source.format },
-                    data: { index: i + 1 },
-                    style: {
-                        fillColor: color.value,
-                        gradient: 0,
+                let istr = (i + 1).toFixed(0);
+
+                for (let role in column.source.roles) {
+                    if (role !== "Values") {
+                        istr = role.substr(6);
                     }
-                });
+
+                    let color = this.colors.getColor("zc-fc-color-" + istr);
+                    let s = <ZoomCharts.Configuration.TimeChartSettingsSeriesColumns>{
+                        type: "columns",
+                        id: "s" + istr,
+                        name: column.source.displayName,
+                        extra: { format: column.source.format },
+                        data: { index: i + 1 },
+                        valueAxis: "primary",
+                        style: {
+                            fillColor: color.value,
+                            gradient: 0,
+                        }
+                    };
+                    this.updateSeries(istr, s);
+
+                    series.push(s);
+                }
+
+                series.sort((a,b) => a.id.localeCompare(b.id));
             }
+
+            this.series = series;
 
             let settings: ZoomCharts.Configuration.TimeChartSettings = {
                 series: series,
-                legend: { enabled: series.length > 1 },
+                legend: this.setLegendState ? { enabled: series.length > 1 } : void 0,
             }
 
             if (this.chart) {
@@ -154,7 +188,7 @@ module powerbi.extensibility.visual {
             }
         }
 
-        private updateSelection(args: ZoomCharts.Configuration.TimeChartChartEventArguments, delay: number) {
+        protected updateSelection(args: ZoomCharts.Configuration.TimeChartChartEventArguments, delay: number) {
             if (this.updateTimer) window.clearTimeout(this.updateTimer);
 
             window.setTimeout(() => {
@@ -164,7 +198,7 @@ module powerbi.extensibility.visual {
                 //if (time[0] == null)
                 //    time = this.chart.targetTime();
 
-                if (time[0] == null || !this.dataObj)
+                if (!this.dataObj)
                     return;
 
                 if (this.lastTimeRange[0] === time[0] && this.lastTimeRange[1] === time[1])
@@ -172,7 +206,7 @@ module powerbi.extensibility.visual {
 
                 this.lastTimeRange = time;
 
-                if (time[0] <= this.dataObj.from && time[1] >= this.dataObj.to) {
+                if (time[0] === null || (time[0] <= this.dataObj.from && time[1] >= this.dataObj.to)) {
                     selman.clear();
                 } else {
                     let ids = [];
