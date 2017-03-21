@@ -76,12 +76,13 @@ module powerbi.extensibility.visual {
                 for (let v = 0; v < valueCat.length; v++) {
                     let aValues = valueCat[v];
 
-                    if (typeof aValues.values[i] !== "number") {
-                        displayMessage(target, "Please select a numerical field as the value for the visual or change the aggregation of it to `Count`.", "Incorrect data", false);
+                    let vvv = aValues.values[i];
+                    if (vvv != null && typeof vvv !== "number") {
+                        displayMessage(target, "Please select a numerical field as the value for the visual or change the aggregation of it to `Count`. The problematic value is `" + aValues.values[i] + "` from the field `" + aValues.source.displayName + "`", "Incorrect data", false);
                         return {data: root, ids: ids };
                     }
 
-                    x[v + 1] = <number>aValues.values[i] || 0;
+                    x[v + 1] = <number>vvv;
                 }
 
                 root.values.push(x);
