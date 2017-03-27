@@ -20,6 +20,7 @@ module powerbi.extensibility.visual {
         protected selectionManager: ISelectionManager;
         protected setLegendState = true;
         protected series: ZoomCharts.Configuration.FacetChartSettingsSeries[] = [];
+        protected lastCategorySet: string = null;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -203,19 +204,37 @@ module powerbi.extensibility.visual {
             }, delay);
         }
 
+        protected stringifyCategories(dataview: DataView) {
+            if (!dataview) return null;
+            if (!dataview.categorical) return null;
+
+            let categories = dataview.categorical.categories;
+            let res = "";
+            for (let c of categories) {
+                res += "///" + c.source.queryName;
+            }
+            return res;
+        }
+
         @logExceptions()
         public update(options: VisualUpdateOptions) {
             if (options.type & VisualUpdateType.Data) {
                 this.createSeries(options);
                 let root = Data.convert(this.host, this.target, options);
+                let catStr = this.stringifyCategories(options.dataViews[0]);
                 if (this.chart) {
                     let state = (<any>this.chart)._impl.scrolling.getState();
                     this.chart.replaceData(root);
-                    this.chart.setPie(state.idArray, state.offset, state.count);
+                    if (this.lastCategorySet !== catStr)
+                        this.chart.setPie([""], 0);
+                    else
+                        this.chart.setPie(state.idArray, state.offset, state.count);
+
                     this.pendingData = root;
                 } else {
                     this.pendingData = root;
                 }
+                this.lastCategorySet = catStr;
             }
         }
 

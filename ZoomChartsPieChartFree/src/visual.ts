@@ -20,6 +20,7 @@ module powerbi.extensibility.visual {
         protected formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
         protected lastChartUpdatePieId = "";
         protected selectionManager: ISelectionManager;
+        protected lastCategorySet: string = null;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -124,10 +125,23 @@ module powerbi.extensibility.visual {
             }, delay);
         }
 
+        protected stringifyCategories(dataview: DataView) {
+            if (!dataview) return null;
+            if (!dataview.categorical) return null;
+
+            let categories = dataview.categorical.categories;
+            let res = "";
+            for (let c of categories) {
+                res += "///" + c.source.queryName;
+            }
+            return res;
+        }
+
         @logExceptions()
         public update(options: VisualUpdateOptions) {
             if (options.type & VisualUpdateType.Data) {
                 let root = Data.convert(this.host, this.target, options);
+                let catStr = this.stringifyCategories(options.dataViews[0]);
 
                 if (root.subvalues.length) {
                     this.formatString = options.dataViews[0].categorical.values[0].source.format;
@@ -136,10 +150,15 @@ module powerbi.extensibility.visual {
 
                 if (this.chart) {
                     this.chart.replaceData(root);
+
+                    if (this.lastCategorySet !== catStr)
+                        this.chart.setPie([""], 0);
+
                     this.pendingData = root;
                 } else {
                     this.pendingData = root;
                 }
+                this.lastCategorySet = catStr;
             }
         }
 
