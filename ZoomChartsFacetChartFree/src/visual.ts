@@ -153,7 +153,12 @@ module powerbi.extensibility.visual {
                     series.push(s);
                 }
 
-                series.sort((a,b) => a.id.localeCompare(b.id));
+                series.sort((a, b) => { 
+                    let x = (a.extra.zIndex || 0) - (b.extra.zIndex || 0);
+                    if (x === 0)
+                        x = a.id.localeCompare(b.id); 
+                    return x;
+                });
             }
 
             this.series = series;
