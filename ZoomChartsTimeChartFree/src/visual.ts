@@ -62,6 +62,21 @@ module powerbi.extensibility.visual {
 
             this.chart = new zc.TimeChart({
                 container: chartContainer,
+                area: {
+                    displayUnits: [
+                        { unit: "1 ms", name: "millisecond" },
+                        { unit: "1 s", name: "second" },
+                        { unit: "5 s", name: "5 seconds" },
+                        { unit: "1 m", name: "minute" },
+                        { unit: "5 m", name: "5 minutes" },
+                        { unit: "1 h", name: "hour" },
+                        { unit: "6 h", name: "6 hours" },
+                        { unit: "1 d", name: "day" },
+                        { unit: "1 M", name: "month" },
+                        { unit: "3 M", name: "quarter" },
+                        { unit: "1 y", name: "year" }
+                    ]
+                },
                 data:
                 [{
                     units: [this.dataObj.unit],
@@ -103,6 +118,9 @@ module powerbi.extensibility.visual {
                         //if (args.origin === "user")
                         //    this.updateSelection(args, 500);
                     }
+                },
+                currentTime: {
+                    enabled: false
                 },
                 toolbar: {
                     export: false
