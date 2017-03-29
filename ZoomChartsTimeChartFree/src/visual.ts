@@ -152,6 +152,19 @@ module powerbi.extensibility.visual {
         protected updateSeries(istr: string, series: ZoomCharts.Configuration.TimeChartSettingsSeries) {
         }
 
+        protected getValueAggregation(col: DataViewMetadataColumn): "sum" | "avg" | "max" | "min" | "first" | "last" {
+            let qn = col.queryName;
+            let x: number = (<any>col.expr).func;
+
+            switch (x) {
+                default: return "sum";
+                case 0: return "sum";
+                case 1: return "avg";
+                case 3: return "min";
+                case 4: return "max";
+            }
+        }
+
         protected createSeries(options: VisualUpdateOptions, legendState: boolean = null) {
             let dataView = options.dataViews[0];
             if (!dataView || !dataView.categorical)
@@ -171,13 +184,14 @@ module powerbi.extensibility.visual {
                         istr = role.substr(6);
                     }
 
+
                     let color = this.colors.getColor("zc-fc-color-" + istr);
                     let s = <ZoomCharts.Configuration.TimeChartSettingsSeriesColumns>{
                         type: "columns",
                         id: "s" + istr,
                         name: column.source.displayName,
                         extra: { format: column.source.format },
-                        data: { index: i + 1 },
+                        data: { index: i + 1, aggregation: this.getValueAggregation(column.source) },
                         valueAxis: "primary",
                         style: {
                             fillColor: color.value,
@@ -189,10 +203,10 @@ module powerbi.extensibility.visual {
                     series.push(s);
                 }
 
-                series.sort((a, b) => { 
+                series.sort((a, b) => {
                     let x = (a.extra.zIndex || 0) - (b.extra.zIndex || 0);
                     if (x === 0)
-                        x = a.id.localeCompare(b.id); 
+                        x = a.id.localeCompare(b.id);
                     return x;
                 });
             }
