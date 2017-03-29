@@ -1,6 +1,6 @@
 # ZoomCharts custom visuals for Microsoft PowerBI
 
-For more information, please see https://zoomcharts.com/en/microsoft-powerbi-custom-visuals/
+For more information, please see https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/
 
 # License
 
