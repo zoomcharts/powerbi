@@ -127,7 +127,7 @@ module powerbi.extensibility.visual {
 
         protected stringifyCategories(dataview: DataView) {
             if (!dataview) return null;
-            if (!dataview.categorical) return null;
+            if (!dataview.categorical || !dataview.categorical.categories) return null;
 
             let categories = dataview.categorical.categories;
             let res = "";

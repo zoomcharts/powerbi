@@ -1,3 +1,14 @@
+/// <reference path="helpers.ts" />
+
+namespace ZoomCharts.Configuration {
+    export interface PieChartDataObjectCommon {
+        valueArray?: Array<number>;
+    }
+    export interface FacetChartDataObjectCommon {
+        valueArray?: Array<number>;
+    }
+}
+
 module powerbi.extensibility.visual {
     export class Data {
         private static palettes: ZoomCharts.Dictionary<ColorPaletteWrapper> = {};
@@ -10,7 +21,8 @@ module powerbi.extensibility.visual {
             let root: ZoomCharts.Configuration.PieChartDataObjectRoot = {
                 id: "",
                 subvalues: [],
-                extra: []
+                extra: [],
+                valueArray: []
             };
 
             let dataView = options.dataViews[0];
@@ -43,6 +55,7 @@ module powerbi.extensibility.visual {
             let ids: Array<visuals.ISelectionId> = new Array(values.length);
             let parentObjects: Array<ZoomCharts.Configuration.PieChartDataObject> = new Array(values.length);
             let grouper: ZoomCharts.Dictionary<ZoomCharts.Configuration.PieChartDataObject>;
+            let allObjects: Array<ZoomCharts.Configuration.PieChartDataObject> = [];
             for (let i = 0; i < values.length; i++) {
                 parentObjects[i] = <any>root;
                 ids[i] = host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[0], i).createSelectionId();
@@ -77,6 +90,7 @@ module powerbi.extensibility.visual {
 
                         obj = {
                             value: <number>values[i] || 0,
+                            valueArray: [<number>values[i] || 0],
                             name: "" + catValue,
                             id: idVal,
                             subvalues: [],
@@ -88,29 +102,72 @@ module powerbi.extensibility.visual {
                         };
                         obj.extra.category = categories.source.queryName;
                         obj.extra.categoryName = categories.source.displayName;
-                        parent.value += <number>values[i] || 0;
+                        //parent.value += <number>values[i] || 0;
+                        //parent.valueArray.push(<number>values[i] || 0)
                         parent.subvalues.push(obj);
                         grouper[idVal] = obj;
+                        allObjects.push(obj);
                     } else {
                         obj.extra.push(ids[i]);
                         obj.value += <number>values[i] || 0;
+                        obj.valueArray.push(<number>values[i] || 0);
+                        //parent.value += <number>values[i] || 0;
+                        //parent.valueArray.push(<number>values[i] || 0)
                     }
 
                     // support for multiples values (in FacetChart)
                     for (let v = 1; v < dataView.categorical.values.length; v++) {
                         let aValues = dataView.categorical.values[v].highlights || dataView.categorical.values[v].values;
                         let k = "value" + v.toFixed(0);
-                        if (!obj[k])
+                        let ka = k + "Array";
+                        if (!obj[ka]) {
+                            obj[ka] = [<number>aValues[i] || 0];
                             obj[k] = <number>aValues[i] || 0;
-                        else
+                        } else {
+                            obj[ka].push(<number>aValues[i] || 0);
                             obj[k] += <number>aValues[i] || 0;
+                        }
                     }
 
                     parentObjects[i] = obj;
                 }
             }
 
+            for (let obj of allObjects) {
+                for (let v = 0; v < dataView.categorical.values.length; v++) {
+                    let k = v === 0 ? "value" : ("value" + v.toFixed(0));
+                    let ka = k + "Array";
+                    
+                    obj[k] = this.aggregateValue(dataView.categorical.values[v].source, obj[ka]);
+                }                
+            }
+
             return root;
+        }
+
+        protected static aggregateValue(col: DataViewMetadataColumn, values: number[]) {
+            let qn = col.queryName;
+            let x: number = (<any>col.expr).func;
+
+            switch (x) {
+                default:
+                case 0:
+                    let sum = 0;
+                    for (let v of values) sum += v;
+                    return sum;
+
+                case 1:
+                    if (values.length === 0) return 0;
+                    let avg = 0;
+                    for (let v of values) avg += v;
+                    return avg / values.length;
+
+                case 3: 
+                    return Math.min(...values);
+                
+                case 4:
+                    return Math.max(...values);                
+            }
         }
 
         public static enumerateSlices(objectName: string, depth: number, parent: ZoomCharts.Configuration.PieChartDataObjectCommon, result: VisualObjectInstance[], seenKeys: ZoomCharts.Dictionary<boolean>) {
