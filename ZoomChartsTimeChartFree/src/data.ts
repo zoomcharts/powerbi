@@ -31,6 +31,11 @@ module powerbi.extensibility.visual {
                 return {data: root, ids: ids };
             }
 
+            if (!dataView.categorical.categories[0].source.type.dateTime) {
+                displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type.", "Incorrect data", false);
+                return {data: root, ids:ids};
+            }
+
             if (!dataView.categorical.values) {
                 displayMessage(target, "Please select at least one value field for the visual.", "Incorrect data", false);
                 return {data: root, ids: ids };
@@ -57,13 +62,20 @@ module powerbi.extensibility.visual {
             for (let i = 0; i < times.length; i++) {
                 let x = new Array<number>(valueCat.length + 2);
                 x[x.length - 1] = i;
-                let d = <Date>times[i];
-                if (!d) continue;
 
-                if (!d.getSeconds) {
+                let raw = times[i];
+                if (!raw == null)
+                    continue;
+
+                let d: Date = new Date(times[i]);
+
+                if (isNaN(d.valueOf())) {
+                    console.log("Value not recognized as a valid Date:", d);
                     displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type.", "Incorrect data", false);
                     return {data: root, ids:ids};
                 }
+
+                times[i] = d;
 
                 if (d.getSeconds() !== 0) hasSeconds = true;
                 if (d.getMinutes() !== 0) hasMinutes = true;
