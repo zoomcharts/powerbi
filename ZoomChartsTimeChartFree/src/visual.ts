@@ -291,6 +291,9 @@ module powerbi.extensibility.visual {
                     if (lastDataObj.dataLimitFrom !== root.data.dataLimitFrom || lastDataObj.dataLimitTo !== root.data.dataLimitTo) {
                         let unit = new this.ZC.Internal.TimeChart.TimeStep(root.data.unit, 1);
                         this.chart.time(<number>root.data.from, unit.add(<number>root.data.to, 1), false);
+
+                        unit = (<any>this.chart)._impl.scene.displayUnit;
+                        this.chart.time(unit.roundTimeDown(<number>root.data.from), unit.roundTimeUp(<number>root.data.to), false);
                     } else {
 
                     }
