@@ -57,6 +57,7 @@ module powerbi.extensibility.visual {
             let hasHours = false;
             let hasDays = false;
             let hasMonths = false;
+            let hasMilliseconds = false;
 
             let convValues = new Array<[number[]]>(times.length);
             for (let i = 0; i < times.length; i++) {
@@ -77,6 +78,7 @@ module powerbi.extensibility.visual {
 
                 times[i] = d;
 
+                if (d.getMilliseconds() !== 0) hasMilliseconds = true;
                 if (d.getSeconds() !== 0) hasSeconds = true;
                 if (d.getMinutes() !== 0) hasMinutes = true;
                 if (d.getHours() !== 0) hasHours = true;
@@ -100,7 +102,7 @@ module powerbi.extensibility.visual {
                 root.values.push(x);
             }
 
-            if (!hasSeconds && !hasMinutes && !hasHours) {
+            if (!hasMilliseconds && !hasSeconds && !hasMinutes && !hasHours) {
                 // normalize to UTC as the dates are given in the local timezone
                 let ii = 0;
                 for (let i = 0; i < times.length; i++) {
@@ -113,7 +115,7 @@ module powerbi.extensibility.visual {
 
             root.values.sort((a,b) => <number>a[0] - <number>b[0]);
 
-            root.unit = hasSeconds ? "s" : hasMinutes ? "m" : hasHours ? "h" : hasDays ? "d" : hasMonths ? "M" : "y";
+            root.unit = hasMilliseconds ? "ms" : hasSeconds ? "s" : hasMinutes ? "m" : hasHours ? "h" : hasDays ? "d" : hasMonths ? "M" : "y";
             root.from = root.dataLimitFrom = root.values[0][0];
             root.to = root.dataLimitTo = <number> root.values[root.values.length - 1][0] + 1;
             return {data: root, ids: ids };
