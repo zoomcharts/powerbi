@@ -16,6 +16,7 @@ module powerbi.extensibility.visual {
         protected host: IVisualHost;
         protected dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 0, unit: "d", values: [] };
         protected dataIds: ISelectionId[] = [];
+        protected dataSourceIdentity: string = "";
         protected pendingSettings: ZoomCharts.Configuration.TimeChartSettings = {};
         protected updateTimer: number;
         protected lastTimeRange: [number, number] = [null, null];
@@ -275,8 +276,10 @@ module powerbi.extensibility.visual {
                 this.createSeries(options);
                 let root = Data.convert(this.host, this.target, options);
                 let lastDataObj = this.dataObj;
+                let lastDataSource = this.dataSourceIdentity;
                 this.dataObj = root.data;
                 this.dataIds = root.ids;
+                this.dataSourceIdentity = createDataSourceIdentity(options.dataViews[0]);
 
                 if (this.chart) {
                     let sel = this.chart.selection();
@@ -288,7 +291,7 @@ module powerbi.extensibility.visual {
                     });
                     this.chart.replaceData(root.data);
 
-                    if (lastDataObj.dataLimitFrom !== root.data.dataLimitFrom || lastDataObj.dataLimitTo !== root.data.dataLimitTo) {
+                    if (this.dataSourceIdentity !== lastDataSource) {
                         let unit = new this.ZC.Internal.TimeChart.TimeStep(root.data.unit, 1);
                         this.chart.time(<number>root.data.from, unit.add(<number>root.data.to, 1), false);
 

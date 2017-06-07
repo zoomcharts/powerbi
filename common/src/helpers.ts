@@ -11,6 +11,25 @@ module powerbi.extensibility.visual {
         });
     }
 
+    export function createDataSourceIdentity(dataView: DataView): string {
+        if (!dataView || !dataView.metadata || !dataView.metadata.columns.length)
+            return "";
+
+        let res = "";
+
+        for (let c of dataView.metadata.columns) {
+            res += "//" + JSON.stringify(c.expr) + "/" + c.queryName + "/" + c.index;
+            if (c.roles) {
+                for (let k of Object.keys(c.roles)) {
+                    if (c.roles[k])
+                     res += "/" + k;
+                }
+            }
+        }
+
+        return res;
+    }
+
     export function createColorPalette(host: IVisualHost) {
         let cp = host.colorPalette;
             
