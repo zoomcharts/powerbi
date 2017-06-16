@@ -180,7 +180,7 @@ module powerbi.extensibility.visual {
             if (this.updateTimer) window.clearTimeout(this.updateTimer);
             let selman = this.selectionManager;
             let selectedSlices = (args.selection || []).map(o => o.data);
-            if (!selectedSlices.length && args.facet.id) {
+            if (!selectedSlices.length && args.facet.id && args.facet.data) {
                 selectedSlices = args.facet.data.values;
             }
 
