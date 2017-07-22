@@ -61,6 +61,7 @@ module powerbi.extensibility.visual {
             chartContainer.className = "chart-container";
             this.target.appendChild(chartContainer);
 
+
             this.chart = new zc.TimeChart({
                 container: chartContainer,
                 area: {
@@ -95,6 +96,9 @@ module powerbi.extensibility.visual {
                 interaction: {
                     selection: { enabled: true },
                     resizing: { enabled: false }
+                },
+                navigation: {
+                //    initialDisplayUnit: props.displayUnits.initialDisplayUnit
                 },
                 events: {
                     onClick: (e, args) => {
@@ -281,13 +285,29 @@ module powerbi.extensibility.visual {
                 this.dataIds = root.ids;
                 this.dataSourceIdentity = createDataSourceIdentity(options.dataViews[0]);
 
+                //scale:
+                let tempViewport: any = options.viewport;
+                let tmpScale = 0;
+                let scale: any = true;
+                if (tempViewport.scale){
+                    tmpScale = tempViewport.scale;
+                    if(tmpScale == 1) {
+                        scale = true;
+                    } else if(tmpScale > 0 && tmpScale < 1) {
+                        scale = tmpScale * 4;
+                    }
+                }
+
                 if (this.chart) {
                     let sel = this.chart.selection();
                     this.chart.replaceSettings({
                         data: [{
                             units: [root.data.unit],
                             preloaded: root.data
-                        }]
+                        }],
+                        advanced: {
+                            highDPI: scale
+                        }
                     });
                     this.chart.replaceData(root.data);
 

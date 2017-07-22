@@ -148,7 +148,27 @@ module powerbi.extensibility.visual {
                     this.formatter = powerbi.extensibility.utils.formatting.valueFormatter.create({format: this.formatString});
                 }
 
+                //scale:
+                let tempViewport: any = options.viewport;
+                let tmpScale = 0;
+                let scale: any = true;
+                if (tempViewport.scale){
+                    tmpScale = tempViewport.scale;
+                    if(tmpScale == 1) {
+                        scale = true;
+                    } else if(tmpScale > 0 && tmpScale < 1) {
+                        scale = tmpScale * 4;
+                    }
+                }
+
                 if (this.chart) {
+
+                    this.chart.replaceSettings({
+                        advanced: {
+                            highDPI: scale
+                        }
+                    });
+
                     this.chart.replaceData(root);
 
                     if (this.lastCategorySet !== catStr)
