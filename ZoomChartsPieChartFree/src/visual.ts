@@ -158,6 +158,8 @@ module powerbi.extensibility.visual {
                         scale = true;
                     } else if(tmpScale > 0 && tmpScale < 1) {
                         scale = tmpScale * 4;
+                    } else if(tmpScale > 1) {
+                        scale = tmpScale * 1;
                     }
                 }
 
