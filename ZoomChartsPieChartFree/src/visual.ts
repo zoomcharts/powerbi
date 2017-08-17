@@ -157,9 +157,15 @@ module powerbi.extensibility.visual {
                     if(tmpScale == 1) {
                         scale = true;
                     } else if(tmpScale > 0 && tmpScale < 1) {
-                        scale = tmpScale * 4;
+                        scale = tmpScale * 2;
                     } else if(tmpScale > 1) {
-                        scale = tmpScale * 1;
+                        if(window.devicePixelRatio) {
+                            scale = tmpScale * window.devicePixelRatio;
+                        } else if(window.window.devicePixelRatio) {
+                            scale = tmpScale * window.window.devicePixelRatio;
+                        } else {
+                            scale = tmpScale * 1;
+                        }
                     }
                 }
 

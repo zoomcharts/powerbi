@@ -223,7 +223,7 @@ module powerbi.extensibility.visual {
                 let root = Data.convert(this.host, this.target, options);
                 let catStr = this.stringifyCategories(options.dataViews[0]);
 
-                 //scale:
+                //scale:
                 let tempViewport: any = options.viewport;
                 let tmpScale = 0;
                 let scale: any = true;
@@ -232,9 +232,15 @@ module powerbi.extensibility.visual {
                     if(tmpScale == 1) {
                         scale = true;
                     } else if(tmpScale > 0 && tmpScale < 1) {
-                        scale = tmpScale * 4;
+                        scale = tmpScale * 2;
                     } else if(tmpScale > 1) {
-                        scale = tmpScale * 1;
+                        if(window.devicePixelRatio) {
+                            scale = tmpScale * window.devicePixelRatio;
+                        } else if(window.window.devicePixelRatio) {
+                            scale = tmpScale * window.window.devicePixelRatio;
+                        } else {
+                            scale = tmpScale * 1;
+                        }
                     }
                 }
                 

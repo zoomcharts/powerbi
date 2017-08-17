@@ -6,8 +6,12 @@ module powerbi.extensibility.visual {
     } catch (e) {
         console.warn("Cannot read window.devicePixelRatio. Applying workaround. See https://github.com/Microsoft/PowerBI-visuals-tools/issues/81", e);
 
+        let value = 1;
+        if(window.window.devicePixelRatio) {
+            value = window.window.devicePixelRatio;
+        }
         Object.defineProperty(window, "devicePixelRatio", {
-            get: () => 1
+            get: () => value
         });
     }
 
