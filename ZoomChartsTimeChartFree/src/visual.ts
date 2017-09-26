@@ -194,7 +194,7 @@ module powerbi.extensibility.visual {
                     let s = <ZoomCharts.Configuration.TimeChartSettingsSeriesColumns>{
                         type: "columns",
                         id: "s" + istr,
-                        name: column.source.displayName,
+                        name: column.source.displayName.replace(/</g, "<"),
                         extra: { format: column.source.format },
                         data: { index: i + 1, aggregation: this.getValueAggregation(column.source) },
                         valueAxis: "primary",

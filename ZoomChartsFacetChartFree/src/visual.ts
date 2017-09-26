@@ -140,7 +140,7 @@ module powerbi.extensibility.visual {
                     let s = <ZoomCharts.Configuration.FacetChartSettingsSeriesColumns>{
                         type: "columns",
                         id: "s" + istr,
-                        name: column.source.displayName,
+                        name: column.source.displayName.replace(/</g, "<"),
                         extra: { format: column.source.format },
                         data: { field: i === 0 ? "value" : ("value" + i.toFixed(0)) },
                         valueAxis: "primary",

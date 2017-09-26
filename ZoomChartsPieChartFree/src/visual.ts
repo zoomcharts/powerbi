@@ -132,7 +132,7 @@ module powerbi.extensibility.visual {
             let categories = dataview.categorical.categories;
             let res = "";
             for (let c of categories) {
-                res += "///" + c.source.queryName;
+                res += "///" + c.source.queryName.replace(/</g, "<");
             }
             return res;
         }

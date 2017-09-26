@@ -62,7 +62,7 @@ module powerbi.extensibility.visual {
             }
 
             if (catCount > 0) {
-                root.name = dataView.categorical.categories[0].source.displayName;
+                root.name = dataView.categorical.categories[0].source.displayName.replace(/</g, "<");
             }
 
             for (let c = 0; c < catCount; c++) {
@@ -100,8 +100,8 @@ module powerbi.extensibility.visual {
                             },
                             extra: [ids[i]]
                         };
-                        obj.extra.category = categories.source.queryName;
-                        obj.extra.categoryName = categories.source.displayName;
+                        obj.extra.category = categories.source.queryName.replace(/</g, "<");
+                        obj.extra.categoryName = categories.source.displayName.replace(/</g, "<");
                         //parent.value += <number>values[i] || 0;
                         //parent.valueArray.push(<number>values[i] || 0)
                         parent.subvalues.push(obj);
@@ -180,10 +180,10 @@ module powerbi.extensibility.visual {
                     if (seenKeys[key])
                         continue;
                     seenKeys[key] = true;
-
+ 
                     result.push({
                         objectName: objectName,
-                        displayName: v.name,
+                        displayName: v.name.replace(/</g, "<"),
                         properties: { fill: { solid: { color: v.style.fillColor } } },
                         selector: v.extra[0].getSelector()
                     });
