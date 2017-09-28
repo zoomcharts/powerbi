@@ -104,7 +104,7 @@ module powerbi.extensibility.visual {
         return true;
     }
     
-    export function getColor(category: DataViewCategoricalColumn, rowIndex: number, objectName: string): IColorInfo {
+    function getColorDirect(category: DataViewCategoryColumn, rowIndex: number, objectName: string): IColorInfo {
         if (!category.objects) return null;
         let a = category.objects[rowIndex];
         if (!a) return null;
@@ -115,6 +115,50 @@ module powerbi.extensibility.visual {
         let d = c["solid"];
         if (!d) return null;
         return { value: d.color };
+    }
+
+    const cachedCategoryColors: ZoomCharts.Dictionary<{color: IColorInfo, identity: string}> = {};
+
+    export function getColor(category: DataViewCategoryColumn, rowIndex: number, objectName: string): IColorInfo {
+        let color = getColorDirect(category, rowIndex, objectName);
+        let foundRowIndex = rowIndex;
+
+        const valueToSearch = category.values[rowIndex];
+        if (!color) {
+            for (let i = 0; i < category.objects.length; i++) {
+                if (i !== rowIndex && category.values[i] === valueToSearch) {
+                    color = getColorDirect(category, i, objectName);
+
+                    if (color) {
+                        foundRowIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        let localId = category.source.queryName + "\ufdd0" + valueToSearch + "\ufdd0" + objectName;
+        if (!color) {
+            let cached = cachedCategoryColors[localId];
+            if (cached) {
+                color = cached.color;
+                for (let id of category.identity) {
+                    if (id.key === cached.identity) {
+                        // the color seems to be reset
+                        color = null;
+                        cachedCategoryColors[localId] = null;
+                        break;
+                    }
+                }
+            }
+        } else {
+            cachedCategoryColors[localId] = {
+                color: color,
+                identity: category.identity[foundRowIndex].key,
+            };
+        }
+
+        return color;
     }
 
     export class ColorPaletteWrapper {

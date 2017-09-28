@@ -151,7 +151,7 @@ module powerbi.extensibility.visual {
                 //scale:
                 let tempViewport: any = options.viewport;
                 let tmpScale = 0;
-                let scale: any = true;
+                let scale: any = null;
                 if (tempViewport.scale){
                     tmpScale = tempViewport.scale;
                     if(tmpScale == 1) {
@@ -171,11 +171,13 @@ module powerbi.extensibility.visual {
 
                 if (this.chart) {
 
-                    this.chart.replaceSettings({
-                        advanced: {
-                            highDPI: scale
-                        }
-                    });
+                    if (scale !== null) {
+                        this.chart.replaceSettings({
+                            advanced: {
+                                highDPI: scale
+                            }
+                        });
+                    }
 
                     this.chart.replaceData(root);
 
