@@ -124,7 +124,7 @@ module powerbi.extensibility.visual {
         let foundRowIndex = rowIndex;
 
         const valueToSearch = category.values[rowIndex];
-        if (!color) {
+        if (!color && category.objects) {
             for (let i = 0; i < category.objects.length; i++) {
                 if (i !== rowIndex && category.values[i] === valueToSearch) {
                     color = getColorDirect(category, i, objectName);
