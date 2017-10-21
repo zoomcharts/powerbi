@@ -15,6 +15,7 @@ module powerbi.extensibility.visual {
         protected ZC: typeof ZoomCharts;
         protected host: IVisualHost;
         protected pendingData: ZoomCharts.Configuration.NetChartDataObject = {nodes:[], links: []};
+        protected pendingClasses: Array<any>;
         protected updateTimer: number;
         protected formatString: string = "#,0.00";
         protected formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
@@ -93,18 +94,24 @@ module powerbi.extensibility.visual {
                     linkHovered: {
                         shadowBlur: 0,
                         fillColor: "red"
-                    }
+                    },
+                    nodeClasses: this.pendingClasses
+                },
+                legend: {
+                    enabled: true
                 },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
             });
 
-            //this.pendingData = null;
+            this.pendingData = null;
         }
 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
             if (options.type & VisualUpdateType.Data) {
-                let root:ZoomCharts.Configuration.NetChartDataObject = Data.convert(this.host, this.target, options);
+                let blob = Data.convert(this.host, this.target, options);
+                let classes = blob.classes;
+                let root:ZoomCharts.Configuration.NetChartDataObject = blob;
 
                 let tempViewport: any = options.viewport;
                 let tmpScale = 0;
@@ -127,6 +134,7 @@ module powerbi.extensibility.visual {
                 }
 
                 if (this.chart) {
+
                     if (scale !== null){
                         this.chart.replaceSettings({
                             advanced: {
@@ -134,11 +142,14 @@ module powerbi.extensibility.visual {
                             }
                         });
                     }
-
+                    
+                    this.chart.updateSettings({style:{nodeClasses: classes}});
+                    
                     this.chart.replaceData(root);
 
                     this.pendingData = root;
                 } else {
+                    this.pendingClasses = classes;
                     this.pendingData = root;
                 }
             }

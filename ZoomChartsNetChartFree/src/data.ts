@@ -5,9 +5,10 @@ module powerbi.extensibility.visual {
                 console.log("Chart data update called", options);
             }
 
-            let root: ZoomCharts.Configuration.NetChartDataObject = {
+            let root = {
                 nodes: [],
-                links: []
+                links: [],
+                classes: []
             };
             let ids: Array<visuals.ISelectionId>;
 
@@ -23,6 +24,10 @@ module powerbi.extensibility.visual {
                 console.log(dataView);
             }
 
+            if (typeof(dataView.categorical.categories) == "undefined"){
+                return root;
+            }
+
             let categories = dataView.categorical.categories.length;
             let values = dataView.categorical.categories[0].values.length;
 
@@ -30,15 +35,25 @@ module powerbi.extensibility.visual {
             let linkMap = [];
             let nodeId;
             let colorMap = [
-                "#2fc32f",
-                "#b0dc0b",
-                "#eab404",
-                "#de672c",
-                "#ec2e2e",
-                "#d5429b"
+                "#01b8aa",
+                "#fd7976",
+                "#f6da5e",
+                "#00b8cf",
+                "#374649",
+                "#b37fa8",
+                "fea57d",
+                "53a8c2",
+                "778183"
             ];
             for (let y = 0; y < categories; y++){
                 nodeMap[y] = {};
+                root.classes.push({
+                    className: "l" + y,
+                    nameLegend: dataView.categorical.categories[y].source.displayName,
+                    style: {
+                        fillColor: colorMap[y]
+                    }
+                });
             }
             for (let x = 0; x < values; x++){
                 for (let y = 0; y < categories; y++){
@@ -60,7 +75,7 @@ module powerbi.extensibility.visual {
                             depth: y,
                             value: 0
                         };
-                        root.nodes.push({id: nodeId, extra: nodeMap[y][nodeId], loaded: true, style: {fillColor: colorMap[y]}});
+                        root.nodes.push({id: nodeId, extra: nodeMap[y][nodeId], loaded: true, className: "l" + y});
                     }
                     if (y > 0){
                         let f = (y-1) + ":" + dataView.categorical.categories[y-1].values[x];
