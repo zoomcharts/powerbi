@@ -1,0 +1,50 @@
+{
+    "dataRoles": [
+        {
+            "displayName": "Nodes",
+            "name": "Nodes",
+            "kind": "Grouping"
+        },
+        {
+            "displayName": "Measure",
+            "name": "Size",
+            "kind": "Measure"
+        }
+    ],
+    "dataViewMappings": [
+        {
+            "conditions": [
+                {
+                    "NodeType1": {
+                        "min": 0,
+                        "max": 6
+                    }
+                }
+            ],
+            "categorical": {
+                "categories": {
+                    "for": {
+                        "in": "Nodes"
+                    },
+                    "dataReductionAlgorithm": {
+                        "top": {
+                            "count": 100000
+                        }
+                    }
+                },
+                "values": {
+                    "select": [
+                        { "for": { "in": "Size" } },
+                        {
+                            "bind": {
+                                "to": "Nodes"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "objects": {
+    }
+}
