@@ -73,7 +73,8 @@ module powerbi.extensibility.visual {
                             name: v,
                             id: x,
                             depth: y,
-                            value: 0
+                            value: 0,
+                            selectionId: host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[y], x).createSelectionId()
                         };
                         root.nodes.push({id: nodeId, extra: nodeMap[y][nodeId], loaded: true, className: "l" + y});
                     }

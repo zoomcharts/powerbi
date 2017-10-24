@@ -70,7 +70,8 @@ module powerbi.extensibility.visual {
                     onClick: (e, args) => {
                     },
                     onChartUpdate: (e, args) => {
-                    }
+                    },
+                    onSelectionChange: (e, args) => this.updateSelection(args, 200)
                 },
                 style: {
                     nodeStyleFunction: (n) => {
@@ -162,6 +163,29 @@ module powerbi.extensibility.visual {
                 this.chart.remove();
                 this.chart = null;
             }
+        }
+        private updateSelection(args: ZoomCharts.Configuration.NetChartChartEventArguments, delay: number) {
+            if (this.updateTimer) window.clearTimeout(this.updateTimer);
+
+            let selman = this.selectionManager;
+            let selectedSlices = (args.selection || []).map(o => o.data);
+
+            window.setTimeout(() => {
+                if (selectedSlices.length) {
+                    let sel: visuals.ISelectionId[] = [];
+                    for (let i = 0; i < selectedSlices.length; i++) {
+                        sel = sel.concat(selectedSlices[i].extra.selectionId);
+                    }
+
+                    let cursel = selman.getSelectionIds();
+                    if (!arraysEqual(cursel, sel, (a: any, b: any) => a.key === b.key)) {
+                        selman.clear();
+                        selman.select(sel, false);
+                    }
+                } else {
+                    selman.clear();
+                }
+            }, delay);
         }
     }
 }
