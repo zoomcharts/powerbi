@@ -65,13 +65,14 @@ module powerbi.extensibility.visual {
                 x[x.length - 1] = i;
 
                 let raw = times[i];
-                if (!raw == null)
+                if (raw == null){
+                    /* skip nulls */
                     continue;
+                }
 
                 let d: Date = new Date(times[i]);
 
                 if (isNaN(d.valueOf())) {
-                    console.log("Value not recognized as a valid Date:", d);
                     displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type.", "Incorrect data", false);
                     return {data: root, ids:ids};
                 }
@@ -118,6 +119,9 @@ module powerbi.extensibility.visual {
             root.unit = hasMilliseconds ? "ms" : hasSeconds ? "s" : hasMinutes ? "m" : hasHours ? "h" : hasDays ? "d" : hasMonths ? "M" : "y";
             root.from = root.dataLimitFrom = root.values[0][0];
             root.to = root.dataLimitTo = <number> root.values[root.values.length - 1][0] + 1;
+            if (isDebugVisual) {
+                console.log(root);
+            }
             return {data: root, ids: ids };
         }
     }

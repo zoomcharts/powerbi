@@ -98,7 +98,7 @@ module powerbi.extensibility.visual {
                     resizing: { enabled: false }
                 },
                 navigation: {
-                //    initialDisplayUnit: props.displayUnits.initialDisplayUnit
+                    //initialDisplayUnit: props.displayUnits.initialDisplayUnit
                 },
                 events: {
                     onClick: (e, args) => {
@@ -325,10 +325,7 @@ module powerbi.extensibility.visual {
 
                         unit = (<any>this.chart)._impl.scene.displayUnit;
                         this.chart.time(unit.roundTimeDown(<number>root.data.from), unit.roundTimeUp(<number>root.data.to), false);
-                    } else {
-
                     }
-
                     this.chart.selection(sel[0], sel[1]);
 
                     /*
