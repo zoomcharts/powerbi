@@ -12,7 +12,10 @@ namespace ZoomCharts.Configuration {
 module powerbi.extensibility.visual {
     export class Data {
         private static palettes: ZoomCharts.Dictionary<ColorPaletteWrapper> = {};
-
+        public static secureString(i:string){
+            let s:string = i.replace(/</g, "&lt;").replace(/>/, "&gt;");
+            return s;
+        }
         public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             if (isDebugVisual) {
                 console.log("Chart data update called", options);
@@ -62,7 +65,7 @@ module powerbi.extensibility.visual {
             }
 
             if (catCount > 0) {
-                root.name = dataView.categorical.categories[0].source.displayName.replace(/</g, "<");
+                root.name = this.secureString(dataView.categorical.categories[0].source.displayName);
             }
 
             for (let c = 0; c < catCount; c++) {
@@ -100,8 +103,8 @@ module powerbi.extensibility.visual {
                             },
                             extra: [ids[i]]
                         };
-                        obj.extra.category = categories.source.queryName.replace(/</g, "<");
-                        obj.extra.categoryName = categories.source.displayName.replace(/</g, "<");
+                        obj.extra.category = this.secureString(categories.source.queryName);
+                        obj.extra.categoryName = this.secureString(categories.source.displayName);
                         //parent.value += <number>values[i] || 0;
                         //parent.valueArray.push(<number>values[i] || 0)
                         parent.subvalues.push(obj);
@@ -183,7 +186,7 @@ module powerbi.extensibility.visual {
  
                     result.push({
                         objectName: objectName,
-                        displayName: v.name.replace(/</g, "<"),
+                        displayName: this.secureString(v.name),
                         properties: { fill: { solid: { color: v.style.fillColor } } },
                         selector: v.extra[0].getSelector()
                     });

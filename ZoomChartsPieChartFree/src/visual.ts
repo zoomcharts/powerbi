@@ -66,9 +66,9 @@ module powerbi.extensibility.visual {
                     contentsFunction: (data, slice) => {
                         let f = this.formatter;
                         if (!f) return "";
-                        return data.name 
+                        return Data.secureString(data.name)
                         + " - " 
-                        + f.format(data.value)
+                        + Data.secureString(f.format(data.value))
                         + " (" 
                         + slice.percent.toFixed(1) 
                         + "%)";
@@ -132,7 +132,7 @@ module powerbi.extensibility.visual {
             let categories = dataview.categorical.categories;
             let res = "";
             for (let c of categories) {
-                res += "///" + c.source.queryName.replace(/</g, "<");
+                res += "///" + Data.secureString(c.source.queryName);
             }
             return res;
         }
@@ -148,36 +148,9 @@ module powerbi.extensibility.visual {
                     this.formatter = powerbi.extensibility.utils.formatting.valueFormatter.create({format: this.formatString});
                 }
 
-                //scale:
-                let tempViewport: any = options.viewport;
-                let tmpScale = 0;
-                let scale: any = null;
-                if (tempViewport.scale){
-                    tmpScale = tempViewport.scale;
-                    if(tmpScale == 1) {
-                        scale = true;
-                    } else if(tmpScale > 0 && tmpScale < 1) {
-                        scale = tmpScale * 2;
-                    } else if(tmpScale > 1) {
-                        if(window.devicePixelRatio) {
-                            scale = tmpScale * window.devicePixelRatio;
-                        } else if(window.window.devicePixelRatio) {
-                            scale = tmpScale * window.window.devicePixelRatio;
-                        } else {
-                            scale = tmpScale * 1;
-                        }
-                    }
-                }
-
-                if (this.chart) {
-
-                    if (scale !== null) {
-                        this.chart.replaceSettings({
-                            advanced: {
-                                highDPI: scale
-                            }
-                        });
-                    }
+                 if (this.chart) {
+                    
+                     updateScale(options, this.chart);
 
                     this.chart.replaceData(root);
 

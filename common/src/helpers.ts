@@ -15,6 +15,37 @@ module powerbi.extensibility.visual {
         });
     }
 
+    export function updateScale(options: VisualUpdateOptions, chart){
+        //scale:
+        let tempViewport: any = options.viewport;
+        let tmpScale = 0;
+        let scale: any = null;
+        if (tempViewport.scale){
+            tmpScale = tempViewport.scale;
+            if(tmpScale == 1) {
+                scale = true;
+            } else if(tmpScale > 0 && tmpScale < 1) {
+                scale = tmpScale * 2;
+            } else if(tmpScale > 1) {
+                if(window.devicePixelRatio) {
+                    scale = tmpScale * window.devicePixelRatio;
+                } else if(window.window.devicePixelRatio) {
+                    scale = tmpScale * window.window.devicePixelRatio;
+                } else {
+                    scale = tmpScale * 1;
+                }
+            }
+        }
+        if (scale){
+            chart.replaceSettings({
+                advanced: {
+                    highDPI: scale
+                }
+            });
+        }
+        return scale;
+    }
+
     export function createDataSourceIdentity(dataView: DataView): string {
         if (!dataView || !dataView.metadata || !dataView.metadata.columns.length)
             return "";
