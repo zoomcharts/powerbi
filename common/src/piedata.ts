@@ -12,10 +12,6 @@ namespace ZoomCharts.Configuration {
 module powerbi.extensibility.visual {
     export class Data {
         private static palettes: ZoomCharts.Dictionary<ColorPaletteWrapper> = {};
-        public static secureString(i:string){
-            let s:string = i.replace(/</g, "&lt;").replace(/>/, "&gt;");
-            return s;
-        }
         public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             if (isDebugVisual) {
                 console.log("Chart data update called", options);
@@ -65,7 +61,7 @@ module powerbi.extensibility.visual {
             }
 
             if (catCount > 0) {
-                root.name = this.secureString(dataView.categorical.categories[0].source.displayName);
+                root.name = secureString(dataView.categorical.categories[0].source.displayName);
             }
 
             for (let c = 0; c < catCount; c++) {
@@ -94,7 +90,7 @@ module powerbi.extensibility.visual {
                         obj = {
                             value: <number>values[i] || 0,
                             valueArray: [<number>values[i] || 0],
-                            name: "" + catValue,
+                            name: secureString("" + catValue),
                             id: idVal,
                             subvalues: [],
                             style: {
@@ -103,8 +99,8 @@ module powerbi.extensibility.visual {
                             },
                             extra: [ids[i]]
                         };
-                        obj.extra.category = this.secureString(categories.source.queryName);
-                        obj.extra.categoryName = this.secureString(categories.source.displayName);
+                        obj.extra.category = secureString(categories.source.queryName);
+                        obj.extra.categoryName = secureString(categories.source.displayName);
                         //parent.value += <number>values[i] || 0;
                         //parent.valueArray.push(<number>values[i] || 0)
                         parent.subvalues.push(obj);
@@ -186,7 +182,7 @@ module powerbi.extensibility.visual {
  
                     result.push({
                         objectName: objectName,
-                        displayName: this.secureString(v.name),
+                        displayName: secureString(v.name),
                         properties: { fill: { solid: { color: v.style.fillColor } } },
                         selector: v.extra[0].getSelector()
                     });

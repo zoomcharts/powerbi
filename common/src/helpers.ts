@@ -65,6 +65,11 @@ module powerbi.extensibility.visual {
         return res;
     }
 
+    export function secureString(i:string){
+        let s:string = i.replace(/</g, "&lt;").replace(/>/, "&gt;");
+        return s;
+    }
+
     export function createColorPalette(host: IVisualHost) {
         let cp = host.colorPalette;
             

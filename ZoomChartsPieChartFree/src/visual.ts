@@ -66,9 +66,9 @@ module powerbi.extensibility.visual {
                     contentsFunction: (data, slice) => {
                         let f = this.formatter;
                         if (!f) return "";
-                        return Data.secureString(data.name)
+                        return secureString(data.name)
                         + " - " 
-                        + Data.secureString(f.format(data.value))
+                        + secureString(f.format(data.value))
                         + " (" 
                         + slice.percent.toFixed(1) 
                         + "%)";
@@ -132,7 +132,7 @@ module powerbi.extensibility.visual {
             let categories = dataview.categorical.categories;
             let res = "";
             for (let c of categories) {
-                res += "///" + Data.secureString(c.source.queryName);
+                res += "///" + secureString(c.source.queryName);
             }
             return res;
         }
