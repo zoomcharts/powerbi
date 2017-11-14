@@ -217,4 +217,38 @@ module powerbi.extensibility.visual {
             this.cache[key] = value;
         }
     }
+
+    export class timebomb {
+        public is_set: boolean = false;
+        private when: number = null;
+        public target: HTMLElement = null;
+        constructor(target, options?: any) {
+            this.target = target;
+            //http://currentmillis.com/
+            //You can set timebomb globally for both PieData(PC/FC) and Data(TC) here:
+            //this.set(1510662480000);
+        }
+        public set(when: number) { //milliseconds!
+            //Use something like : Date.now();
+            this.is_set = true;
+            this.when = when;
+        }
+        public addDays(days) {
+            var dat = new Date();
+            dat.setDate(dat.getDate() + days);
+            return dat;
+        }
+        public checkIfExpired() {
+            if(this.is_set) {
+                if(this.when <= Date.now()) {
+                    this.expired();
+                    return true;
+                }
+            }
+            return false;
+        }
+        public expired() {
+          //  displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
+        }
+    }
 }
