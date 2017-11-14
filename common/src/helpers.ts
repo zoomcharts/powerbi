@@ -66,6 +66,9 @@ module powerbi.extensibility.visual {
     }
 
     export function secureString(i:string){
+        if(!i) {
+            return i;
+        }
         let s:string = i.replace(/</g, "&lt;").replace(/>/, "&gt;");
         return s;
     }
