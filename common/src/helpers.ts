@@ -226,7 +226,7 @@ module powerbi.extensibility.visual {
             this.target = target;
             //http://currentmillis.com/
             //You can set timebomb globally for both PieData(PC/FC) and Data(TC) here:
-            this.set(1512079199000); //1512079199000); //1510662480000
+            //this.set(1512079199000); //1510662480000
         }
         public set(when: number) { //milliseconds!
             //Use something like : Date.now();
@@ -256,9 +256,13 @@ module powerbi.extensibility.visual {
             let logo = document.createElement("div");
             logo.className = "beta-logo";
             logo.addEventListener("click", function() {
-                self.displayBugReportDialog();
+                let container = <HTMLElement>target.getElementsByClassName("message-overlay-bugreport")[0];
+                if(container && container.style.display != "none") {
+                    self.hideBugReportDialog();
+                } else {
+                    self.displayBugReportDialog();
+                }
             });
-            //document.body.insertBefore(logo, target);
             target.appendChild(logo);
         }
         public displayExpiredMessage(target: HTMLElement, message: string, title: string, isError: boolean) {
@@ -291,14 +295,22 @@ module powerbi.extensibility.visual {
                 target.appendChild(container);
             }
     
-            let message = "Report on sight to 'zoomcharts.com/pbi/bug/'. Please copy and paste this address in to your browser.";
             let title = "BUG?";
+            let message = "Report on sight to us. Please copy and paste the following address in to your browser: <br><br><b>'https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/submit-a-bug/'</b>.";
             container.style.display = "";
 
             let html = "";
             if (title) html += "<h3>" + title + "</h3>";
             if (message) html += "<p>" + message + "</p>";
             container.innerHTML = html;
+        }
+        public hideBugReportDialog() {
+            let target = this.target;
+            let container = <HTMLElement>target.getElementsByClassName("message-overlay-bugreport")[0];
+            if(!container) {
+                return;
+            }
+            container.style.display = "none";
         }
     }
     

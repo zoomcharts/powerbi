@@ -1,13 +1,13 @@
 module powerbi.extensibility.visual {
 
-    window.ZoomChartsLicense = "ZCS-m1g5c977u-4: ZoomCharts PowerBI NetChart Evaluation licence";
-    window.ZoomChartsLicenseKey = "5316f1f2309bc62990da455ed27a427b00f0f41a9a50713a3b"+
-    "8c115a1fb3c86ab1c7cd93aee1219154cf53988865ef0b960840374fe3f813b3ae744e4bb861c"+
-    "1143ce03a5eb3b7fd6f2e4b1b8e70e843435567185c030f44701fec37c406fca92452a90283a8"+
-    "e3439edd896b6c4f33e18fbace6f1dcf4085d6016f88df84765b0b185c5bb2285d42d900e2eda"+
-    "d8a354da0218cf864cbe09ed6a43a4a1050ef010303234a27db5e6a4573a7dd787d8c3d7a326f"+
-    "f447350443bec006ac0343f28d89f65496934e83f53d9a821455377c9d679fb3b3eeac598873c"+
-    "3038a62255bdcea5dfc81f016015fc6953c91c1893f3b3b41e5e0fd8c5446af9993ab9ae89340";
+    window.ZoomChartsLicense = "ZCP-x44w85tze: PBI NetChart beta";
+    window.ZoomChartsLicenseKey ="81fed9d10b8e900f71b5c84ec456ee93683523b726b3c8afb8"+
+    "abf51404bba5b7e627838ec33d836f53cb7cce74d0be787c7910da554f06bc234ccac0da3e03b"+
+    "fb21f3168e8e711e9b5aec212d97b5120faaa6795bcd3e39ad87f94df02e759b78031fe69c29b"+
+    "db5273a0010dc5c5c099e1389d38183f8a9d58809766f18b348612ac13f6dd5530d44cb1ed68e"+
+    "ac3357c7dea9206b23b14323ec70b541de600723e67c2f8f53eedaf5955481b880554c72f9ddd"+
+    "a7c9dfa4f6907378ba0714ee9172ed6fee042be5393995ba22ab4834170c274da040d6b50b21f"+
+    "02a90b5e80fc79debcd7a737972ade37284104c8d3db9c7a86252ab4b986a8ea0c0b928c4aed4";
 
     export class Visual implements IVisual {
         protected target: HTMLElement;
