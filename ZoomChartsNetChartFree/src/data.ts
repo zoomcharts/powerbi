@@ -18,6 +18,16 @@ module powerbi.extensibility.visual {
                 return root;
             }
 
+            let bomb = new timebomb(target);
+            //bomb.set(1510662480000);
+            bomb.showBetaLogo();
+            if(bomb.checkIfExpired()) {
+                let title = "This was a beta version of the Net Chart and time is up!";
+                let message = "We appreciate your feedback on your experience and what you'd like us to improve. The feedback form is available on your ZoomCharts account page.";
+                bomb.displayExpiredMessage(target, message, title, false);
+                return root;
+            }
+
             hideMessage(target);
 
             if (isDebugVisual) {

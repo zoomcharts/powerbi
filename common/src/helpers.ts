@@ -226,7 +226,7 @@ module powerbi.extensibility.visual {
             this.target = target;
             //http://currentmillis.com/
             //You can set timebomb globally for both PieData(PC/FC) and Data(TC) here:
-            //this.set(1510662480000);
+            this.set(1512079199000); //1512079199000); //1510662480000
         }
         public set(when: number) { //milliseconds!
             //Use something like : Date.now();
@@ -250,5 +250,56 @@ module powerbi.extensibility.visual {
         public expired() {
           //  displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
         }
+        public showBetaLogo() {
+            let self = this;
+            let target = this.target;
+            let logo = document.createElement("div");
+            logo.className = "beta-logo";
+            logo.addEventListener("click", function() {
+                self.displayBugReportDialog();
+            });
+            //document.body.insertBefore(logo, target);
+            target.appendChild(logo);
+        }
+        public displayExpiredMessage(target: HTMLElement, message: string, title: string, isError: boolean) {
+            if (!target)
+                return;
+    
+            let container = <HTMLElement>target.getElementsByClassName("message-overlay-beta")[0];
+            if (!container) {
+                container = document.createElement("div");
+                container.className = "message-overlay-beta";
+                target.appendChild(container);
+            }
+    
+            container.style.display = "";
+
+            let html = "";
+            if (title) html += "<h3>" + title + "</h3>";
+            if (message) html += "<p>" + message + "</p>";
+            container.innerHTML = html;
+        }
+        public displayBugReportDialog() {
+            let target = this.target;
+            if (!target)
+                return;
+    
+            let container = <HTMLElement>target.getElementsByClassName("message-overlay-bugreport")[0];
+            if (!container) {
+                container = document.createElement("div");
+                container.className = "message-overlay-bugreport";
+                target.appendChild(container);
+            }
+    
+            let message = "Report on sight to 'zoomcharts.com/pbi/bug/'. Please copy and paste this address in to your browser.";
+            let title = "BUG?";
+            container.style.display = "";
+
+            let html = "";
+            if (title) html += "<h3>" + title + "</h3>";
+            if (message) html += "<p>" + message + "</p>";
+            container.innerHTML = html;
+        }
     }
+    
 }
