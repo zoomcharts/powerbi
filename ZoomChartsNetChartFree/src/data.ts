@@ -8,7 +8,8 @@ module powerbi.extensibility.visual {
             let root = {
                 nodes: [],
                 links: [],
-                classes: []
+                classes: [],
+                format: null
             };
             let ids: Array<visuals.ISelectionId>;
 
@@ -19,10 +20,6 @@ module powerbi.extensibility.visual {
             }
 
             hideMessage(target);
-
-            if (isDebugVisual) {
-                console.log(dataView);
-            }
 
             if (typeof(dataView.categorical.categories) == "undefined"){
                 return root;
@@ -55,6 +52,8 @@ module powerbi.extensibility.visual {
                     }
                 });
             }
+            let format = dataView.categorical.values[0].source.format;
+            root.format = format;
             for (let x = 0; x < values; x++){
                 for (let y = 0; y < categories; y++){
                     let v = dataView.categorical.categories[y].values[x];
@@ -67,17 +66,19 @@ module powerbi.extensibility.visual {
                     if (typeof(value) != "number"){
                         value = 1; // count
                     }
-
+                    let sid:any = host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[y], x).createSelectionId();
                     if (typeof(nodeMap[y][nodeId]) === "undefined"){
                         nodeMap[y][nodeId] = {
                             name: v,
                             id: x,
                             depth: y,
                             value: 0,
-                            selectionId: host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[y], x).createSelectionId()
+                            selectionIds:[]
                         };
                         root.nodes.push({id: nodeId, extra: nodeMap[y][nodeId], loaded: true, className: "l" + y});
                     }
+                    nodeMap[y][nodeId].selectionIds.push(sid);
+
                     if (y > 0){
                         let f = (y-1) + ":" + dataView.categorical.categories[y-1].values[x];
                         let t = nodeId;
@@ -99,10 +100,37 @@ module powerbi.extensibility.visual {
                     }
                 }
             }
-            if (isDebugVisual) {
-                console.log(root);
-            }
+            let min = 1.0e12;
+            let max = -min;
 
+			function compare(a,b) {
+                min = Math.min(min, a.extra.value);
+                min = Math.min(min, b.extra.value);
+                max = Math.max(max, a.extra.value);
+                max = Math.max(max, b.extra.value);
+				return a.extra.value - b.extra.value;
+			}
+			root.nodes = root.nodes.sort(compare);
+			
+	        /*
+             * Group nodes in "ranges"
+             * */
+            let mode = "dynamic";
+            let base = 21;
+            let max_gain = 300;
+            if (mode == "group"){
+                let steps = 6;
+                let step = 50;
+                let nodes_in_step = Math.round(root.nodes.length / steps);
+                for (let x = 0; x < root.nodes.length; x++){
+                    root.nodes[x].extra.radius = Math.floor(x / nodes_in_step)*step + base;
+                }
+            } else if (mode == "dynamic"){
+                let range = max-min;
+                for (let x = 0; x < root.nodes.length; x++){
+                    root.nodes[x].extra.radius = base + (root.nodes[x].extra.value-min)/max * max_gain;
+                }
+            }
             return root;
         }
     }
