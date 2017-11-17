@@ -266,24 +266,63 @@ module powerbi.extensibility.visual {
         }
 
         public rect:any=null;
-        public current_scale:any=null;
+        public current_scale:any=1;
+        public prev_pixel_ratio:any;
         public updateSize(viewport){
+            //console.log("it's the new version", viewport);
             let scale = viewport.scale;
-            if (!scale){
-                scale = 1;
+            if (!this.prev_pixel_ratio){
+                this.prev_pixel_ratio = window.devicePixelRatio;
             }
-            let height = viewport.height;
-            let width = viewport.width;
-            this.target.style.marginTop = -Math.round((height - height* 1/scale)/2*scale) +"px";
-            this.target.style.marginLeft= -Math.round((width - width *1/scale)/2*scale) +"px";
-            this.target.style.height = Math.round(height * scale) +"px";
-            this.target.style.width = Math.round(width* scale) +"px";
+            if (window.devicePixelRatio != this.prev_pixel_ratio){
+                //console.log("Pixel ratio chagne", viewport);
+                this.prev_pixel_ratio = window.devicePixelRatio;
+                this.current_scale = 1;
+            }
+            this.prev_pixel_ratio = 2;
 
-            this.target.style.transform = "scale(" + 1/scale + "," + 1/scale + ")";
-        }
+            if (window.devicePixelRatio == 2){
+                if (scale){
+                    scale = this.current_scale = scale * this.prev_pixel_ratio;
+                } else {
+                    scale = this.current_scale;
+                }
+                scale = scale;// * window.devicePixelRatio;
+                let height = viewport.height;
+                let width = viewport.width;
+                let nh:any;
+                let nw:any;
+                this.target.style.height =(nh=Math.round(height * scale )) +"px";
+                this.target.style.width = (nw=Math.round(width * scale)) +"px";
+                this.target.style.marginTop = -Math.round((height - height * 1/scale)/2)*scale+"px";
+                this.target.style.marginLeft= -Math.round((width - width *1/scale)/2)*scale +"px"; 
+                let t:any;
+                this.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
+                //console.log(window.devicePixelRatio, width, height, scale, "New height",nh, "New widht", nw, "New transform", t);
+            } else {
+                if (scale){
+                    scale = this.current_scale = scale;
+                } else {
+                    scale = this.current_scale;
+                }
+                scale = scale;// * window.devicePixelRatio;
+                let height = viewport.height;
+                let width = viewport.width;
+                let nh:any;
+                let nw:any;
+                this.target.style.height =(nh=Math.round(height * scale )) +"px";
+                this.target.style.width = (nw=Math.round(width * scale)) +"px";
+                this.target.style.marginTop = -Math.round((height - height * 1/scale)/2)*scale+"px";
+                this.target.style.marginLeft= -Math.round((width - width *1/scale)/2)*scale +"px"; 
+                let t:any;
+                this.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
+                //console.log("non retina", window.devicePixelRatio, width, height, scale, "New height",nh, "New widht", nw, "New transform", t);
+            }
+        } 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
             this.updateSize(options.viewport);
+            console.log(options);
             if (options.type & VisualUpdateType.Data) {
                 
                 let blob = Data.convert(this, this.host, this.target, options);
@@ -294,6 +333,8 @@ module powerbi.extensibility.visual {
 
 
                 if (this.chart) {
+                    updateScale(options, this.chart);
+                    this.chart.updateSize();
 
                     this.chart.updateSettings({style:{nodeClasses: classes}});
                     
