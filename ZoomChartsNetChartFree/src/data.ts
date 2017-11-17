@@ -1,6 +1,6 @@
 module powerbi.extensibility.visual {
     export class Data {
-        public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
+        public static convert(visual:any, host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             if (isDebugVisual) {
                 console.log("Chart data update called", options);
             }
@@ -9,7 +9,8 @@ module powerbi.extensibility.visual {
                 nodes: [],
                 links: [],
                 classes: [],
-                format: null
+                format: null,
+                betalimitator: null
             };
             let ids: Array<visuals.ISelectionId>;
 
@@ -19,17 +20,11 @@ module powerbi.extensibility.visual {
                 return root;
             }
 
-            let bomb = new timebomb(target);
-            //bomb.set(1510662480000);
-            bomb.showBetaLogo();
-            if(bomb.checkIfExpired()) {
-                let title = "This was a beta version of the Net Chart and time is up!";
-                let message = "We appreciate your feedback on your experience and what you'd like us to improve. The feedback form is available on your ZoomCharts account page.";
-                bomb.displayBetaExpiredMessage(target, message, title, false);
+            if(visual.betalimitator.checkIfExpired()){
+                visual.showExpired();
                 return root;
             }
-
-            hideMessage(target);
+            //hideMessage(target);
 
             if (typeof(dataView.categorical.categories) == "undefined"){
                 return root;

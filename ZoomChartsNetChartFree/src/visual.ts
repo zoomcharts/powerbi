@@ -22,6 +22,7 @@ module powerbi.extensibility.visual {
         protected selectionManager: ISelectionManager;
         protected lastCategorySet: string = null;
         protected zoom: number = 1;
+        public betalimitator: any = null;
 
         constructor(options: VisualConstructorOptions) {
 
@@ -45,8 +46,20 @@ module powerbi.extensibility.visual {
             ZoomChartsLoader.ensure((zc) => this.createChart(zc), () => {
                 displayMessage(this.target, "Cannot load ZoomCharts library. This visual requires internet connectivity.", "Error", true);
             });
-        }
 
+            this.betalimitator = new betalimitator(this.target);
+            //betalimitator.set(1510662480000);
+            this.betalimitator.showBetaLogo();
+            if(this.betalimitator.checkIfExpired()) {
+                this.showExpired();
+            }
+        }
+        public showExpired(){
+            let title = "This was a beta version of the Net Chart and time is up!";
+            let message = "We appreciate your feedback on your experience and what you'd like us to improve. The feedback form is available on your ZoomCharts account page.";
+            this.betalimitator.displayBetaExpiredMessage(this.target, message, title, false);
+        }
+        public updateTimeout:number = 0;
         protected createChart(zc: typeof ZoomCharts) {
             // check if the visual is destroyed before chart is created.
             if (!this.target)
@@ -83,6 +96,7 @@ module powerbi.extensibility.visual {
             let current_selection:any=[];
             let self = this;
             self.zoom = 1;
+            self.updateTimeout = null;
             this.chart = new zc.NetChart({
                 container: chartContainer,
                 data:
@@ -101,6 +115,15 @@ module powerbi.extensibility.visual {
                             e.preventDefault();
                             return false;
                         }
+                    },
+                    onPositionChange: (e, args) => {
+                        self.zoom = self.chart.zoom();
+                        if (self.updateTimeout){
+                            clearTimeout(self.updateTimeout);
+                        }
+                        self.updateTimeout = setTimeout(()=>{
+                            self.chart.updateStyle();
+                        },25);
                     },
                     onChartUpdate: (e, args) => {
                         self.zoom = self.chart.zoom();
@@ -124,7 +147,7 @@ module powerbi.extensibility.visual {
                         l.shadowBlur = null;
                         l.shadowColor = null;
                         if (l.from.selected || l.to.selected){
-                            l.radius = 5;
+                            l.radius = 20;
                             l.fillColor = "black";
                         }
                     },
@@ -147,10 +170,10 @@ module powerbi.extensibility.visual {
 
                         if (n.selected){
                             n.lineColor = "black";
-                            n.lineWidth = n.radius*0.20*self.zoom;
+                            n.lineWidth = n.radius*0.3*self.zoom;
                         } else if (n.hovered){
                             n.lineColor = "rgba(0,0,0,0.5)";
-                            n.lineWidth = n.radius*0.20*self.zoom;
+                            n.lineWidth = n.radius*0.3*self.zoom;
                         } else if (current_selection.length){
                             if (!cached_color_light[n.fillColor]){
                                 let r:number = parseInt(n.fillColor.substr(1,2), 16);
@@ -242,44 +265,36 @@ module powerbi.extensibility.visual {
             this.pendingData = null;
         }
 
+        public rect:any=null;
+        public current_scale:any=null;
+        public updateSize(viewport){
+            let scale = viewport.scale;
+            if (!scale){
+                scale = 1;
+            }
+            let height = viewport.height;
+            let width = viewport.width;
+            this.target.style.marginTop = -Math.round((height - height* 1/scale)/2*scale) +"px";
+            this.target.style.marginLeft= -Math.round((width - width *1/scale)/2*scale) +"px";
+            this.target.style.height = Math.round(height * scale) +"px";
+            this.target.style.width = Math.round(width* scale) +"px";
+
+            this.target.style.transform = "scale(" + 1/scale + "," + 1/scale + ")";
+        }
         @logExceptions()
         public update(options: VisualUpdateOptions) {
+            this.updateSize(options.viewport);
             if (options.type & VisualUpdateType.Data) {
-                let blob = Data.convert(this.host, this.target, options);
+                
+                let blob = Data.convert(this, this.host, this.target, options);
                 let classes = blob.classes;
                 let root:ZoomCharts.Configuration.NetChartDataObject = blob;
                 if (blob.format != undefined)
                     this.formatString = blob.format;
 
-                let tempViewport: any = options.viewport;
-                let tmpScale = 0;
-                let scale: any = null;
-                if (tempViewport.scale){
-                    tmpScale = tempViewport.scale;
-                    if(tmpScale == 1) {
-                        scale = true;
-                    } else if(tmpScale > 0 && tmpScale < 1) {
-                        scale = tmpScale * 2;
-                    } else if(tmpScale > 1) {
-                        if(window.devicePixelRatio) {
-                            scale = tmpScale * window.devicePixelRatio;
-                        } else if(window.window.devicePixelRatio) {
-                            scale = tmpScale * window.window.devicePixelRatio;
-                        } else {
-                            scale = tmpScale * 1;
-                        }
-                    }
-                }
 
                 if (this.chart) {
 
-                    if (scale !== null){
-                        this.chart.replaceSettings({
-                            advanced: {
-                                highDPI: scale
-                            }
-                        });
-                    }
                     this.chart.updateSettings({style:{nodeClasses: classes}});
                     
                     this.chart.replaceData(root);

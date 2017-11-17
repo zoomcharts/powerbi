@@ -218,14 +218,15 @@ module powerbi.extensibility.visual {
         }
     }
 
-    export class timebomb {
+    export class betalimitator {
         public is_set: boolean = false;
         private when: number = null;
         public target: HTMLElement = null;
+        protected logo:any = null;
         constructor(target, options?: any) {
             this.target = target;
             //http://currentmillis.com/
-            //You can set timebomb globally for both PieData(PC/FC) and Data(TC) here:
+            //You can set betalimitator globally for both PieData(PC/FC) and Data(TC) here:
             //this.set(1512165599000); //1510662480000
         }
         public set(when: number) { //milliseconds!
@@ -252,8 +253,12 @@ module powerbi.extensibility.visual {
         public showBetaLogo() {
             let self = this;
             let target = this.target;
-            let logo = document.createElement("div");
+            this.logo = document.createElement("div");
+            let logo = this.logo;
             logo.className = "beta-logo";
+            logo.style.transform = "scale(0.5,0.5)";
+            logo.style.right = "-84px";
+            logo.style.bottom = "-19px";
             logo.addEventListener("click", function() {
                 let container = <HTMLElement>target.getElementsByClassName("message-overlay-bugreport")[0];
                 if(container && container.style.display != "none") {
@@ -264,6 +269,7 @@ module powerbi.extensibility.visual {
             });
             target.appendChild(logo);
         }
+        private boundingBox = null;
         public displayBetaExpiredMessage(target: HTMLElement, message: string, title: string, isError: boolean) {
             if (!target)
                 return;
