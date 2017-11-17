@@ -226,7 +226,7 @@ module powerbi.extensibility.visual {
             this.target = target;
             //http://currentmillis.com/
             //You can set timebomb globally for both PieData(PC/FC) and Data(TC) here:
-            //this.set(1512079199000); //1510662480000
+            //this.set(1512165599000); //1510662480000
         }
         public set(when: number) { //milliseconds!
             this.is_set = true;
@@ -280,6 +280,7 @@ module powerbi.extensibility.visual {
             let html = "";
             if (title) html += "<h3>" + title + "</h3>";
             if (message) html += "<p>" + message + "</p>";
+            html += "<div class=\"beta-version\">BETA v0.1</div>";
             container.innerHTML = html;
         }
         public displayBugReportDialog() {
@@ -292,16 +293,19 @@ module powerbi.extensibility.visual {
                 container = document.createElement("div");
                 container.className = "message-overlay-bugreport";
                 target.appendChild(container);
-            }
     
-            let title = "BUG?";
-            let message = "Report on sight to us. Please copy and paste the following address in to your browser: <br><br><b>https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/submit-a-bug/</b>";
-            container.style.display = "";
+                let title = "BUG?";
+                let message = "Report on sight to us. Please copy and paste the following address in to your browser:";
+                message += "<br><br><b>https://zoomcharts.com/pbibeta/</b>";
+                container.style.display = "";
 
-            let html = "";
-            if (title) html += "<h3>" + title + "</h3>";
-            if (message) html += "<p>" + message + "</p>";
-            container.innerHTML = html;
+                let html = "";
+                if (title) html += "<h3>" + title + "</h3>";
+                if (message) html += "<p>" + message + "</p>";
+                html += "<div class=\"beta-version\">BETA v0.1</div>";
+                container.innerHTML = html;
+            }
+            container.style.display = "";
         }
         public hideBugReportDialog() {
             let target = this.target;
