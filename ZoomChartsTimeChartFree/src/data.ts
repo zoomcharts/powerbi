@@ -41,13 +41,6 @@ module powerbi.extensibility.visual {
                 return {data: root, ids: ids };
             }
 
-            let bomb = new timebomb(target);
-            //bomb.set(1510662480000);
-            if(bomb.checkIfExpired()) {
-                displayMessage(target, "Trial period for this visual is expired.", "Trial expired", false);
-                return {data: root, ids: ids };
-            }
-
             hideMessage(target);
 
             let timeCat = dataView.categorical.categories[0];
