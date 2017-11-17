@@ -21,6 +21,7 @@ module powerbi.extensibility.visual {
         protected lastChartUpdatePieId = "";
         protected selectionManager: ISelectionManager;
         protected lastCategorySet: string = null;
+        public betalimitator: any = null;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -42,6 +43,12 @@ module powerbi.extensibility.visual {
             ZoomChartsLoader.ensure((zc) => this.createChart(zc), () => {
                 displayMessage(this.target, "Cannot load ZoomCharts library. This visual requires internet connectivity.", "Error", true);
             });
+
+            this.betalimitator = new betalimitator(this.target);
+            //betalimitator.set(1510662480000);
+            if(this.betalimitator.checkIfExpired()) {
+                displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
+            }
         }
 
         protected createChart(zc: typeof ZoomCharts) {

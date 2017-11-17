@@ -45,13 +45,6 @@ module powerbi.extensibility.visual {
                 return root;
             }
 
-            let bomb = new timebomb(target);
-            //bomb.set(1510662480000);
-            if(bomb.checkIfExpired()) {
-                displayMessage(target, "Trial period for this visual is expired.", "Trial expired", false);
-                return root;
-            }
-
             hideMessage(target);
 
             const formatter = powerbi.extensibility.utils.formatting.formattingService;
