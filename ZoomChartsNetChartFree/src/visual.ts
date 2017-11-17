@@ -21,6 +21,7 @@ module powerbi.extensibility.visual {
         protected formatter: powerbi.extensibility.utils.formatting.IValueFormatter = null;
         protected selectionManager: ISelectionManager;
         protected lastCategorySet: string = null;
+        protected zoom: number = 1;
 
         constructor(options: VisualConstructorOptions) {
 
@@ -56,7 +57,32 @@ module powerbi.extensibility.visual {
             let chartContainer = document.createElement("div");
             chartContainer.className = "chart-container";
             this.target.appendChild(chartContainer);
-
+            function formatText(value:any){
+                let s = Math.round(value) + "";
+                let l = s.length;
+                let m = {"3": "k", "6": "m", "9":"b", "12": "t"};
+                let max:any = 1;
+                for (let x in m){
+                    if (m.hasOwnProperty(x)){
+                        let ki:number = parseInt(x);
+                        if (s.length > ki){
+                            max = Math.max(max, ki);
+                        }
+                    }
+                }
+                let v:string;
+                if (l){
+                    v = Math.round(value / Math.pow(10, max)*10)/10 + m[max+""];
+                } else {
+                    v = Math.round(value * 10)/10 +"";
+                }
+                return v;
+            }
+            let cached_color:any={};
+            let cached_color_light:any={};
+            let current_selection:any=[];
+            let self = this;
+            self.zoom = 1;
             this.chart = new zc.NetChart({
                 container: chartContainer,
                 data:
@@ -64,42 +90,151 @@ module powerbi.extensibility.visual {
                     preloaded: this.pendingData
                 }],
                 interaction: {
-                    resizing: { enabled: false }
+                    resizing: { enabled: false },
+                    zooming: {
+                        autoZoomPositionElasticity: 2.5e-6
+                    }
                 },
                 events: {
                     onClick: (e, args) => {
+                        if (args.clickNode){
+                            e.preventDefault();
+                            return false;
+                        }
                     },
                     onChartUpdate: (e, args) => {
+                        self.zoom = self.chart.zoom();
                     },
-                    onSelectionChange: (e, args) => this.updateSelection(args, 200)
+                    onSelectionChange: (e, args) => {
+                        current_selection = args.selection;
+                        self.updateSelection(args, 200);
+                        self.chart.updateStyle();
+                    }
                 },
                 style: {
-                    nodeStyleFunction: (n) => {
-                        let name = n.data.extra.name
-                        if (name !== null){
-                            n.label = name;
-                        } else {
-                            n.label = "(empty)";
+                    nodeSelected: {
+                        shadowBlur: null,
+                        shadowColor: null
+                    },
+                    nodeHovered: {
+                        shadowBlur: null,
+                        shadowColor: null
+                    },
+                    linkStyleFunction: (l) => {
+                        l.shadowBlur = null;
+                        l.shadowColor = null;
+                        if (l.from.selected || l.to.selected){
+                            l.radius = 5;
+                            l.fillColor = "black";
                         }
-                        n.radius = Math.log(n.data.extra.value)*10+10;
-                        n.items = [{
-                            px: 0,
-                            py: 0,
-                            text: ""+(Math.round(n.data.extra.value*100)/100),
-                            textStyle: {
-                                font: Math.round(n.radius/4) + "px Arial"
-                            },
-                            scaleWithZoom: true
-                        }];
                     },
                     linkHovered: {
-                        shadowBlur: 0,
-                        fillColor: "red"
+                        radius: 5,
+                        fillColor: "rgba(0,0,0,0.5)"
                     },
-                    nodeClasses: this.pendingClasses
+                    selection: {
+                        shadowBlur: null,
+                        shadowColor: null
+                    },
+                    nodeStyleFunction: (n) => {
+                        let name = n.data.extra.name;
+                        n.label = null;
+						n.radius = n.data.extra.radius;
+
+                        n.lineColor = null;
+                        n.shadowBlur = null;
+                        n.shadowColor = null;
+
+                        if (n.selected){
+                            n.lineColor = "black";
+                            n.lineWidth = n.radius*0.20*self.zoom;
+                        } else if (n.hovered){
+                            n.lineColor = "rgba(0,0,0,0.5)";
+                            n.lineWidth = n.radius*0.20*self.zoom;
+                        } else if (current_selection.length){
+                            if (!cached_color_light[n.fillColor]){
+                                let r:number = parseInt(n.fillColor.substr(1,2), 16);
+                                let g:number = parseInt(n.fillColor.substr(3,2), 16);
+                                let b:number = parseInt(n.fillColor.substr(5,2), 16);
+                                cached_color_light[n.fillColor] = "rgba(" + [r,g,b].join(",") + ",0.5)";
+                            }
+                            n.fillColor = cached_color_light[n.fillColor];
+                        }
+                        if (!n.items.length){
+                            n.items = [];
+                            let label:string = "(empty)";
+                            if (name){
+                                label = name;
+                            }
+                            n.items.push({
+                                px: 0,
+                                py: 1.33,
+                                text: secureString(label),
+                                textStyle: {
+                                    fillColor: "black",
+                                    font: Math.round(n.radius/2) + "px Arial"
+                                },
+                                backgroundStyle: {
+                                    fillColor: "rgba(255,255,255,0.5)"
+                                },
+                                scaleWithZoom: true,
+                                hoverEffect: false
+                            });
+                            let color:string = "black";
+                            if (typeof(cached_color[n.fillColor]) == "undefined"){
+                                let r:number = parseInt(n.fillColor.substr(1,2), 16)/255;
+                                let g:number = parseInt(n.fillColor.substr(3,2), 16)/255;
+                                let b:number = parseInt(n.fillColor.substr(5,2), 16)/255;
+                                let i = r /3 + g/3 + b/3;
+                                if (i < 0.4)
+                                    color = "white";
+                                cached_color[n.fillColor] = color;
+                            } else {
+                                color = cached_color[n.fillColor];
+                            }
+                            n.items.push({
+                                px: 0,
+                                py: 0,
+                                text: ""+(formatText(Math.round(n.data.extra.value*100)/100)),
+                                textStyle: {
+                                    fillColor: color,
+                                    font: Math.round(n.radius/2) + "px Arial"
+                                },
+                                backgroundStyle: {
+                                    fillColor: null
+                                },
+                                scaleWithZoom: true,
+                                hoverEffect: false
+                            });
+                        }
+                    },
+                    link: {
+                        shadowBlur: null,
+                        shadowColor: null
+                    },
+                    nodeClasses: this.pendingClasses,
+                    nodeDetailMinSize: 20,
+                    nodeDetailMinZoom: 0.05
                 },
                 legend: {
                     enabled: true
+                },
+                toolbar: {
+                    fullscreen: false
+                },
+                nodeMenu: {
+                    buttons: [
+                        "btn:hide", "btn:collapse", "btn:expand"
+                    ],
+                    contentsFunction: (data:any, node:any, callback:any)=>{
+                        let val:string = "";
+                        val = "Name: " + secureString(data.extra.name) + "<br>";
+                        val += "Value: " + powerbi.extensibility.utils.formatting.valueFormatter.format(
+                            data.extra.value,
+                            self.formatString);
+                        callback(val);
+                        return val;
+                    }
                 },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
             });
@@ -113,6 +248,8 @@ module powerbi.extensibility.visual {
                 let blob = Data.convert(this.host, this.target, options);
                 let classes = blob.classes;
                 let root:ZoomCharts.Configuration.NetChartDataObject = blob;
+                if (blob.format != undefined)
+                    this.formatString = blob.format;
 
                 let tempViewport: any = options.viewport;
                 let tmpScale = 0;
@@ -143,7 +280,6 @@ module powerbi.extensibility.visual {
                             }
                         });
                     }
-                    
                     this.chart.updateSettings({style:{nodeClasses: classes}});
                     
                     this.chart.replaceData(root);
@@ -173,8 +309,15 @@ module powerbi.extensibility.visual {
             window.setTimeout(() => {
                 if (selectedSlices.length) {
                     let sel: visuals.ISelectionId[] = [];
-                    for (let i = 0; i < selectedSlices.length; i++) {
-                        sel = sel.concat(selectedSlices[i].extra.selectionId);
+                    let l = selectedSlices.length;
+                    for (let i = 0; i < l; i++) {
+                        if (typeof(selectedSlices[i].extra) == "undefined")
+                            continue;
+                        if (typeof(selectedSlices[i].extra.selectionIds) == "undefined")
+                            continue;
+                        let sid = selectedSlices[i].extra.selectionIds;
+                        let slen = sid.length;
+                        sel = sel.concat(sid);
                     }
 
                     let cursel = selman.getSelectionIds();
