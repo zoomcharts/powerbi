@@ -24,7 +24,7 @@ module powerbi.extensibility.visual {
             if(bomb.checkIfExpired()) {
                 let title = "This was a beta version of the Net Chart and time is up!";
                 let message = "We appreciate your feedback on your experience and what you'd like us to improve. The feedback form is available on your ZoomCharts account page.";
-                bomb.displayExpiredMessage(target, message, title, false);
+                bomb.displayBetaExpiredMessage(target, message, title, false);
                 return root;
             }
 

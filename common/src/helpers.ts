@@ -229,7 +229,6 @@ module powerbi.extensibility.visual {
             //this.set(1512079199000); //1510662480000
         }
         public set(when: number) { //milliseconds!
-            //Use something like : Date.now();
             this.is_set = true;
             this.when = when;
         }
@@ -265,7 +264,7 @@ module powerbi.extensibility.visual {
             });
             target.appendChild(logo);
         }
-        public displayExpiredMessage(target: HTMLElement, message: string, title: string, isError: boolean) {
+        public displayBetaExpiredMessage(target: HTMLElement, message: string, title: string, isError: boolean) {
             if (!target)
                 return;
     
@@ -296,7 +295,7 @@ module powerbi.extensibility.visual {
             }
     
             let title = "BUG?";
-            let message = "Report on sight to us. Please copy and paste the following address in to your browser: <br><br><b>'https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/submit-a-bug/'</b>.";
+            let message = "Report on sight to us. Please copy and paste the following address in to your browser: <br><br><b>https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/submit-a-bug/</b>";
             container.style.display = "";
 
             let html = "";
