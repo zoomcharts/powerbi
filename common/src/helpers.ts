@@ -219,6 +219,17 @@ module powerbi.extensibility.visual {
     }
 
     export class betalimitator {
+        /*
+            Modes supported:
+            
+            BETA mode - possible to display BETA logo with toggle options where 
+            overlay about where/how to post feedback. BETA logo is visible always.
+            After time runs out, unable to interact with chart, overlay saying "time is out" appears.
+
+            TRIAL mode - no logos appear by default. After time runs out, 
+            an overlay about "This was a trial." appears.
+
+        */
         public is_set: boolean = false;
         private when: number = null;
         public target: HTMLElement = null;

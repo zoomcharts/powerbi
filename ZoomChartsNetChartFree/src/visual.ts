@@ -48,7 +48,6 @@ module powerbi.extensibility.visual {
             });
 
             this.betalimitator = new betalimitator(this.target);
-            //betalimitator.set(1510662480000);
             this.betalimitator.showBetaLogo();
             if(this.betalimitator.checkIfExpired()) {
                 this.showExpired();

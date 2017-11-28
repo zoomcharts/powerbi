@@ -45,10 +45,13 @@ module powerbi.extensibility.visual {
             });
 
             this.betalimitator = new betalimitator(this.target);
-            //betalimitator.set(1510662480000);
             if(this.betalimitator.checkIfExpired()) {
-                displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
+                this.showExpired();
             }
+        }
+
+        public showExpired(){
+            displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
         }
 
         protected createChart(zc: typeof ZoomCharts) {
@@ -147,7 +150,7 @@ module powerbi.extensibility.visual {
         @logExceptions()
         public update(options: VisualUpdateOptions) {
             if (options.type & VisualUpdateType.Data) {
-                let root = Data.convert(this.host, this.target, options);
+                let root = Data.convert(this, this.host, this.target, options);
                 let catStr = this.stringifyCategories(options.dataViews[0]);
 
                 if (root.subvalues.length) {

@@ -12,7 +12,7 @@ namespace ZoomCharts.Configuration {
 module powerbi.extensibility.visual {
     export class Data {
         private static palettes: ZoomCharts.Dictionary<ColorPaletteWrapper> = {};
-        public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
+        public static convert(visual:Visual, host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             if (isDebugVisual) {
                 console.log("Chart data update called", options);
             }
@@ -42,6 +42,11 @@ module powerbi.extensibility.visual {
 
             if (!dataView.categorical.values) {
                 displayMessage(target, "Please select at least one value field for the visual.", "Incorrect data", false);
+                return root;
+            }         
+            
+            if(visual.betalimitator.checkIfExpired()){
+                visual.showExpired();
                 return root;
             }
 
