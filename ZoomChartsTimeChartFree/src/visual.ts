@@ -24,7 +24,7 @@ module powerbi.extensibility.visual {
         protected selectionManager: ISelectionManager;
         protected setLegendState = true;
         protected series: ZoomCharts.Configuration.FacetChartSettingsSeries[] = [];
-        public customProperties: any = [];
+        protected customProperties: any = [];
         public betalimitator: any = null;
         public customizationInformer: any = null;
         public viewport: any = null;
@@ -69,7 +69,6 @@ module powerbi.extensibility.visual {
                 }
             });
             this.customizationInformer.showGetFullVersionLogo();
-  
         }
 
         public showExpired(){

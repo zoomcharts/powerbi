@@ -21,7 +21,7 @@ module powerbi.extensibility.visual {
         protected lastChartUpdatePieId = "";
         protected selectionManager: ISelectionManager;
         protected lastCategorySet: string = null;
-        public customProperties: any = [];
+        protected customProperties: any = [];
         public betalimitator: any = null;
         public customizationInformer: any = null;
         public viewport: any = null;
