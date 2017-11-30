@@ -52,5 +52,14 @@
         }
     ],
     "objects": {
+        "customization": {
+            "displayName": "Customization",
+            "properties": {
+                "show": {
+                    "displayName": "Enable",
+                    "type": { "bool": true }
+                }
+            }
+        }
     }
 }
