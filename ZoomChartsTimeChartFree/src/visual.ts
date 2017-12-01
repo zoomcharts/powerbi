@@ -299,8 +299,11 @@ module powerbi.extensibility.visual {
             }, delay);
         }
 
+        public current_scale:any=1;
+        public prev_pixel_ratio:any;
         @logExceptions()
         public update(options: VisualUpdateOptions) {
+            updateSize(this, options.viewport);
             if (options.type & VisualUpdateType.Data) {
                 this.createSeries(options);
                 let root = Data.convert(this, this.host, this.target, options);

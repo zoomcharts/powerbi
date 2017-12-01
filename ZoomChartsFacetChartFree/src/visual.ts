@@ -128,6 +128,7 @@ module powerbi.extensibility.visual {
                     maxUnitWidth: 200
                 },
                 toolbar: {
+                    back:false,
                     export: false
                 },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
@@ -243,8 +244,11 @@ module powerbi.extensibility.visual {
             return res;
         }
 
+        public current_scale:any=1;
+        public prev_pixel_ratio:any;
         @logExceptions()
         public update(options: VisualUpdateOptions) {
+            updateSize(this, options.viewport);
             if (options.type & VisualUpdateType.Data) {
                 this.createSeries(options);
                 let root = Data.convert(this, this.host, this.target, options);
