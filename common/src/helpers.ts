@@ -46,6 +46,57 @@ module powerbi.extensibility.visual {
         return scale;
     }
 
+    export function updateSize(visual, viewport){
+        let scale;
+        if (typeof(viewport.scale) != "undefined"){
+            scale = viewport.scale;
+        } else {
+            scale = this.current_scale;
+        }
+
+        if (!visual.prev_pixel_ratio){
+            visual.prev_pixel_ratio = window.devicePixelRatio;
+        }
+        if (window.devicePixelRatio != visual.prev_pixel_ratio){
+            visual.prev_pixel_ratio = window.devicePixelRatio;
+            visual.current_scale = 1;
+        }
+        visual.prev_pixel_ratio = 2;
+        if (scale){
+            scale = visual.current_scale = scale;
+        } else {
+            scale = visual.current_scale;
+        }
+        if (window.devicePixelRatio == 2){
+            if (scale > 1){
+                scale = scale;// * window.devicePixelRatio;
+                let height = viewport.height;
+                let width = viewport.width;
+                let nh:any;
+                let nw:any;
+                visual.target.style.height =(nh=Math.round(height * scale )) +"px";
+                visual.target.style.width = (nw=Math.round(width * scale)) +"px";
+                visual.target.style.marginTop = -Math.round((height - height * 1/scale)/2)*scale+"px";
+                visual.target.style.marginLeft= -Math.round((width - width *1/scale)/2)*scale +"px"; 
+                let t:any;
+                visual.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
+            }
+        } else {
+            if (scale > 1){
+                let height = viewport.height;
+                let width = viewport.width;
+                let nh:any;
+                let nw:any;
+                visual.target.style.height =(nh=Math.round(height * scale )) +"px";
+                visual.target.style.width = (nw=Math.round(width * scale)) +"px";
+                visual.target.style.marginTop = -Math.round((height - height * 1/scale)/2*scale)+"px";
+                visual.target.style.marginLeft= -Math.round((width - width *1/scale)/2*scale)+"px"; 
+                let t:any;
+                visual.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
+            }
+        }
+    } 
+
     export function createDataSourceIdentity(dataView: DataView): string {
         if (!dataView || !dataView.metadata || !dataView.metadata.columns.length)
             return "";
