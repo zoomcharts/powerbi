@@ -1,6 +1,6 @@
 module powerbi.extensibility.visual {
     export class Data {
-        public static convert(host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
+        public static convert(visual: Visual, host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             if (isDebugVisual) {
                 console.log("Chart data update called", options);
             }

@@ -24,7 +24,10 @@ module powerbi.extensibility.visual {
         protected selectionManager: ISelectionManager;
         protected setLegendState = true;
         protected series: ZoomCharts.Configuration.FacetChartSettingsSeries[] = [];
+        public customProperties: any = [];
         public betalimitator: any = null;
+        public customizationInformer: any = null;
+        public viewport: any = null;
 
         constructor(options: VisualConstructorOptions) {
             this.target = options.element;
@@ -51,10 +54,26 @@ module powerbi.extensibility.visual {
             });
 
             this.betalimitator = new betalimitator(this.target);
-            //betalimitator.set(1510662480000);
             if(this.betalimitator.checkIfExpired()) {
                 displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
             }
+  
+            this.customizationInformer = new customiztionInformer(this.target, this, {
+                url: "https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/custom-visuals/drill-down-column-line-area-chart-for-time-based-data/",
+                images: {
+                    "600x400": "https://cdn.zoomcharts-cloud.com/assets/power-bi/TC-600x400.png",
+                    "500x500": "https://cdn.zoomcharts-cloud.com/assets/power-bi/TC-500x500.png",
+                    "400x600": "https://cdn.zoomcharts-cloud.com/assets/power-bi/TC-400x600.png",
+                    "300x200": "https://cdn.zoomcharts-cloud.com/assets/power-bi/TC-300x200.png",
+                    "200x300": "https://cdn.zoomcharts-cloud.com/assets/power-bi/TC-200x300.png"
+                }
+            });
+            this.customizationInformer.showGetFullVersionLogo();
+  
+        }
+
+        public showExpired(){
+            displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
         }
 
         protected createChart(zc: typeof ZoomCharts) {
@@ -285,44 +304,25 @@ module powerbi.extensibility.visual {
         public update(options: VisualUpdateOptions) {
             if (options.type & VisualUpdateType.Data) {
                 this.createSeries(options);
-                let root = Data.convert(this.host, this.target, options);
+                let root = Data.convert(this, this.host, this.target, options);
                 let lastDataObj = this.dataObj;
                 let lastDataSource = this.dataSourceIdentity;
                 this.dataObj = root.data;
                 this.dataIds = root.ids;
                 this.dataSourceIdentity = createDataSourceIdentity(options.dataViews[0]);
 
-                //scale:
-                let tempViewport: any = options.viewport;
-                let tmpScale = 0;
-                let scale: any = true;
-                if (tempViewport.scale){
-                    tmpScale = tempViewport.scale;
-                    if(tmpScale == 1) {
-                        scale = true;
-                    } else if(tmpScale > 0 && tmpScale < 1) {
-                        scale = tmpScale * 2;
-                    } else if(tmpScale > 1) {
-                        if(window.devicePixelRatio) {
-                            scale = tmpScale * window.devicePixelRatio;
-                        } else if(window.window.devicePixelRatio) {
-                            scale = tmpScale * window.window.devicePixelRatio;
-                        } else {
-                            scale = tmpScale * 1;
-                        }
-                    }
-                }
+                this.viewport = options.viewport;
+
+                this.customProperties = options.dataViews[0].metadata.objects;
 
                 if (this.chart) {
+                    updateScale(options, this.chart);
                     let sel = this.chart.selection();
                     this.chart.replaceSettings({
                         data: [{
                             units: [root.data.unit],
                             preloaded: root.data
-                        }],
-                        advanced: {
-                            highDPI: scale
-                        }
+                        }]
                     });
                     this.chart.replaceData(root.data);
 
@@ -356,6 +356,45 @@ module powerbi.extensibility.visual {
                 this.chart.remove();
                 this.chart = null;
             }
+        }
+
+        @logExceptions()
+        public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
+            const objectName = options.objectName;
+            let objectEnumeration: VisualObjectInstance[] = [];
+
+            switch (objectName) {
+                case 'customization':
+                    let val = getValue(this.customProperties, "customization", "show", null);
+
+                    let isInfoVisible = this.customizationInformer.isDialogVisible();
+                    if(val == true && !isInfoVisible && !this.customizationInformer.initialCheck) {
+                        this.customizationInformer.hideDialog();
+                        val = false;
+                    } else if(val == true) {
+                        this.customizationInformer.displayDialog();
+                    } else {
+                        this.customizationInformer.hideDialog();
+                    }
+
+                    objectEnumeration.push({
+                        objectName: objectName,
+                        properties: {
+                            show: val
+                        },
+                        selector: null
+                    });
+
+            }
+            return objectEnumeration;
+            /*
+            return [{
+                objectName: objectName,
+                properties: <any>vals,
+                validValues: validValues,
+                selector: null
+            }];
+            */
         }
     }
 }

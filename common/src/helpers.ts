@@ -7,7 +7,7 @@ module powerbi.extensibility.visual {
         console.warn("Cannot read window.devicePixelRatio. Applying workaround. See https://github.com/Microsoft/PowerBI-visuals-tools/issues/81", e);
 
         let value = 1;
-        if(window.window.devicePixelRatio) {
+        if (window.window.devicePixelRatio) {
             value = window.window.devicePixelRatio;
         }
         Object.defineProperty(window, "devicePixelRatio", {
@@ -15,28 +15,28 @@ module powerbi.extensibility.visual {
         });
     }
 
-    export function updateScale(options: VisualUpdateOptions, chart){
+    export function updateScale(options: VisualUpdateOptions, chart) {
         //scale:
         let tempViewport: any = options.viewport;
         let tmpScale = 0;
         let scale: any = null;
-        if (tempViewport.scale){
+        if (tempViewport.scale) {
             tmpScale = tempViewport.scale;
-            if(tmpScale == 1) {
+            if (tmpScale == 1) {
                 scale = true;
-            } else if(tmpScale > 0 && tmpScale < 1) {
+            } else if (tmpScale > 0 && tmpScale < 1) {
                 scale = tmpScale * 2;
-            } else if(tmpScale > 1) {
-                if(window.devicePixelRatio) {
+            } else if (tmpScale > 1) {
+                if (window.devicePixelRatio) {
                     scale = tmpScale * window.devicePixelRatio;
-                } else if(window.window.devicePixelRatio) {
+                } else if (window.window.devicePixelRatio) {
                     scale = tmpScale * window.window.devicePixelRatio;
                 } else {
                     scale = tmpScale * 1;
                 }
             }
         }
-        if (scale){
+        if (scale) {
             chart.replaceSettings({
                 advanced: {
                     highDPI: scale
@@ -57,7 +57,7 @@ module powerbi.extensibility.visual {
             if (c.roles) {
                 for (let k of Object.keys(c.roles)) {
                     if (c.roles[k])
-                     res += "/" + k;
+                        res += "/" + k;
                 }
             }
         }
@@ -65,17 +65,17 @@ module powerbi.extensibility.visual {
         return res;
     }
 
-    export function secureString(i:string){
-        if(!i) {
+    export function secureString(i: string) {
+        if (!i) {
             return i;
         }
-        let s:string = i.replace(/</g, "&lt;").replace(/>/, "&gt;");
+        let s: string = i.replace(/</g, "&lt;").replace(/>/, "&gt;");
         return s;
     }
 
     export function createColorPalette(host: IVisualHost) {
         let cp = host.colorPalette;
-            
+
         if ((<any>extensibility).createColorPalette && (<any>cp).colors)
             cp = (<any>extensibility).createColorPalette((<any>cp).colors);
 
@@ -142,7 +142,7 @@ module powerbi.extensibility.visual {
         }
         return true;
     }
-    
+
     function getColorDirect(category: DataViewCategoryColumn, rowIndex: number, objectName: string): IColorInfo {
         if (!category.objects) return null;
         let a = category.objects[rowIndex];
@@ -156,7 +156,7 @@ module powerbi.extensibility.visual {
         return { value: d.color };
     }
 
-    const cachedCategoryColors: ZoomCharts.Dictionary<{color: IColorInfo, identity: string}> = {};
+    const cachedCategoryColors: ZoomCharts.Dictionary<{ color: IColorInfo, identity: string }> = {};
 
     export function getColor(category: DataViewCategoryColumn, rowIndex: number, objectName: string): IColorInfo {
         let color = getColorDirect(category, rowIndex, objectName);
@@ -219,10 +219,22 @@ module powerbi.extensibility.visual {
     }
 
     export class betalimitator {
+        /*
+            Modes supported:
+            
+            BETA mode - possible to display BETA logo with toggle options where 
+            overlay about where/how to post feedback. BETA logo is visible always.
+            After time runs out, unable to interact with chart, overlay saying "time is out" appears.
+
+            TRIAL mode - no logos appear by default. After time runs out, 
+            an overlay about "This was a trial." appears.
+
+        */
         public is_set: boolean = false;
         private when: number = null;
         public target: HTMLElement = null;
-        protected logo:any = null;
+        protected logo: any = null;
+        private boundingBox = null;
         constructor(target, options?: any) {
             this.target = target;
             //http://currentmillis.com/
@@ -239,8 +251,8 @@ module powerbi.extensibility.visual {
             return dat;
         }
         public checkIfExpired() {
-            if(this.is_set) {
-                if(this.when <= Date.now()) {
+            if (this.is_set) {
+                if (this.when <= Date.now()) {
                     this.expired();
                     return true;
                 }
@@ -248,7 +260,7 @@ module powerbi.extensibility.visual {
             return false;
         }
         public expired() {
-          //  displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
+            //  displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
         }
         public showBetaLogo() {
             let self = this;
@@ -259,9 +271,9 @@ module powerbi.extensibility.visual {
             logo.style.transform = "scale(0.5,0.5)";
             logo.style.right = "-84px";
             logo.style.bottom = "-19px";
-            logo.addEventListener("click", function() {
+            logo.addEventListener("click", function () {
                 let container = <HTMLElement>target.getElementsByClassName("message-overlay-bugreport")[0];
-                if(container && container.style.display != "none") {
+                if (container && container.style.display != "none") {
                     self.hideBugReportDialog();
                 } else {
                     self.displayBugReportDialog();
@@ -269,18 +281,17 @@ module powerbi.extensibility.visual {
             });
             target.appendChild(logo);
         }
-        private boundingBox = null;
         public displayBetaExpiredMessage(target: HTMLElement, message: string, title: string, isError: boolean) {
             if (!target)
                 return;
-    
+
             let container = <HTMLElement>target.getElementsByClassName("message-overlay-beta")[0];
             if (!container) {
                 container = document.createElement("div");
                 container.className = "message-overlay-beta";
                 target.appendChild(container);
             }
-    
+
             container.style.display = "";
 
             let html = "";
@@ -293,13 +304,13 @@ module powerbi.extensibility.visual {
             let target = this.target;
             if (!target)
                 return;
-    
+
             let container = <HTMLElement>target.getElementsByClassName("message-overlay-bugreport")[0];
             if (!container) {
                 container = document.createElement("div");
                 container.className = "message-overlay-bugreport";
                 target.appendChild(container);
-    
+
                 let title = "BUG?";
                 let message = "Report on sight to us. Please copy and paste the following address in to your browser:";
                 message += "<br><br><b>https://zoomcharts.com/pbibeta/</b>";
@@ -316,11 +327,225 @@ module powerbi.extensibility.visual {
         public hideBugReportDialog() {
             let target = this.target;
             let container = <HTMLElement>target.getElementsByClassName("message-overlay-bugreport")[0];
-            if(!container) {
+            if (!container) {
                 return;
             }
             container.style.display = "none";
         }
     }
-    
+
+    export function getValue(objects: DataViewObjects, objectName: string, propertyName: string, defaultValue: null) {
+        if (objects) {
+            let object = objects[objectName];
+            if (object) {
+                let property = object[propertyName];
+                if (property !== undefined) {
+                    return property;
+                }
+            }
+        }
+        return defaultValue;
+    }
+
+    export class customiztionInformer {
+        public target: HTMLElement = null;
+        public initialCheck: boolean = false;
+        public containerClass: string = "message-overlay-get-paid";
+        public turnOffNextTime: boolean = false;
+        public visual: Visual = null;
+        public host: IVisualHost;
+        public img_element: HTMLElement = null;
+        public full_version_logo: HTMLElement = null;
+        public options: {
+            url: "https://zoomcharts.com",
+            images: {
+                "600x400": "",
+                "500x500": "",
+                "400x600": "",
+                "300x200": "",
+                "200x300": ""
+            }
+        };
+        constructor(target, visual, options?: any) {
+            this.target = target;
+            this.visual = visual;
+            this.host = visual.host;
+            this.options = options;
+        }
+        public displayDialog() {
+            this.initialCheckDone();
+            let target = this.target;
+            if (!target) {
+                return;
+            }
+
+            let container = <HTMLElement>target.getElementsByClassName(this.containerClass)[0];
+            if (!container) {
+                container = document.createElement("div");
+                container.className = this.containerClass;
+                target.appendChild(container);
+
+                container.style.display = "";
+
+                let span = document.createElement("span");
+                span.setAttribute("class", "helper");
+                container.appendChild(span);
+
+                //add image here:
+                this.img_element = document.createElement("img");
+                this.img_element.setAttribute("class", "action-btn");
+                this.img_element.setAttribute("src", this.getDimensionImage());
+
+                container.appendChild(this.img_element);
+
+                let host = this.host;
+                let url = this.options.url;
+                let fn1 = function () {
+                    openURL(host, url);
+                }
+                let el = target.getElementsByClassName("action-btn")[0];
+                el.addEventListener("click", fn1);
+            } else {
+                this.updateImage();
+            }
+
+            container.style.display = "";
+        }
+        public hideDialog() {
+            this.initialCheckDone();
+            let container = <HTMLElement>this.target.getElementsByClassName(this.containerClass)[0];
+            if (!container) {
+                return;
+            }
+
+            container.style.display = "none";
+        }
+        public hideDialogAndTurnOff() {
+            this.setToTurnOff();
+            this.hideDialog();
+        }
+        public isDialogVisible() {
+            let container = <HTMLElement>this.target.getElementsByClassName(this.containerClass)[0];
+            if (!container) {
+                return false;
+            } else {
+                if (container.style.display == "none") {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+        public setToTurnOff() {
+            this.turnOffNextTime = true;
+        }
+        public initialCheckDone() {
+            if (!this.initialCheck) {
+                this.initialCheck = true;
+            }
+        }
+        public updateImage() {
+            let img = this.getDimensionImage();
+            this.img_element.setAttribute("src", img);
+        }
+        public getDimensionImage(): string {
+            let viewport = this.visual.viewport;
+
+            let height = viewport.height;
+            let width = viewport.width;
+            let aspectRatio = width / height;
+            let best = "300x200";
+            if (aspectRatio >= 1) {
+                if (width >= 600) {
+                    if (height >= 600) {
+                        best = "600x400";
+                    } else if (height >= 500) {
+                        best = "500x500";
+                    } else if (height >= 400) {
+                        best = "600x400";
+                    } else if (height >= 300) {
+                        best = "200x300";
+                    } else {
+                        best = "300x200";
+                    }
+                } else if (width >= 500) {
+                    if (height >= 500) {
+                        best = "500x500";
+                    } else if (height >= 400) {
+                        best = "300x200";
+                    } else if (height >= 300) {
+                        best = "300x200";
+                    } else {
+                        best = "300x200";
+                    }
+                } else if (width >= 400) {
+                    if (height >= 400) {
+                        best = "200x300";
+                    } else if (height >= 300) {
+                        best = "200x300";
+                    } else {
+                        best = "300x200";
+                    }
+                } else if (width >= 300) {
+                    if (height >= 300) {
+                        best = "200x300";
+                    } else {
+                        best = "300x200";
+                    }
+                } else {
+                    best = "200x300";
+                }
+            } else {
+                if (width >= 600) {
+                    if (height >= 600) {
+                        best = "400x600";
+                    }
+                } else if (width >= 500) {
+                    if (height >= 600) {
+                        best = "400x600";
+                    } else if (height >= 500) {
+                        best = "500x500";
+                    }
+                } else if (width >= 400) {
+                    if (height >= 600) {
+                        best = "400x600";
+                    } else if (height >= 500) {
+                        best = "200x300";
+                    } else if (height >= 400) {
+                        best = "200x300";
+                    }
+                } else if (width >= 300) {
+                    best = "200x300";
+                } else {
+                    best = "200x300";
+                }
+            }
+
+            let img = this.options.images[best];
+            return img;
+        }
+        public showGetFullVersionLogo() {
+            let self = this;
+            let target = this.target;
+            this.full_version_logo = document.createElement("div");
+            let logo = this.full_version_logo;
+            logo.className = "get-paid-logo";
+            logo.style.transform = "scale(0.5,0.5)";
+            logo.style.right = "-118px";
+            logo.style.bottom = "-19px";
+            target.appendChild(logo);
+
+            let host = this.host;
+            let url = this.options.url;
+            let fn1 = function () {
+                openURL(host, url);
+            }
+            logo.addEventListener("click", fn1);
+        }
+        
+    }
+
+    export function openURL(host: IVisualHost, url: string) {
+        host.launchUrl(url);
+    }
 }

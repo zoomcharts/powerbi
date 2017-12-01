@@ -23,6 +23,7 @@ module powerbi.extensibility.visual {
         protected lastCategorySet: string = null;
         protected zoom: number = 1;
         public betalimitator: any = null;
+        public viewport: any = null;
 
         constructor(options: VisualConstructorOptions) {
 
@@ -48,7 +49,6 @@ module powerbi.extensibility.visual {
             });
 
             this.betalimitator = new betalimitator(this.target);
-            //betalimitator.set(1510662480000);
             this.betalimitator.showBetaLogo();
             if(this.betalimitator.checkIfExpired()) {
                 this.showExpired();
@@ -333,7 +333,6 @@ module powerbi.extensibility.visual {
         @logExceptions()
         public update(options: VisualUpdateOptions) {
             this.updateSize(options.viewport);
-            //console.log(options);
             if (options.type & VisualUpdateType.Data) {
                 
                 let blob = Data.convert(this, this.host, this.target, options);
@@ -344,6 +343,7 @@ module powerbi.extensibility.visual {
 
 
                 if (this.chart) {
+                    this.viewport = options.viewport;
                     updateScale(options, this.chart);
                     this.chart.updateSize();
 
