@@ -270,7 +270,14 @@ module powerbi.extensibility.visual {
         public prev_pixel_ratio:any;
         public updateSize(viewport){
             //console.log("it's the new version", viewport);
-            let scale = viewport.scale;
+            let scale;
+            if (typeof(viewport.scale) != "undefined"){
+                scale = viewport.scale;
+            } else {
+                scale = this.current_scale;
+            }
+
+            //console.log("Current scale", scale);
             if (!this.prev_pixel_ratio){
                 this.prev_pixel_ratio = window.devicePixelRatio;
             }
@@ -283,22 +290,24 @@ module powerbi.extensibility.visual {
 
             if (window.devicePixelRatio == 2){
                 if (scale){
-                    scale = this.current_scale = scale * this.prev_pixel_ratio;
+                    scale = this.current_scale = scale;
                 } else {
                     scale = this.current_scale;
                 }
-                scale = scale;// * window.devicePixelRatio;
-                let height = viewport.height;
-                let width = viewport.width;
-                let nh:any;
-                let nw:any;
-                this.target.style.height =(nh=Math.round(height * scale )) +"px";
-                this.target.style.width = (nw=Math.round(width * scale)) +"px";
-                this.target.style.marginTop = -Math.round((height - height * 1/scale)/2)*scale+"px";
-                this.target.style.marginLeft= -Math.round((width - width *1/scale)/2)*scale +"px"; 
-                let t:any;
-                this.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
-                //console.log(window.devicePixelRatio, width, height, scale, "New height",nh, "New widht", nw, "New transform", t);
+                if (scale > 1){
+                    scale = scale;// * window.devicePixelRatio;
+                    let height = viewport.height;
+                    let width = viewport.width;
+                    let nh:any;
+                    let nw:any;
+                    this.target.style.height =(nh=Math.round(height * scale )) +"px";
+                    this.target.style.width = (nw=Math.round(width * scale)) +"px";
+                    this.target.style.marginTop = -Math.round((height - height * 1/scale)/2)*scale+"px";
+                    this.target.style.marginLeft= -Math.round((width - width *1/scale)/2)*scale +"px"; 
+                    let t:any;
+                    this.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
+                    //console.log("retina", window.devicePixelRatio, width, height, scale, "New height",nh, "New widht", nw, "New transform", t);
+                }
             } else {
                 if (scale){
                     scale = this.current_scale = scale;
@@ -306,23 +315,25 @@ module powerbi.extensibility.visual {
                     scale = this.current_scale;
                 }
                 scale = scale;// * window.devicePixelRatio;
-                let height = viewport.height;
-                let width = viewport.width;
-                let nh:any;
-                let nw:any;
-                this.target.style.height =(nh=Math.round(height * scale )) +"px";
-                this.target.style.width = (nw=Math.round(width * scale)) +"px";
-                this.target.style.marginTop = -Math.round((height - height * 1/scale)/2)*scale+"px";
-                this.target.style.marginLeft= -Math.round((width - width *1/scale)/2)*scale +"px"; 
-                let t:any;
-                this.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
-                //console.log("non retina", window.devicePixelRatio, width, height, scale, "New height",nh, "New widht", nw, "New transform", t);
+                if (scale > 1){
+                    let height = viewport.height;
+                    let width = viewport.width;
+                    let nh:any;
+                    let nw:any;
+                    this.target.style.height =(nh=Math.round(height * scale )) +"px";
+                    this.target.style.width = (nw=Math.round(width * scale)) +"px";
+                    this.target.style.marginTop = -Math.round((height - height * 1/scale)/2*scale)+"px";
+                    this.target.style.marginLeft= -Math.round((width - width *1/scale)/2*scale)+"px"; 
+                    let t:any;
+                    this.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
+                    //console.log("non retina", window.devicePixelRatio, width, height, scale, "New height",nh, "New widht", nw, "New transform", t);
+                }
             }
         } 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
             this.updateSize(options.viewport);
-            console.log(options);
+            //console.log(options);
             if (options.type & VisualUpdateType.Data) {
                 
                 let blob = Data.convert(this, this.host, this.target, options);
