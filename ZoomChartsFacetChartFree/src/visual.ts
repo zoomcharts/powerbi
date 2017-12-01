@@ -128,6 +128,7 @@ module powerbi.extensibility.visual {
                     maxUnitWidth: 200
                 },
                 toolbar: {
+                    back:false,
                     export: false
                 },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
