@@ -48,7 +48,7 @@ module powerbi.extensibility.visual {
                 displayMessage(this.target, "Cannot load ZoomCharts library. This visual requires internet connectivity.", "Error", true);
             });
 
-            this.betalimitator = new betalimitator(this.target);
+            this.betalimitator = new betalimitator(this.target, {host: this.host});
             this.betalimitator.showBetaLogo();
             if(this.betalimitator.checkIfExpired()) {
                 this.showExpired();

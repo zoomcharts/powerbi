@@ -235,11 +235,14 @@ module powerbi.extensibility.visual {
         public target: HTMLElement = null;
         protected logo: any = null;
         private boundingBox = null;
+        public version = "BETA v.0.2";
+        public host: IVisualHost;
         constructor(target, options?: any) {
             this.target = target;
+            this.host = options.host;
             //http://currentmillis.com/
-            //You can set betalimitator globally for both PieData(PC/FC) and Data(TC) here:
-            //this.set(1512165599000); //1510662480000
+            //You can set betalimitator globally for all PieData(PC/FC) and Data(TC) here:
+            this.set(1513115999000); //1510662480000
         }
         public set(when: number) { //milliseconds!
             this.is_set = true;
@@ -297,8 +300,17 @@ module powerbi.extensibility.visual {
             let html = "";
             if (title) html += "<h3>" + title + "</h3>";
             if (message) html += "<p>" + message + "</p>";
-            html += "<div class=\"beta-version\">BETA v0.1</div>";
+            html += "<br><u class=\"action-btn-to-dashboard\">Go To ZoomCharts Dashboard</u><br>";
+            html += "<br><div class=\"beta-version\">" + this.version + "</div>";
             container.innerHTML = html;
+
+            let host = this.host;
+            let url = "https://zoomcharts.com/en/account/dashboard/#power-bi-beta";
+            let fn3 = function () {
+                openURL(host, url);
+            }
+            let el = target.getElementsByClassName("action-btn-to-dashboard")[0];
+            el.addEventListener("click", fn3);
         }
         public displayBugReportDialog() {
             let target = this.target;
@@ -307,20 +319,28 @@ module powerbi.extensibility.visual {
 
             let container = <HTMLElement>target.getElementsByClassName("message-overlay-bugreport")[0];
             if (!container) {
+                let url = "https://zoomcharts.com/pbibeta/";
                 container = document.createElement("div");
                 container.className = "message-overlay-bugreport";
                 target.appendChild(container);
 
                 let title = "BUG?";
-                let message = "Report on sight to us. Please copy and paste the following address in to your browser:";
-                message += "<br><br><b>https://zoomcharts.com/pbibeta/</b>";
+                let message = "Report on sight to us. Please use the link bellow or copy and paste the following address in to your browser:";
+                message += "<br><br><b class=\"action-btn-link\">" + url + "</b>";
                 container.style.display = "";
 
                 let html = "";
                 if (title) html += "<h3>" + title + "</h3>";
                 if (message) html += "<p>" + message + "</p>";
-                html += "<div class=\"beta-version\">BETA v0.1</div>";
+                html += "<div class=\"beta-version\">" + this.version + "</div>";
                 container.innerHTML = html;
+
+                let host = this.host;
+                let fn2 = function () {
+                    openURL(host, url);
+                }
+                let el = target.getElementsByClassName("action-btn-link")[0];
+                el.addEventListener("click", fn2);
             }
             container.style.display = "";
         }
