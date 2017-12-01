@@ -21,7 +21,7 @@ module powerbi.extensibility.visual {
         protected setLegendState = true;
         protected series: ZoomCharts.Configuration.FacetChartSettingsSeries[] = [];
         protected lastCategorySet: string = null;
-        public customProperties: any = [];
+        protected customProperties: any = [];
         public betalimitator: any = null;
         public customizationInformer: any = null;
         public viewport: any = null;

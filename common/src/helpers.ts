@@ -356,6 +356,7 @@ module powerbi.extensibility.visual {
         public host: IVisualHost;
         public img_element: HTMLElement = null;
         public full_version_logo: HTMLElement = null;
+        public enabled: boolean = true;
         public options: {
             url: "https://zoomcharts.com",
             images: {
@@ -372,7 +373,21 @@ module powerbi.extensibility.visual {
             this.host = visual.host;
             this.options = options;
         }
+        public disable() {
+            this.enabled = false;
+            let container = <HTMLElement>this.target.getElementsByClassName("get-paid-logo")[0];
+            if(container) {
+                container.parentNode.removeChild(container);
+            }
+            let container2 = <HTMLElement>this.target.getElementsByClassName(this.containerClass)[0];
+            if(container2) {
+                container2.parentNode.removeChild(container2);
+            }
+        }
         public displayDialog() {
+            if(!this.enabled) {
+                return;
+            }
             this.initialCheckDone();
             let target = this.target;
             if (!target) {
@@ -525,7 +540,9 @@ module powerbi.extensibility.visual {
             return img;
         }
         public showGetFullVersionLogo() {
-            let self = this;
+            if(!this.enabled) {
+                return;
+            }
             let target = this.target;
             this.full_version_logo = document.createElement("div");
             let logo = this.full_version_logo;
