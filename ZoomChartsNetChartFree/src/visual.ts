@@ -13,7 +13,7 @@ module powerbi.extensibility.visual {
         protected target: HTMLElement;
         protected chart: ZoomCharts.NetChart;
         protected ZC: typeof ZoomCharts;
-        protected host: IVisualHost;
+        public host: IVisualHost;
         protected pendingData: ZoomCharts.Configuration.NetChartDataObject = {nodes:[], links: []};
         protected pendingClasses: Array<any>;
         protected updateTimer: number;
@@ -48,7 +48,7 @@ module powerbi.extensibility.visual {
                 displayMessage(this.target, "Cannot load ZoomCharts library. This visual requires internet connectivity.", "Error", true);
             });
 
-            this.betalimitator = new betalimitator(this.target, {host: this.host});
+            this.betalimitator = new betalimitator(this.target, this);
             this.betalimitator.showBetaLogo();
             if(this.betalimitator.checkIfExpired()) {
                 this.showExpired();

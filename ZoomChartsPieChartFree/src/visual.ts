@@ -13,7 +13,7 @@ module powerbi.extensibility.visual {
         protected target: HTMLElement;
         protected chart: ZoomCharts.PieChart;
         protected ZC: typeof ZoomCharts;
-        protected host: IVisualHost;
+        public host: IVisualHost;
         protected pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
         protected updateTimer: number;
         protected formatString: string = "#,0.00";
@@ -47,7 +47,7 @@ module powerbi.extensibility.visual {
                 displayMessage(this.target, "Cannot load ZoomCharts library. This visual requires internet connectivity.", "Error", true);
             });
 
-            this.betalimitator = new betalimitator(this.target);
+            this.betalimitator = new betalimitator(this.target, this);
             if(this.betalimitator.checkIfExpired()) {
                 this.showExpired();
             }

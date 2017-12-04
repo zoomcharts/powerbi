@@ -13,7 +13,7 @@ module powerbi.extensibility.visual {
         protected target: HTMLElement;
         protected chart: ZoomCharts.TimeChart;
         protected ZC: typeof ZoomCharts;
-        protected host: IVisualHost;
+        public host: IVisualHost;
         protected dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 0, unit: "d", values: [] };
         protected dataIds: ISelectionId[] = [];
         protected dataSourceIdentity: string = "";
@@ -53,7 +53,7 @@ module powerbi.extensibility.visual {
                 displayMessage(this.target, "Cannot load ZoomCharts library. This visual requires internet connectivity.", "Error", true);
             });
 
-            this.betalimitator = new betalimitator(this.target);
+            this.betalimitator = new betalimitator(this.target, this);
             if(this.betalimitator.checkIfExpired()) {
                 displayMessage(this.target, "Trial period for this visual is expired.", "Trial expired", false);
             }
