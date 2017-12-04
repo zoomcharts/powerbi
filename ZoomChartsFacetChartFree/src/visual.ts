@@ -21,7 +21,7 @@ module powerbi.extensibility.visual {
         protected setLegendState = true;
         protected series: ZoomCharts.Configuration.FacetChartSettingsSeries[] = [];
         protected lastCategorySet: string = null;
-        protected customProperties: any = [];
+        protected customPropertiesFree: any = [];
         public betalimitator: any = null;
         public customizationInformer: any = null;
         public viewport: any = null;
@@ -256,7 +256,7 @@ module powerbi.extensibility.visual {
 
                 this.viewport = options.viewport;
                 
-                this.customProperties = options.dataViews[0].metadata.objects;
+                this.customPropertiesFree = options.dataViews[0].metadata.objects;
                 
                 if (this.chart) {
                     updateScale(options, this.chart);
@@ -291,7 +291,7 @@ module powerbi.extensibility.visual {
 
             switch (objectName) {
                 case 'customization':
-                    let val = getValue(this.customProperties, "customization", "show", null);
+                    let val = getValue(this.customPropertiesFree, "customization", "show", null);
 
                     let isInfoVisible = this.customizationInformer.isDialogVisible();
                     if(val == true && !isInfoVisible && !this.customizationInformer.initialCheck) {
