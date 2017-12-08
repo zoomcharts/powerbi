@@ -93,7 +93,7 @@ module powerbi.extensibility.visual {
 
                     let vvv = aValues.values[i];
                     if (vvv != null && typeof vvv !== "number") {
-                        displayMessage(target, "Please select a numerical field as the value for the visual or change the aggregation of it to `Count`. The problematic value is `" + aValues.values[i] + "` from the field `" + aValues.source.displayName.replace(/</g, "<") + "`", "Incorrect data", false);
+                        displayMessage(target, "Please select a numerical field as the value for the visual or change the aggregation of it to `Count`. The problematic value is `" + secureString(aValues.values[i]) + "` from the field `" + secureString(aValues.source.displayName) + "`", "Incorrect data", false);
                         return {data: root, ids: ids };
                     }
 
