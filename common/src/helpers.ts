@@ -289,7 +289,7 @@ module powerbi.extensibility.visual {
         public target: HTMLElement = null;
         protected logo: any = null;
         private boundingBox = null;
-        public version = "BETA v.0.2";
+        public version = "BETA v.0.3";
         public visual: Visual = null;
         public host: IVisualHost;
         constructor(target, visual: Visual) {
@@ -297,7 +297,7 @@ module powerbi.extensibility.visual {
             this.host = visual.host;
             //http://currentmillis.com/
             //You can set betalimitator globally for all PieData(PC/FC) and Data(TC) here:
-            //this.set(1513115999000); //1510662480000
+            //this.set(1516053599000); //1510662480000
         }
         public set(when: number) { //milliseconds!
             this.is_set = true;
