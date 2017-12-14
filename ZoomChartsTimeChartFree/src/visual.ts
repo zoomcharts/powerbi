@@ -122,9 +122,6 @@ module powerbi.extensibility.visual {
                     selection: { enabled: true },
                     resizing: { enabled: false }
                 },
-                navigation: {
-                    //initialDisplayUnit: props.displayUnits.initialDisplayUnit
-                },
                 events: {
                     onClick: (e, args) => {
                         if (e.ctrlKey && args.hoverStart) {
