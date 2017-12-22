@@ -36,6 +36,7 @@ module powerbi.extensibility.visual {
                 }
             }
         }
+
         if (scale) {
             chart.replaceSettings({
                 advanced: {
@@ -80,6 +81,14 @@ module powerbi.extensibility.visual {
                 visual.target.style.marginLeft= -Math.round((width - width *1/scale)/2)*scale +"px"; 
                 let t:any;
                 visual.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
+            } else {
+                let height = viewport.height;
+                let width = viewport.width;
+                visual.target.style.height = height + "px";
+                visual.target.style.width = width + "px";
+                visual.target.style.marginTop = 0;
+                visual.target.style.marginLeft = 0;
+                visual.target.style.transform ="scale(" + 1 + "," + 1 + ")";
             }
         } else {
             if (scale > 1){
@@ -93,7 +102,15 @@ module powerbi.extensibility.visual {
                 visual.target.style.marginLeft= -Math.round((width - width *1/scale)/2*scale)+"px"; 
                 let t:any;
                 visual.target.style.transform = t="scale(" + 1/scale + "," + 1/scale + ")";
-            }
+            } else if(scale <= 1) {
+                let height = viewport.height;
+                let width = viewport.width;
+                visual.target.style.height = height + "px";
+                visual.target.style.width = width + "px";
+                visual.target.style.marginTop = 0;
+                visual.target.style.marginLeft = 0;
+                visual.target.style.transform ="scale(" + 1 + "," + 1 + ")";
+            } 
         }
     } 
 
