@@ -4,7 +4,7 @@
     "displayName": "Drill-Down Donut Chart by ZoomCharts",
     "guid": "ZoomChartsPieChartFree33C9F325D337408C98D4E1D4E1EAD703",
     "visualClassName": "Visual",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "ZoomCharts Donut chart provides standard donut chart functionality with additional interactive features for data exploration. If you have added multiple “Category” fields, drill-down will be enabled - clicking on any slice will take you to the next level. Clicking in the middle will take you back to the previous level. Clicking on any slice acts as a filter for rest of your dashboard. Additionally, if there are more than 15 slices, “others” slice is added. Clicking on “others” slice would reveal the next 15 slices in relative proportions to each other while initial 15 slices are compacted into “previous” slice. Additional styling and settings are available in the paid version.",
     "supportUrl": "https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/",
     "gitHubUrl": "https://github.com/zoomcharts/powerbi/tree/master/ZoomChartsPieChartFree"
