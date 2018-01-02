@@ -1,0 +1,31 @@
+{
+  "visual": {
+    "name": "ZoomChartsNetChartFree",
+    "displayName": "ZoomCharts Graph Visualization",
+    "guid": "ZoomChartsNetChartFreeD1C58E3B59077E6D06A4CB9B0D4E2029A917",
+    "visualClassName": "Visual",
+    "version": "1.0.0",
+    "description": "ZoomCharts Graph Visualization",
+    "supportUrl": "https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/",
+    "gitHubUrl": "https://github.com/zoomcharts/powerbi/tree/master/ZoomChartsPieChartFree"
+  },
+  "apiVersion": "1.9.0",
+  "author": {
+    "name": "ZoomCharts",
+    "email": "powerbi@zoomcharts.com"
+  },
+  "assets": {
+    "icon": "assets/icon.png"
+  },
+  "externalJS": [
+    "../common/src/lodash.min.js",
+    "../common/src/globalize.js",
+    "../common/src/globalize.culture.en-US.js",
+    "../common/src/powerbi-visuals-utils-dataviewutils.js",
+    "../common/src/powerbi-visuals-utils-typeutils.js",
+    "../common/src/powerbi-visuals-utils-svgutils.js",
+    "../common/src/powerbi-visuals-utils-formattingutils.js"
+  ],
+  "style": "../common/style/visual.less",
+  "capabilities": "capabilities.json"
+}
