@@ -15,9 +15,9 @@
         {
             "conditions": [
                 {
-                    "NodeType1": {
+                    "Nodes": {
                         "min": 0,
-                        "max": 6
+                        "max": 3
                     }
                 }
             ],
