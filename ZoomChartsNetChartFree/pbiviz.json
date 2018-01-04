@@ -4,10 +4,10 @@
     "displayName": "ZoomCharts Graph Visualization",
     "guid": "ZoomChartsNetChartFreeD1C58E3B59077E6D06A4CB9B0D4E2029A917",
     "visualClassName": "Visual",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "ZoomCharts Graph Visualization",
     "supportUrl": "https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/",
-    "gitHubUrl": "https://github.com/zoomcharts/powerbi/tree/master/ZoomChartsPieChartFree"
+    "gitHubUrl": "https://github.com/zoomcharts/powerbi/tree/master/ZoomChartsNetChartFree"
   },
   "apiVersion": "1.9.0",
   "author": {
