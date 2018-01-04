@@ -1,11 +1,11 @@
 {
   "visual": {
     "name": "ZoomChartsNetChartFree",
-    "displayName": "ZoomCharts Graph Visualization",
+    "displayName": "ZoomCharts Network Chart",
     "guid": "ZoomChartsNetChartFreeD1C58E3B59077E6D06A4CB9B0D4E2029A917",
     "visualClassName": "Visual",
     "version": "1.0.1",
-    "description": "ZoomCharts Graph Visualization",
+    "description": "ZoomCharts Network Chart",
     "supportUrl": "https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/",
     "gitHubUrl": "https://github.com/zoomcharts/powerbi/tree/master/ZoomChartsNetChartFree"
   },
