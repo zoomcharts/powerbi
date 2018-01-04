@@ -52,7 +52,7 @@ module powerbi.extensibility.visual {
         if (typeof(viewport.scale) != "undefined"){
             scale = viewport.scale;
         } else {
-            scale = this.current_scale;
+            scale = visual.current_scale;
         }
 
         if (!visual.prev_pixel_ratio){
