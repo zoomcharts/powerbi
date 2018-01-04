@@ -91,19 +91,18 @@ module powerbi.extensibility.visual {
             function formatText(value:any){
                 let s = Math.round(value) + "";
                 let l = s.length;
-                let m = {"3": "k", "6": "m", "9":"b", "12": "t"};
+                let m = ["", "k","m","b","t"];
                 let max:any = 1;
-                for (let x in m){
-                    if (m.hasOwnProperty(x)){
-                        let ki:number = parseInt(x);
-                        if (s.length > ki){
-                            max = Math.max(max, ki);
-                        }
+                let maxIndex:any = 0;
+                for (let x = 1; x < m.length; x++){
+                    let ki:number = x * 3;
+                    if (s.length > ki){
+                        maxIndex = x;
                     }
                 }
                 let v:string;
                 if (l){
-                    v = Math.round(value / Math.pow(10, max)*10)/10 + m[max+""];
+                    v = Math.round(value / Math.pow(10, maxIndex*3)*10)/10 + m[maxIndex];
                 } else {
                     v = Math.round(value * 10)/10 +"";
                 }
@@ -205,7 +204,7 @@ module powerbi.extensibility.visual {
                             n.items = [];
                             let label:string = "(empty)";
                             if (name){
-                                label = name;
+                                label = name+"";
                             }
                             n.items.push({
                                 px: 0,

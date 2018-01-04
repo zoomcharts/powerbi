@@ -2,7 +2,7 @@ module powerbi.extensibility.visual {
     export class Data {
         public static convert(visual:any, host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             if (isDebugVisual) {
-                console.log("Chart data update called", options);
+                console.log("Debug info: Chart data update called", options);
             }
 
             let root = {
@@ -24,18 +24,21 @@ module powerbi.extensibility.visual {
                 visual.showExpired();
                 return root;
             }
-            //hideMessage(target);
 
             if (typeof(dataView.categorical.categories) == "undefined"){
+                displayMessage(target, "Please, select at least one category for node grouping", "Incorrect data", false);
                 return root;
             }
 
             let categories = dataView.categorical.categories.length;
+            if (categories < 1){
+                displayMessage(target, "Please, select at least one category for node grouping", "Incorrect data", false);
+                return root;
+            }
             let values = dataView.categorical.categories[0].values.length;
 
             let nodeMap = [];
             let linkMap = [];
-            let nodeId;
             let colorMap = [
                 "#01b8aa",
                 "#fd7976",
@@ -57,16 +60,23 @@ module powerbi.extensibility.visual {
                     }
                 });
             }
+
+            if (typeof(dataView.categorical.values) == "undefined"){
+                displayMessage(target, "Please, select measure to view the network", "Incorrect data", false);
+                return root;
+            }
+            hideMessage(target);
             let format = dataView.categorical.values[0].source.format;
             root.format = format;
             for (let x = 0; x < values; x++){
+                let value;
+                if (typeof(dataView.categorical.values) != "undefined"){
+                    value = dataView.categorical.values[0].values[x];
+                }
                 for (let y = 0; y < categories; y++){
-                    let v = dataView.categorical.categories[y].values[x];
+                    let cat = dataView.categorical.categories[y]; 
+                    let v = cat.values[x]; // name of the "category item"
                     let nodeId = y + ":" + v;
-                    let value;
-                    if (typeof(dataView.categorical.values) != "undefined"){
-                        value = dataView.categorical.values[0].values[x];
-                    }
 
                     if (typeof(value) != "number"){
                         value = 1; // count
