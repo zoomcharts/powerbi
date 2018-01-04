@@ -204,7 +204,7 @@ module powerbi.extensibility.visual {
                             n.items = [];
                             let label:string = "(empty)";
                             if (name){
-                                label = name;
+                                label = name+"";
                             }
                             n.items.push({
                                 px: 0,
