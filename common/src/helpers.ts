@@ -657,4 +657,24 @@ module powerbi.extensibility.visual {
     export function openURL(host: IVisualHost, url: string) {
         host.launchUrl(url);
     }
+    export function formatText(value:any){
+        let s = Math.round(value) + "";
+        let l = s.length;
+        let m = ["", "k","m","b","t"];
+        let max:any = 1;
+        let maxIndex:any = 0;
+        for (let x = 1; x < m.length; x++){
+            let ki:number = x * 3;
+            if (s.length > ki){
+                maxIndex = x;
+            }
+        }
+        let v:string;
+        if (l){
+            v = Math.round(value / Math.pow(10, maxIndex*3)*10)/10 + m[maxIndex];
+        } else {
+            v = Math.round(value * 10)/10 +"";
+        }
+        return v;
+    }
 }

@@ -84,7 +84,7 @@ module powerbi.extensibility.visual {
                     let sid:any = host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[y], x).createSelectionId();
                     if (typeof(nodeMap[y][nodeId]) === "undefined"){
                         nodeMap[y][nodeId] = {
-                            name: v,
+                            name: secureString(v),
                             id: x,
                             depth: y,
                             value: 0,

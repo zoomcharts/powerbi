@@ -28,6 +28,9 @@ module powerbi.extensibility.visual {
         public viewport: any = null;
         public current_scale:any = 1;
         public prev_pixel_ratio:any = 1;
+        public cached_color:any={};
+        public cached_color_light:any={};
+        public current_selection:any={};
 
         constructor(options: VisualConstructorOptions) {
 
@@ -88,29 +91,6 @@ module powerbi.extensibility.visual {
             let chartContainer = document.createElement("div");
             chartContainer.className = "chart-container";
             this.target.appendChild(chartContainer);
-            function formatText(value:any){
-                let s = Math.round(value) + "";
-                let l = s.length;
-                let m = ["", "k","m","b","t"];
-                let max:any = 1;
-                let maxIndex:any = 0;
-                for (let x = 1; x < m.length; x++){
-                    let ki:number = x * 3;
-                    if (s.length > ki){
-                        maxIndex = x;
-                    }
-                }
-                let v:string;
-                if (l){
-                    v = Math.round(value / Math.pow(10, maxIndex*3)*10)/10 + m[maxIndex];
-                } else {
-                    v = Math.round(value * 10)/10 +"";
-                }
-                return v;
-            }
-            let cached_color:any={};
-            let cached_color_light:any={};
-            let current_selection:any=[];
             let self = this;
             self.zoom = 1;
             self.updateTimeout = null;
@@ -146,7 +126,7 @@ module powerbi.extensibility.visual {
                         self.zoom = self.chart.zoom();
                     },
                     onSelectionChange: (e, args) => {
-                        current_selection = args.selection;
+                        this.current_selection = args.selection;
                         self.updateSelection(args, 200);
                         self.chart.updateStyle();
                     }
@@ -191,14 +171,14 @@ module powerbi.extensibility.visual {
                         } else if (n.hovered){
                             n.lineColor = "rgba(0,0,0,0.5)";
                             n.lineWidth = n.radius*0.3*self.zoom;
-                        } else if (current_selection.length){
-                            if (!cached_color_light[n.fillColor]){
+                        } else if (this.current_selection.length){
+                            if (!this.cached_color_light[n.fillColor]){
                                 let r:number = parseInt(n.fillColor.substr(1,2), 16);
                                 let g:number = parseInt(n.fillColor.substr(3,2), 16);
                                 let b:number = parseInt(n.fillColor.substr(5,2), 16);
-                                cached_color_light[n.fillColor] = "rgba(" + [r,g,b].join(",") + ",0.5)";
+                                this.cached_color_light[n.fillColor] = "rgba(" + [r,g,b].join(",") + ",0.5)";
                             }
-                            n.fillColor = cached_color_light[n.fillColor];
+                            n.fillColor = this.cached_color_light[n.fillColor];
                         }
                         if (!n.items.length){
                             n.items = [];
@@ -221,16 +201,16 @@ module powerbi.extensibility.visual {
                                 hoverEffect: false
                             });
                             let color:string = "black";
-                            if (typeof(cached_color[n.fillColor]) == "undefined"){
+                            if (typeof(this.cached_color[n.fillColor]) == "undefined"){
                                 let r:number = parseInt(n.fillColor.substr(1,2), 16)/255;
                                 let g:number = parseInt(n.fillColor.substr(3,2), 16)/255;
                                 let b:number = parseInt(n.fillColor.substr(5,2), 16)/255;
                                 let i = r /3 + g/3 + b/3;
                                 if (i < 0.4)
                                     color = "white";
-                                cached_color[n.fillColor] = color;
+                                this.cached_color[n.fillColor] = color;
                             } else {
-                                color = cached_color[n.fillColor];
+                                color = this.cached_color[n.fillColor];
                             }
                             n.items.push({
                                 px: 0,
