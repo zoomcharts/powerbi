@@ -88,6 +88,10 @@ module powerbi.extensibility.visual {
 
             this.ZC = zc;
 
+            if(!this.pendingData.nodes.length) {
+                displayMessage(this.target, "Please, select at least one category for node grouping", "Incorrect data", false);        
+            }
+
             let chartContainer = document.createElement("div");
             chartContainer.className = "chart-container";
             this.target.appendChild(chartContainer);
