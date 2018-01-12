@@ -239,7 +239,9 @@ module powerbi.extensibility.visual {
                     },
                     nodeClasses: this.pendingClasses,
                     nodeDetailMinSize: 20,
-                    nodeDetailMinZoom: 0.05
+                    nodeDetailMinZoom: 0.05,
+                    linkDetailMinSize: 20,
+                    linkDetailMinZoom: 0.05
                 },
                 legend: {
                     enabled: true
