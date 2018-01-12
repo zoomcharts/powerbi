@@ -31,6 +31,7 @@ module powerbi.extensibility.visual {
         public cached_color:any={};
         public cached_color_light:any={};
         public current_selection:any={};
+        public is_paid: boolean = false;
 
         constructor(options: VisualConstructorOptions) {
 
@@ -93,7 +94,7 @@ module powerbi.extensibility.visual {
             }
 
             let chartContainer = document.createElement("div");
-            chartContainer.className = "chart-container";
+            chartContainer.className = this.is_paid ? "chart-container full-container" : "chart-container";
             this.target.appendChild(chartContainer);
             let self = this;
             self.zoom = 1;
