@@ -1,14 +1,4 @@
 module powerbi.extensibility.visual {
-    window.ZoomChartsLicense = "ZCF-6sag05711-16: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects (for TimeChart); upgrades until: 2018-08-03";
-    window.ZoomChartsLicenseKey = "1cd1965a013d1e8a15f110c4dc59c697e3bbb77e91246c4b0f" +
-        "73d1f42480151f3908185151424f0e48b9dda27e4f6bbf0f54c39542b7d44c88f9ef6766f5264" +
-        "8fb585623d85ebeb8bd7a8847f4a14d50c57c7c8d3176d5f84f69c4f2c50b1ed555387ccd67b7" +
-        "75af8147d5b6778690a67cc114a18ca8ee110c71e91a495045b5a966a435f8f6fff4fdf1b3878" +
-        "e58c97b826a00d5e9e7d3a08813b25c70bb1d34e7f6e3be673348df3993798d40934f0e1b2656" +
-        "fd65d19327c0a85eddf4ba91d2be1f86329aa709f8283ce7517c35cdcb70f4140fa37c2b85bbf" +
-        "c541360474c494ee8126f44dc88b1aba5567e47c72c324748128c7c8b540fd964b45f7437a025";
-
-
     export class Visual implements IVisual {
         protected target: HTMLElement;
         protected chart: ZoomCharts.TimeChart;

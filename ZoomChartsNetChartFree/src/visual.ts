@@ -1,14 +1,5 @@
 module powerbi.extensibility.visual {
 
-    window.ZoomChartsLicense = "ZCP-u34517j50: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects ";
-    window.ZoomChartsLicenseKey = "6611cc38dd379865f5c6d04671dfb30f79cb57af7e4df4ea21"+
-    "42383b44a2a112636ca17c9c729a43841f2a55a16d267a395af10fe35763e409772292b18898e"+
-    "206bcaf353b9ae266bfdcd2c113c3c5973683118c643c870526f3e48e34616f0558b33a03e34b"+
-    "2402e051b887e0bbb9124e2a8de657ce512d7fe3c26d93b25b8a1774de7c00703156a5fb7d5eb"+
-    "cd97a40cabdc2ab45d75fb94466ce7882b813649a7f148ae6997fe214d91df8b408fe2b678177"+
-    "af7b709d6b0754c89dd01ef3e424c02c16dd7ae9162c8a9fe50307233bc6a07a0c63c09b3e239"+
-    "e128a4f5595ff692e5d89f0d68606f8aa2afabc84ba1ef3c6e37f3419feab69e8dcd8a0f0af7d";
-
     export class Visual implements IVisual {
         protected target: HTMLElement;
         protected chart: ZoomCharts.NetChart;
@@ -57,11 +48,9 @@ module powerbi.extensibility.visual {
             });
 
             this.betalimitator = new betalimitator(this.target, this);
-            //this.betalimitator.showBetaLogo();
             if(this.betalimitator.checkIfExpired()) {
                 this.showExpired();
             }
-
             
             this.customizationInformer = new customiztionInformer(this.target, this, {
                 url: "https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/custom-visuals/advanced-network-chart/",
@@ -99,8 +88,9 @@ module powerbi.extensibility.visual {
             let self = this;
             self.zoom = 1;
             self.updateTimeout = null;
-            this.chart = new zc.NetChart({
+            let defaultNetChartSettings = {
                 container: chartContainer,
+                credits: {},
                 data:
                 [{
                     preloaded: this.pendingData
@@ -247,7 +237,7 @@ module powerbi.extensibility.visual {
                     enabled: true
                 },
                 toolbar: {
-                    fullscreen: false
+                    fullscreen: false,
                 },
                 nodeMenu: {
                     buttons: [
@@ -264,7 +254,8 @@ module powerbi.extensibility.visual {
                     }
                 },
                 assetsUrlBase: ZoomChartsLoader.RootUrl + "assets/"
-            });
+            };
+            this.chart = new zc.NetChart(defaultNetChartSettings);
 
             this.pendingData = null;
         }

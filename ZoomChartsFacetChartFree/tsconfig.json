@@ -12,6 +12,7 @@
     ".api/v1.9.0/PowerBI-visuals.d.ts",
     "../common/typings/index.d.ts",
     "../common/src/powerbi-visuals-utils-formattingutils.d.ts",
+    "../common/src/config.ts",
     "../common/src/helpers.ts",
     "../common/src/loader.ts",
     "../common/src/piedata.ts",

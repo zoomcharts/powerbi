@@ -1,14 +1,4 @@
 module powerbi.extensibility.visual {
-    window.ZoomChartsLicense = "ZCF-981cwt0sy-8: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects (for PieChart); upgrades until: 2018-08-03"
-    window.ZoomChartsLicenseKey = "a56064da9f189dd5f9fa3501972d45824138d4818efd560d7b"+
-        "a2b3d4e808111fd4163e8cf53163fe411a3a25482942ee4a83f5d62206af48e301302d5e20bfd"+
-        "a4eac0e919b2a6a9ac97245203d9061a54ea595adda00f32703b5f158e84fc546bd556b441683"+
-        "992153f3a794224cf9d5dc1da638f058bc5ce3a03dd698f0daa1e338a73d930fb4d5d2c721c26"+
-        "c154d17f63a4e8a3d22257852763e0254e1dd8d718dbda5fd43d9a267a1aed563d2ac3183aee9"+
-        "1b5e8e1e148b858c4bc4c9509164a7ff5e7cc656e0d1f21c2bde535970d5a02f623fbfc5ec5b0"+
-        "0d63b288945e3f5b077e541acd9c97f74ab78a9aba23098f87b69bcd0067f94ad4fb43eeaba1a";
-
-
     export class Visual implements IVisual {
         protected target: HTMLElement;
         protected chart: ZoomCharts.PieChart;

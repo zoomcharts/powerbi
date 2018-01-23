@@ -1,3 +1,4 @@
+/// <reference path="../../common/src/config.ts" />
 module powerbi.extensibility.visual {
     export let isDebugVisual = /plugin=[^&]*_DEBUG&/.test(document.location.toString()) || (document.location.search || "").indexOf("unmin") > -1;
 
@@ -305,16 +306,21 @@ module powerbi.extensibility.visual {
         private when: number = null;
         public target: HTMLElement = null;
         protected logo: any = null;
+        protected image:string = null;
         private boundingBox = null;
         public version = "BETA v.0.3";
         public visual: Visual = null;
         public host: IVisualHost;
+        private settings:IBetaSettings = null;
         constructor(target, visual: Visual) {
             this.target = target;
             this.host = visual.host;
-            //http://currentmillis.com/
-            //You can set betalimitator globally for all PieData(PC/FC) and Data(TC) here:
-            //this.set(1516053599000); //1510662480000
+
+
+            this.settings = betaSettings;
+            if (this.settings.enabled){
+                this.showBetaLogo();
+            }
         }
         public set(when: number) { //milliseconds!
             this.is_set = true;
@@ -343,10 +349,25 @@ module powerbi.extensibility.visual {
             this.logo = document.createElement("div");
             let logo = this.logo;
             logo.className = "beta-logo";
-            logo.style.transform = "scale(0.5,0.5)";
-            logo.style.right = "-84px";
-            logo.style.bottom = "-19px";
+            let scale:number = 2;
+            let inverseScale:number = Math.round(1/scale*10)/10;
+            logo.style.transform = "scale(" + inverseScale + "," + inverseScale + ")"; // should scale depending on the resolution
+            if (this.settings.image){
+                logo.style.backgroundImage = this.settings.image;
+                logo.style.width = this.settings.imageWidth+"px";
+                logo.style.height = this.settings.imageHeight+"px";
+                logo.style.right = "-" + Math.round(this.settings.imageWidth/2/scale) + "px";
+                logo.style.bottom = "-" + Math.round(this.settings.imageHeight/2/scale) + "px";
+            } else {
+                logo.style.right = "-84px";
+                logo.style.bottom = "-19px";
+            }
+            let visual = this;
             logo.addEventListener("click", function () {
+                if (visual.settings.url){
+                    openURL(visual.host, visual.settings.url);
+                    return;
+                }
                 let container = <HTMLElement>target.getElementsByClassName("message-overlay-bugreport")[0];
                 if (container && container.style.display != "none") {
                     self.hideBugReportDialog();
