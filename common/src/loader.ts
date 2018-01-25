@@ -7,7 +7,7 @@ module powerbi.extensibility.visual {
         private static _started = false;
         private static _zc: typeof ZoomCharts = null;
 
-        public static RootUrl = "https://cdn.zoomcharts-cloud.com/1/18/latest/";
+        public static RootUrl = ZoomChartsRootUrl;
 
         public static CacheKey = "ZoomChartsLoader 1/18";
 

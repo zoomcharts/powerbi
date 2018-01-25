@@ -1,4 +1,6 @@
 module powerbi.extensibility.visual {
+    export let ZoomChartsRootUrl:string = "https://cdn.zoomcharts-cloud.com/1/18/latest/";
+
     window.ZoomChartsLicense = "ZCP-u34517j50: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects ";
     window.ZoomChartsLicenseKey = "6611cc38dd379865f5c6d04671dfb30f79cb57af7e4df4ea21"+
     "42383b44a2a112636ca17c9c729a43841f2a55a16d267a395af10fe35763e409772292b18898e"+
