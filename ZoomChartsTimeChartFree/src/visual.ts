@@ -213,6 +213,11 @@ module powerbi.extensibility.visual {
                         style: {
                             fillColor: color.value,
                             gradient: 0,
+                            legend: {
+                                marker: {
+                                    shape: null
+                                }
+                            }
                         }
                     };
                     this.updateSeries(istr, s);
