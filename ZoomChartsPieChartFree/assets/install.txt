@@ -1,0 +1,8 @@
+Install
+
+1. Start Power BI desktop or open the Power BI cloud version.
+2. Under the visualizations tab press on the three dots "import custom visual".
+3. Select "import from file" option.
+4. Find the extracted folder, that contains the custom visual.
+5. Select the visual.pbviz file and press open.
+6. Click on the custom visual icon will add visual to your report.
