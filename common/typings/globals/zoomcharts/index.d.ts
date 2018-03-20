@@ -278,6 +278,8 @@ declare module ZoomCharts.Configuration {
         wheely: number;
         x: number;
         y: number;
+        clickCredits: any;
+        credits: any;
     }
     export interface BaseProfiler {
         hasPendingRequests(): boolean;
@@ -857,6 +859,8 @@ declare module ZoomCharts.Configuration {
     export interface FacetChartChartClickEventArguments extends FacetChartChartEventArguments {
         clickFacet: FacetChartFacet;
         clickItem: FacetChartItem;
+        clickCredits: any;
+        credits: any;
     }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface FacetChartChartEventArguments extends BaseChartEventArguments {
@@ -2885,6 +2889,8 @@ declare module ZoomCharts.Configuration {
         clickItem: BaseLabel;
         clickLink: ItemsChartLink;
         clickNode: ItemsChartNode;
+        clickCredits: any;
+        credits: any;
     }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface NetChartChartEventArguments extends ItemsChartChartEventArguments {
@@ -3182,6 +3188,8 @@ declare module ZoomCharts.Configuration {
         /** Contains the slice that was clicked. Note that this will also be populated when the label
         of the slice is clicked. */
         clickSlice: PieChartSlice;
+        clickCredits: any;
+        credits: any;
     }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface PieChartChartEventArguments extends BaseChartEventArguments {
@@ -3801,6 +3809,8 @@ declare module ZoomCharts.Configuration {
         timeEnd: number;
         /** The UTC timestamp for the left-most displayed value. */
         timeStart: number;
+        clickCredits: any;
+        credits: any;
     }
     export interface TimeChartDataObject extends BaseDataErrorResponse {
         /** 
