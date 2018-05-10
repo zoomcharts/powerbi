@@ -661,8 +661,10 @@ module powerbi.extensibility.visual {
             let logo = this.full_version_logo;
             logo.className = "get-paid-logo";
             logo.style.transform = "scale(0.5,0.5)";
-            logo.style.right = "-118px";
-            logo.style.bottom = "-19px";
+            logo.style.right = "-35px";
+            logo.style.bottom = "-8px";
+            //logo.style.right = "-118px";
+            //logo.style.bottom = "-19px";
             target.appendChild(logo);
 
             let host = this.host;
