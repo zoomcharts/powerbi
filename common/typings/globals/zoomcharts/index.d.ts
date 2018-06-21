@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.17.0-dev */
+/** TypeScript definition file for ZoomCharts 1.18.5-dev */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -83,7 +83,10 @@ declare module ZoomCharts.Configuration {
                 chartWidth: number;
                 chartHeight: number;
             };
-        public fullscreen(isFullscreen: boolean): boolean;
+        /** Gets or sets the fullscreen state of the chart. */
+        public fullscreen(
+            /** specify `true` or `false` to set the state, omit the value to get the current state. */
+            isFullscreen?: boolean): boolean;
         public home(): boolean;
         /** Removes an event listener that was added by a call to `on` or by specifying it in settings.
         Note that the listener must be the exact same reference, which means that anonymous functions should not be used in call to `on`. */
@@ -108,6 +111,10 @@ declare module ZoomCharts.Configuration {
                 event: BaseMouseEvent, args: BaseChartErrorEventArguments) => void): void;
         /** Adds an event listener for when the currently hovered item has changed. */
         public on(name: "hoverChange", listener: (event: BaseMouseEvent, args: BaseChartEventArguments) => void): void;
+        /** Adds an event listener for pointer down event. */
+        public on(name: "pointerDown", listener: (event: BaseMouseEvent, args: BaseChartEventArguments) => void): void;
+        /** Adds an event listener for pointer down event. */
+        public on(name: "dataUpdated", listener: (event: BaseMouseEvent, args: BaseChartEventArguments) => void): void;
         /** Adds an event listener for when chart placement on screen changes. Note that this is called on every animation frame. */
         public on(name: "positionChange", listener: (event: BaseMouseEvent, args: BaseChartEventArguments) => void): void;
         /** Adds an event listener for the mouse right click (or touch longpress) event. */
@@ -174,6 +181,11 @@ declare module ZoomCharts.Configuration {
     export interface BaseChartEventArguments {
         /** The chart object for which the event has been raised. */
         chart: BaseApi;
+        clickCredits?: boolean;
+        credits?: {
+            url: string;
+            urlTarget: string;
+        };
         origin: string;
     }
     /** Describes the base properties shared between all events raised by the different charts. */
@@ -278,8 +290,6 @@ declare module ZoomCharts.Configuration {
         wheely: number;
         x: number;
         y: number;
-        clickCredits: any;
-        credits: any;
     }
     export interface BaseProfiler {
         hasPendingRequests(): boolean;
@@ -551,7 +561,12 @@ declare module ZoomCharts.Configuration {
             }>;
     }
     export interface BaseSettingsEvents<TArguments extends BaseChartEventArguments, TClickArguments extends BaseChartEventArguments> {
-        /** Time to wait after last action before firing onChartUpdate event. */
+        /** Function called on pointer down. 
+        Function called on pointer up. 
+        Function called when pointer drag has happened. 
+        Function called when mouse pointer is moved. 
+        Function called when data is loaded/added/replaced/removed. 
+        Time to wait after last action before firing onChartUpdate event. */
         chartUpdateDelay?: number;
         /** Function called when whenever current view has changed. Usually after panning and navigation. Use to update any linked views.
         Note that this is also fired after chart initialization and API methods. Use args.origin field to determine event's origin. */
@@ -656,6 +671,10 @@ declare module ZoomCharts.Configuration {
         marker?: BaseSettingsLegendMarker;
         /** Max number of symbols used in one line of text that applies to any legend entry. */
         maxLineSymbols?: number;
+        /** Minium height of the legend. */
+        minHeight?: number;
+        /** Minium width of the legend. */
+        minWidth?: number;
         /** Max number of columns. Use in conjunction with side parameter under the legend panel should be right or left in order to arrange entries by columns. */
         numberOfColumns?: number;
         /** Max number of rows. Use in conjunction with side parameter under the legend panel that should be set as bottom or top in order to arrange entries by rows. */
@@ -752,6 +771,13 @@ declare module ZoomCharts.Configuration {
         shadowOffsetY?: number;
     }
     export interface BaseSettingsTitle {
+        /** Advanced settings */
+        advanced?: {
+            /** Determine the position of the title relative to the toolbars
+            false - adds title first, then toolbar
+            true - adds toolbar first, then title. Note, `toolbar.location` should be "outside" for this to have effect */
+            addAfterToolbar?: boolean;
+        };
         /** Alignment of the title text. */
         align?: "center" | "left" | "right";
         /** Show/hide chart title */
@@ -859,8 +885,8 @@ declare module ZoomCharts.Configuration {
     export interface FacetChartChartClickEventArguments extends FacetChartChartEventArguments {
         clickFacet: FacetChartFacet;
         clickItem: FacetChartItem;
-        clickCredits: any;
-        credits: any;
+        /** Specifies the source of the click event. */
+        clickOrigin: "item" | "label";
     }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface FacetChartChartEventArguments extends BaseChartEventArguments {
@@ -1130,12 +1156,22 @@ declare module ZoomCharts.Configuration {
             /** Duration of scroll animation. */
             scrollDuration?: number;
         };
+        /** Interaction mode. Note that `selection.enabled` can be used to disable the selection completely.
+        
+        Values:
+        - `drilldown` - performs drill down on click, if item is not expandable, selects it
+        - `select` - selects items
+        - `toggle` - toggle selects items. */
+        mode?: "drilldown" | "select" | "toggle";
         /** Configurable settings for select option. Note that the selection style is configured by `area.style.selection`. */
         selection?: FacetChartSettingsInteractionSelection;
     }
     export interface FacetChartSettingsInteractionSelection {
         /** Enable/disable selection. Setting this to `false` disabled the selection by clicking on the chart,
-        however the selection can still be set using the API. */
+        however the selection can still be set using the API.
+        
+        Disabling the selection interaction could enable some advanced scenarios where the data is highly
+        dynamic but the selection state must always be consistent with some outside state. */
         enabled?: boolean;
         /** Distance in pixels to both sides of an item that is still considered as a hover/click on the item. */
         tolerance?: number;
@@ -1166,6 +1202,8 @@ declare module ZoomCharts.Configuration {
         data?: FacetChartSettingsSeriesData;
         /** Default column style. */
         style?: FacetChartSettingsSeriesColumnsStyle;
+        /** force type to columns only */
+        type?: "columns";
     }
     export interface FacetChartSettingsSeriesColumnsStyle extends LinearChartSettingsSeriesColumnsStyle {
         /** Set to `true` in order to display a "preview" of the value distribution in each column.
@@ -1326,7 +1364,8 @@ declare module ZoomCharts.Configuration {
         /** Theme to apply. You can either use this to share configuration objects between multiple charts or use one of the predefined
         themes. */
         theme?: GeoChartSettings;
-        /** Adjustable settings to manage default and custom toolbar items, as well as toolbar overall appearance. */
+        /** Please note that currently toolbar is not supported on GeoChart.
+        @deprecated */
         toolbar?: BaseSettingsToolbar;
     }
     export interface GeoChartSettingsAggregatedShapeStyle extends BaseSettingsBackgroundStyle {
@@ -1375,7 +1414,7 @@ declare module ZoomCharts.Configuration {
     }
     export interface GeoChartSettingsBackground {
         enabled?: boolean;
-        params?: GeoChartSettingsBackgroundParams;
+        params?: GeoChartSettingsWmsParams | GeoChartSettingsBackgroundParams;
         type?: "tile" | "wms";
         url?: string;
     }
@@ -1493,6 +1532,12 @@ declare module ZoomCharts.Configuration {
     }
     export interface GeoChartSettingsInteraction extends ItemsChartSettingsInteraction {
         mode?: "drilldown" | "select" | "toggle";
+        /** Extra interaction options to control such behavior like disabling zoom in on double click. */
+        zooming?: GeoChartSettingsInteractionZooming;
+    }
+    export interface GeoChartSettingsInteractionZooming extends ItemsChartSettingsInteractionZooming {
+        /** Enables/Disables zoom in on double click. Informs Leaflet not to do this action. */
+        zoomInOnDoubleClick?: boolean;
     }
     export interface GeoChartSettingsLayerAggregated extends GeoChartSettingsLayerOverlay {
         /** Aggregation function to use. */
@@ -1580,6 +1625,27 @@ declare module ZoomCharts.Configuration {
         Use 0 to disable simplification. */
         shapeSimplificationPrecision?: number;
     }
+    /** This type matches L.WMSOptions type from the Leaflet library. */
+    export interface GeoChartSettingsWmsParams {
+        /** WMS image format (use 'image/png' for layers with transparency).
+        
+        Default value: false. */
+        format?: string;
+        /** (required) Comma-separated list of WMS layers to show.
+        
+        Default value: ''. */
+        layers?: string;
+        /** Comma-separated list of WMS styles.
+        
+        Default value: 'image/jpeg'. */
+        styles?: string;
+        /** If true, the WMS service will return images with transparency.
+        
+        Default value: '1.1.1'. */
+        transparent?: boolean;
+        /** Version of the WMS service to use. */
+        version?: string;
+    }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface ItemsChartChartClickEventArguments extends ItemsChartChartEventArguments {
         clickItem: BaseLabel;
@@ -1621,6 +1687,8 @@ declare module ZoomCharts.Configuration {
         style?: ItemsChartSettingsNodeStyle;
     }
     export interface ItemsChartLink extends ItemsChartSettingsLinkStyle {
+        /** Specifies if the link was used for radial/hierarchy layout (false) or not (true). This flag is ignored (always false) by static/dynamic layouts. */
+        background: boolean;
         /** Data object that this link represents. */
         data: ItemsChartDataObjectLink;
         /** Node at the start of the link. */
@@ -2130,6 +2198,8 @@ declare module ZoomCharts.Configuration {
             button: HTMLAnchorElement) => void;
         /** The text (HTML is supported) that is displayed within the button. */
         text?: string;
+        /** Tooltip that is displayed while hovering over the button. Leaving `null` uses `text`. */
+        title?: string;
     }
     export interface ItemsChartSettingsNodeAnchorStyle {
         lineColor?: string;
@@ -2214,6 +2284,8 @@ declare module ZoomCharts.Configuration {
         customShape?: ItemsChartSettingsCustomShape;
         /** Valid values: circle (default), text, roundtext, droplet, rectangle, customShape */
         display?: string;
+        /** Controls if node is draggable; Values: draggable false - node cannot be dragged; draggable true - node can be dragged; Default is `true`. */
+        draggable?: boolean;
         fillColor?: string;
         image?: string;
         /** Specifies the image cropping method. Valid values are `false` (disable cropping), `true` (default cropping mode), `"crop"`, `"letterbox"` and `"fit"`. */
@@ -2299,6 +2371,17 @@ declare module ZoomCharts.Configuration {
         nodeAutoScaling?: "linear" | "logarithmic" | "square";
         /** Min and max value of node radius, before zooming is applied. To use this, specify `nodeAutoScaling`. */
         nodeRadiusExtent?: [number, number];
+        /** The angle of the self-link in degrees. Limited to 0 < selfLinkAngle <= 90. */
+        selfLinkAngle?: number;
+        /** The "height" of the self links, how far away from the node center it will extend. This is a factor of the node radius.
+        Must be positive. */
+        selfLinkHeightFactor?: number;
+        /** The shape of the  self-link. "Parabolic" makes sure the ends of the link point towards the center, but the self-link
+        looks more "squished". "Quadratic" produces a more natural curve, but the ends of the link will not point at the center. */
+        selfLinkShape?: "quadratic" | "parabolic";
+        /** The "width" of the self links, how wide in parallel to the node it will extend. This is a factor of the default width,
+        as determined by the shape. 1 is the default width. Must be non-negative. */
+        selfLinkWidthFactor?: number;
     }
     export interface LinearChartSeriesStackData {
         config: LinearChartSettingsStack;
@@ -2446,7 +2529,11 @@ declare module ZoomCharts.Configuration {
         aggregations?: Array<string>;
         /** Show/hide info popup */
         enabled?: boolean;
-        /** Specifies the position of the info popup. */
+        /** Specifies the position of the info popup.
+        
+        Values:
+        - `inside` - Displays the info popup inside the chart area right below the toolbars. This is the default behavior which is well suited for larger charts.
+        - `outside` - Displays the info popup above the chart area. This mode is intended for very small charts where the info popup would overlap the whole chart. */
         position?: "inside" | "outside";
         /** Whether to show series with no data in hovered time period. */
         showNoData?: boolean;
@@ -2601,7 +2688,6 @@ declare module ZoomCharts.Configuration {
         pattern?: "candlestick" | "bar";
     }
     export interface LinearChartSettingsSeriesColumns extends LinearChartSettingsSeries {
-        type: "columns";
         /** Default column style. */
         style?: LinearChartSettingsSeriesColumnsStyle;
         /** Controls if and how the value labels for each column is displayed on the chart. */
@@ -2612,6 +2698,12 @@ declare module ZoomCharts.Configuration {
         depth?: number;
         /** Brightness applied to depth components. */
         depthBrightness?: number;
+        /** Fill gradient orientation for manual fill gradient mode. In use with fillGradient property.
+        "null" for default fillGradient mode, "vertical" for vertical gradient, "horizontal" for horizonal rendering" */
+        fillGradientMode?: "vertical" | "horizontal";
+        /** Fill gradient type lets you have automated fillGradient steps based on different shapes.
+        Supported types are: null | cylinder */
+        fillGradientType?: "cylinder";
         /** A linear gradient for color change along a line between the column bottom and upper side.
         Specify "1" for no gradiend. Values 0..` will make the bottom part of columns slightly darker. */
         gradient?: number;
@@ -2676,7 +2768,9 @@ declare module ZoomCharts.Configuration {
         /** Fill color. */
         fillColor?: string;
         /** Fill gradient. Allows building a gradient fill, bound to values. Contains array of value-color pairs.
-        For example: [[-20, 'rgba(0,0,255,0.4)'],[30,'rgba(255,0,0,0.7)']]. */
+        For example: [[-20, 'rgba(0,0,255,0.4)'],[30,'rgba(255,0,0,0.7)']].
+        If specified fillGradientMode: "horizontal" or "vertical", then value denotes fraction of the column width and must be in interval from 0 to 1 - this feature is available for columns only
+        For example: [[0,"black"],[0.5,"red"],[1, "orange"]]. */
         fillGradient?: GradientDefinition;
         /** Specifies the URL to the image that will be used as the repeated fill pattern for the series.
         
@@ -2695,7 +2789,7 @@ declare module ZoomCharts.Configuration {
         };
         lineColor?: string;
         /** Array of line dash pattern to have a dashed line. The array contains length of dash followed by length of space in pixels.
-        A sequence of multiple dash-space values is supported. */
+        A sequence of multiple dash-space values is supported. In case you want to set a solid line, pass empty array: [] */
         lineDash?: Array<number>;
         /** Width of the line. */
         lineWidth?: number;
@@ -2729,6 +2823,8 @@ declare module ZoomCharts.Configuration {
         type?: "normal" | "proportional" | "based";
     }
     export interface LinearChartSettingsValueAxis {
+        /** Always animate value axis */
+        animate?: "auto" | "always";
         /** Whether to show vertical line along value axis */
         axisLine?: boolean;
         /** Show/hide value axis. */
@@ -2736,6 +2832,15 @@ declare module ZoomCharts.Configuration {
         /** Whether to show horizontal grid lines. Specifying `null` means that only the first value axis will show the horizontal lines,
         all other axis will not. */
         hgrid?: boolean;
+        /** This parameter works together with `animate` when it's set to "always" as here you can define fixed initial value that should be used for animation beginning.
+        If set to 0, then animation would be with "dropping" effect. If set to larger value than your maximum series value, then effect would be "growing".
+        If you want animation value to be calculated automatically depending on your data, keep default value and adjust `initialAnimationValueMultiplier`. */
+        initialAnimationValue?: number;
+        /** This parameter works together with `animate` when it's set to "always". It's used for multiplying maxium series value to get "growing" or "dropping" animation effect.
+        By default (if initial animation is turned on) there would be "growing" effect. You can increase this value if you need "further growing".
+        To make "dropping" effect you should use values less than 1, (for example: 0.45).
+        Also adjust `scaleAdjustmentAnimationDelay` to make animation longer. */
+        initialAnimationValueMultiplier?: number;
         /** Whether to use logarithmic scale. */
         logScale?: boolean;
         /** Fixed maximum value for value axis. If not set it will be computed automatically from visible data and zeroLine settings. */
@@ -2782,6 +2887,7 @@ declare module ZoomCharts.Configuration {
         thresholds?: Array<LinearChartSettingsValueAxisThreshold>;
         /** Title text for the value axis. */
         title?: string;
+        valueFormat?: string;
         /** Prepare custom format values to display in value axis. If using this, consider also setting the `size` parameter to
         accommodate your label size. */
         valueFormatterFunction?: (
@@ -2824,7 +2930,7 @@ declare module ZoomCharts.Configuration {
             /** Specifies the line color for the upper and lower bounds. If `null`, the lines will not be drawn. */
             lineColor?: string;
             /** Array of line dash pattern to have a dashed line. The array contains length of dash followed by length of space in pixels.
-            A sequence of multiple dash-space values is supported. */
+            A sequence of multiple dash-space values is supported. In case you want to set a solid line, pass empty array: [] */
             lineDash?: Array<number>;
             /** Specifies the width of the boundary lines. */
             lineWidth?: number;
@@ -2884,13 +2990,28 @@ declare module ZoomCharts.Configuration {
         /** Whether to show the zoom slider control. */
         zoomControl?: boolean;
     }
+    /** Settings for gravity in the dynamic layout */
+    export interface NetChartGravitySettings {
+        /** The object affected by the gravity effect in the dynamic layout. */
+        from?: "node" | "cluster" | "auto";
+        /** How to find the center of the object which is affected by gravity. Only used if `from="cluster"`. Only non-locked nodes will be used to calculate the
+        center. */
+        fromCenter?: "weighted" | "geometric";
+        /** Strength of the gravity effect. This does not have any tangible units but is rather a factor that is used in the calculations. If you
+        want to tweak it, experiment until you find a suitable value. Larger values will mean a stronger gravity, smaller will mean weaker. Negative values are
+        allowed and will reverse the effect, but are unlikely to be useful - unlike "traditional" Newtonian gravity, this one actually gets stronger as the nodes get
+        further away from the center, so the result of a negative value will be uncontrolled, exponential expansion. Setting to 0 disables gravity entirely. */
+        strength?: number;
+        /** The object to which the gravity attracts the affected object. */
+        to?: "cluster" | "nearestLockedNode" | "clusterLockedNodes" | "graph" | "graphLockedNodes";
+        /** How to find the center of the object to which the gravity attacts. Not used if `to="nearestLockedNode"`. */
+        toCenter?: "weighted" | "geometric";
+    }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface NetChartChartClickEventArguments extends NetChartChartEventArguments {
         clickItem: BaseLabel;
         clickLink: ItemsChartLink;
         clickNode: ItemsChartNode;
-        clickCredits: any;
-        credits: any;
     }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface NetChartChartEventArguments extends ItemsChartChartEventArguments {
@@ -2920,7 +3041,7 @@ declare module ZoomCharts.Configuration {
         You can use one of these options: url, data function, preloaded data. */
         data?: Array<NetChartSettingsData>;
         /** The events used to handle user interaction with UI elements. */
-        events?: BaseSettingsEvents<NetChartChartEventArguments, NetChartChartClickEventArguments>;
+        events?: NetChartSettingsEvents;
         /** Configurable conditions to filter the raw data values for subset of drawing nodes and links. */
         filters?: {
             /** Determine if link can be displayed. Invoked whenever a link is about to be shown or its data has changed.
@@ -3023,6 +3144,27 @@ declare module ZoomCharts.Configuration {
         `url` or `dataFunction`. */
         preloaded?: NetChartDataObject;
     }
+    export interface NetChartSettingsEvents extends BaseSettingsEvents<NetChartChartEventArguments, NetChartChartClickEventArguments> {
+        /** Function called when data is loaded/added/replaced/removed. */
+        onDataUpdated?: (
+            /** An empty mouse event. */
+            event: MouseEvent, args: NetChartChartEventArguments) => void;
+        onPointerDown?: (
+            /** The mouse event. */
+            event: MouseEvent, args: NetChartChartClickEventArguments) => void;
+        /** Function called when pointer drag has happened. */
+        onPointerDrag?: (
+            /** The mouse event. */
+            event: MouseEvent, args: NetChartChartClickEventArguments) => void;
+        /** Function called when mouse pointer is moved. */
+        onPointerMove?: (
+            /** The mouse event. */
+            event: MouseEvent, args: NetChartChartEventArguments) => void;
+        /** Function called on pointer up. */
+        onPointerUp?: (
+            /** The mouse event. */
+            event: MouseEvent, args: NetChartChartClickEventArguments) => void;
+    }
     export interface NetChartSettingsInteraction extends ItemsChartSettingsInteraction {
         /** The ability to rotate the chart with the pinch gesture, using 2 fingers */
         rotation?: {
@@ -3075,6 +3217,8 @@ declare module ZoomCharts.Configuration {
         aspectRatio?: boolean;
         /** Whether to perform global layout on network changes. Use it for better node placement at the cost of chart slowdown on network changes. */
         globalLayoutOnChanges?: boolean;
+        /** For dynamic layout, settings for gravity that pulls all nodes together. */
+        gravity?: NetChartGravitySettings;
         /** Desired horizontal distance between neighboring nodes with different parents in the hierarchy layout. By default `2*nodeSpacing` */
         groupSpacing?: number;
         /** Maximum time to wait for incremental layout to be completed. Note that bigger value will get nicer placement on network updates at the cost of longer delay. */
@@ -3133,8 +3277,11 @@ declare module ZoomCharts.Configuration {
     algorithm for navigation. Other parameters can tweak this algorithm, but not all parameters apply to all algorithms. */
     export interface NetChartSettingsNavigation {
         /** Determines what happens if the user has reached maximum number of focus nodes (`numberOfFocusNodes`) and focuses another node.
-        If this setting is `true`, then the least recently focused node will be unfocused. If this setting is `false`, then the user
-        will not be able to focus the node. _Used by modes: all modes_ */
+        In focusnode mode, if this setting is `true`, then the least recently focused node will be unfocused; if this setting is `false`, 
+        then the userwill not be able to focus the node. 
+        In manual and showall modes, numberOfFocusNodes is not taken into account. If `true` then by focusing a different node, 
+        the previous becomes unfocused. If 'false' then previous nodes remain focused.
+        _Used by modes: all modes_ */
         autoUnfocus?: boolean;
         /** Whether to auto-zoom to a node when it is focused. _Used by modes: all modes_ */
         autoZoomOnFocus?: boolean;
@@ -3169,7 +3316,7 @@ declare module ZoomCharts.Configuration {
         minNumberOfFocusNodes?: number;
         /** Navigation mode - the algorithm that determines the expanding/collapsing logic. */
         mode?: "manual" | "showall" | "focusnodes";
-        /** Maximum number of focused nodes. The `autoUnfocus` setting determines what happens when more nodes are focused.  _Used by modes: all modes_ */
+        /** Maximum number of focused nodes. The `autoUnfocus` setting determines what happens when more nodes are focused.  _Used by modes: focusnodes_ */
         numberOfFocusNodes?: number;
     }
     export interface NetChartSettingsStyle extends ItemsChartSettingsNodesLayerStyle {
@@ -3188,8 +3335,6 @@ declare module ZoomCharts.Configuration {
         /** Contains the slice that was clicked. Note that this will also be populated when the label
         of the slice is clicked. */
         clickSlice: PieChartSlice;
-        clickCredits: any;
-        credits: any;
     }
     /** Describes the base properties shared between all events raised by the different charts. */
     export interface PieChartChartEventArguments extends BaseChartEventArguments {
@@ -3809,8 +3954,6 @@ declare module ZoomCharts.Configuration {
         timeEnd: number;
         /** The UTC timestamp for the left-most displayed value. */
         timeStart: number;
-        clickCredits: any;
-        credits: any;
     }
     export interface TimeChartDataObject extends BaseDataErrorResponse {
         /** 
@@ -4125,6 +4268,8 @@ declare module ZoomCharts.Configuration {
         overscrollProportion?: number;
     }
     export interface TimeChartSettingsInteractionSelection {
+        /** Specifies if the selection area should be cleared/removed on right click. By default right click will clear selection. */
+        clearOnRightClick?: boolean;
         /** Enable/disable selection */
         enabled?: boolean;
         /** Specifies if the selection area can be moved by dragging it. By default the whole chart is moved instead. */
@@ -4416,14 +4561,14 @@ declare module ZoomCharts.Configuration {
         cut down. */
         zoomOutFunction?: (
             /** Current display unit. */
-            unit: string, 
+            unit: "ms" | "s" | "m" | "h" | "d" | "w" | "M" | "y", 
             /** The count of specified units. */
             count: number, 
             /** Timestamp of time range before `Zoom-out`. */
             from: number, 
             /** Timestamp of time range before `Zoom-out`. */
             to: number) => {
-                unit: string;
+                unit: "ms" | "s" | "m" | "h" | "d" | "w" | "M" | "y" | "milliseconds" | "millisecond" | "sec" | "second" | "seconds" | "min" | "minute" | "minutes" | "hour" | "hours" | "day" | "days" | "D" | "week" | "weeks" | "W" | "mon" | "month" | "months" | "year" | "years" | "Y";
                 count: number;
                 from: number;
                 to: number;
@@ -4450,6 +4595,8 @@ declare module ZoomCharts {
         public getEnabledSeries(): Array<Configuration.FacetChartSettingsSeries>;
         public getPie(): Array<string>;
         public getPieOffset(): number;
+        /** Gets all series even those that are not enabled */
+        public getSeries(): Array<Configuration.TimeChartSettingsSeries>;
         /** Adds event listener. */
         public on(
             /** The type of the event for which the listener will be added. See method overloads for valid values. */
@@ -4641,6 +4788,10 @@ declare module ZoomCharts {
                 /** An empty mouse event. */
                 event: Configuration.BaseMouseEvent, args: Configuration.BaseChartErrorEventArguments) => void): void;
         public on(name: "hoverChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
+        /** Adds an event listener for pointer down event. */
+        public on(name: "pointerDown", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
+        /** Adds an event listener for pointer down event. */
+        public on(name: "dataUpdated", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
         public on(name: "positionChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
         public on(name: "rightClick", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartClickEventArguments) => void): void;
         public on(name: "selectionChange", listener: (event: Configuration.BaseMouseEvent, args: Configuration.NetChartChartEventArguments) => void): void;
@@ -4714,7 +4865,7 @@ declare module ZoomCharts {
         [zoomextent]: https://zoomcharts.com/developers/en/net-chart/api-reference/settings/interaction/zooming/zoomExtent.html */
         public zoom(
             /** if specified and greater than zero, the zoom level will be updated to this value. */
-            zoomValue?: number | "overview" | "auto" | "in" | "out", 
+            zoomValue?: number | "auto" | "overview" | "in" | "out", 
             /** specifies if the zoom change should be animated. The default is `true`. */
             animate?: boolean): number;
         /** 
@@ -4819,6 +4970,8 @@ declare module ZoomCharts {
         public exportVisibleData(): Array<Array<string | number>>;
         /** Gets the currently enabled series */
         public getEnabledSeries(): Array<Configuration.TimeChartSettingsSeries>;
+        /** Gets all series even those that are not enabled */
+        public getSeries(): Array<Configuration.TimeChartSettingsSeries>;
         /** Adds event listener. */
         public on(
             /** The type of the event for which the listener will be added. See method overloads for valid values. */
@@ -4849,19 +5002,24 @@ declare module ZoomCharts {
         /** Updates the chart settings but instead of merging some settings that are arrays or dictionaries (such as `data`)
         these collections are replaced completely. For example, this allows removal of series or value axis within TimeChart. */
         public replaceSettings(changes: Configuration.TimeChartSettings): this;
-        /** Scrolls the visible chart area left or right.
-        
-        The `amount` property format: `< amount unit` or `> amount unit`.
-        
-        - `<` scrolls to the left, `>` scrolls to the right
-        - `amount`: integer amount of units to scroll
-        - `unit`: one of the following: `page`, `bar`, `y`, `M`, `d`, `w`, `h`, `m`, `s`, `ms`.
-        
-        Examples:
-        
-        - `scroll("< 1 s")` - scrolls left 1 second, no animation
-        - `scroll("> 10 y", true)` - scrolls right, 10 years with animation */
-        public scroll(amount: string, animate?: boolean): void;
+        /** Scrolls the visible chart area left or right. */
+        public scroll(
+            /** how much to scroll */
+            amount: string, 
+            /** scroll with animation or without */
+            animate?: boolean, 
+            /** adjust the scroll to snap according to the current displayUnit
+            
+            The `amount` property format: `< amount unit` or `> amount unit`.
+            - `<` scrolls to the left, `>` scrolls to the right
+            - `amount`: integer amount of units to scroll
+            - `unit`: one of the following: `page`, `bar`, `y`, `M`, `d`, `w`, `h`, `m`, `s`, `ms`.
+            
+            Examples:
+            
+            - `scroll("< 1 s")` - scrolls left 1 second, no animation
+            - `scroll("> 10 y", true)` - scrolls right, 10 years with animation */
+            snap?: boolean): void;
         /** Gets or sets the  selection in javascript timestamp (milliseconds). All timestamps are in UTC.
         
         Use `from: null, to: null` to remove selection. If the chart does not have a selection, the method
@@ -4965,6 +5123,11 @@ declare module ZoomCharts {
 
     export interface GradientDefinition extends Array<[number, string]> {
     }
+
+    export type GradientMode = null | "vertical" | "horizontal"
+
+    export type GradientType = null | "cylinder"
+
 
     export interface IRectangle {
         x0: number;

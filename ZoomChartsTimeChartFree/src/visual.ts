@@ -13,7 +13,7 @@ module powerbi.extensibility.visual {
         protected colors: IColorPalette;
         protected selectionManager: ISelectionManager;
         protected setLegendState = true;
-        protected series: ZoomCharts.Configuration.FacetChartSettingsSeries[] = [];
+        protected series: ZoomCharts.Configuration.TimeChartSettingsSeries[] = [];
         protected customPropertiesFree: any = [];
         public betalimitator: any = null;
         public customizationInformer: any = null;
@@ -174,6 +174,7 @@ module powerbi.extensibility.visual {
             let x: number = (<any>col.expr).func;
 
             switch (x) {
+                //case undefined: return "avg";
                 default: return "sum";
                 case 0: return "sum";
                 case 1: return "avg";
