@@ -16,6 +16,16 @@ module powerbi.extensibility.visual {
             let ids: Array<visuals.ISelectionId>;
 
             let dataView = options.dataViews[0];
+            /*if (isDebugVisual) {
+                console.log(dataView);
+                if (dataView.tree){
+                    let c = dataView.tree.root.children;
+                    for (var x = 0; x < c.length; x++){
+                        console.log(c[x]);
+                    }
+                }
+            }*/
+            //debugger;
             if (!dataView) {
                 displayMessage(target, "Either the data loading is taking longer than usual or the data fields for the visual are not properly configured.", "Incorrect data", false);
                 return {data: root, ids: ids };
@@ -42,6 +52,8 @@ module powerbi.extensibility.visual {
             }
 
             hideMessage(target);
+            
+
 
             let timeCat = dataView.categorical.categories[0];
             let times = timeCat.values;

@@ -20,11 +20,6 @@ module powerbi.extensibility.visual {
                 return root;
             }
 
-            if(visual.betalimitator.checkIfExpired()){
-                visual.showExpired();
-                return root;
-            }
-
             if (typeof(dataView.categorical.categories) == "undefined"){
                 displayMessage(target, "Please, select at least one category for node grouping", "Incorrect data", false);
                 return root;

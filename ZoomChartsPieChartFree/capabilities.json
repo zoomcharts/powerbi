@@ -16,7 +16,8 @@
             "conditions": [
                 {
                     "Category": {
-                        "min": 0
+                        "min": 0,
+                        "max": 3
                     },
                     "Values": {
                         "min": 0,

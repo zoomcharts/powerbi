@@ -1,15 +1,15 @@
 module powerbi.extensibility.visual {
     export let ZoomChartsRootUrl:string = "https://cdn.zoomcharts-cloud.com/1/18/latest/";
 
-    window.ZoomChartsLicense = "ZCP-u34517j50: ZoomCharts Custom Visual free licence for use in Microsoft PowerBI Projects ";
-    window.ZoomChartsLicenseKey = "6611cc38dd379865f5c6d04671dfb30f79cb57af7e4df4ea21"+
-    "42383b44a2a112636ca17c9c729a43841f2a55a16d267a395af10fe35763e409772292b18898e"+
-    "206bcaf353b9ae266bfdcd2c113c3c5973683118c643c870526f3e48e34616f0558b33a03e34b"+
-    "2402e051b887e0bbb9124e2a8de657ce512d7fe3c26d93b25b8a1774de7c00703156a5fb7d5eb"+
-    "cd97a40cabdc2ab45d75fb94466ce7882b813649a7f148ae6997fe214d91df8b408fe2b678177"+
-    "af7b709d6b0754c89dd01ef3e424c02c16dd7ae9162c8a9fe50307233bc6a07a0c63c09b3e239"+
-    "e128a4f5595ff692e5d89f0d68606f8aa2afabc84ba1ef3c6e37f3419feab69e8dcd8a0f0af7d";
-
+    window.ZoomChartsLicense = "ZCF-09vyx966i: ZoomCharts SDK license for ZoomCharts Power BI Custom Visuals; upgrades until: 2019-12-31";
+    window.ZoomChartsLicenseKey = "48547aa5d18291d08d7ca38e9bf0b3b67dce6812b7c3b28613"+
+        "3f4e24abc5b5a3321b6f322d761c302c3fa3f99a16d9150745b4c105ad71e3b9fc83fb54ecd69"+
+        "001854a61be03f144b521bd7852cbd338c619f9fa646bb7b8ade3c2b01dcf53b5fda691b3dc27"+
+        "e44f5fde0ac0c4e6dbafc9d3e3a704713af44f03df058c8d89b49d8b394fa475d4e1c3cdfdc2a"+
+        "a31482452fb7a99034d1ce7b3929350f5b6569190bd8d94b7398497b9bb0d15f9ea1fb9e48842"+
+        "91f5fd180d6a867a4b5d75be2e37221ca2ee6c482234b077d4a61a6a762241b398375577e7e7f"+
+        "b7138acf049351817e151ea2580483fdcff289447cfc52908eb9b068855b43527db3c8ee52cd1";
+     
     export interface IBetaSettings {
         enabled:boolean,
         image:string,

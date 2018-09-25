@@ -12,6 +12,7 @@ namespace ZoomCharts.Configuration {
 module powerbi.extensibility.visual {
     export class Data {
         private static palettes: ZoomCharts.Dictionary<ColorPaletteWrapper> = {};
+        @logExceptions()
         public static convert(visual:Visual, host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             if (isDebugVisual) {
                 console.log("Chart data update called", options);
@@ -45,11 +46,6 @@ module powerbi.extensibility.visual {
                 return root;
             }         
             
-            if(visual.betalimitator.checkIfExpired()){
-                visual.showExpired();
-                return root;
-            }
-
             hideMessage(target);
 
             const formatter = powerbi.extensibility.utils.formatting.formattingService;
