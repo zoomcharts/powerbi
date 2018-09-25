@@ -4,7 +4,7 @@ module powerbi.extensibility.visual {
         protected chart: ZoomCharts.TimeChart;
         protected ZC:any;
         public host: IVisualHost;
-        protected dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 0, unit: "d", values: [] };
+        protected dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 1, unit: "d", values: [] };
         protected dataIds: ISelectionId[] = [];
         protected dataSourceIdentity: string = "";
         protected pendingSettings: ZoomCharts.Configuration.TimeChartSettings = {};
@@ -68,7 +68,7 @@ module powerbi.extensibility.visual {
                 return;
 
             this.ZC = zc;
-
+            
             let chartContainer = document.createElement("div");
             chartContainer.className = "chart-container";
             this.target.appendChild(chartContainer);
