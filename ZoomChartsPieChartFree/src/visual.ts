@@ -2,7 +2,7 @@ module powerbi.extensibility.visual {
     export class Visual implements IVisual {
         protected target: HTMLElement;
         protected chart: ZoomCharts.PieChart;
-        protected ZC: typeof ZoomCharts;
+        protected ZC: any;
         public host: IVisualHost;
         protected pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
         protected updateTimer: number;
@@ -33,7 +33,6 @@ module powerbi.extensibility.visual {
             displayMessage(this.target, "ZoomCharts Power BI Custom Visual", "Loading. Please wait.");
 
             appendZCCss(this.target);
-            this.createChart(window);
 
             this.customizationInformer = new customizationInformer(this.target, this, {
                 url: "data:image/png;base64,",
@@ -46,6 +45,7 @@ module powerbi.extensibility.visual {
                 },
                 upgrade_url: "https://zoomcharts.com/powerbi-custom-visuals/donut-chart-overlay"
             });
+            this.createChart(window);
 
         }
 
@@ -98,10 +98,11 @@ module powerbi.extensibility.visual {
                     }
                 },
             };
-            addFreeVersionLogo(settings);
+            if (visualMode == "free"){
+                addFreeVersionLogo(settings);
+            }
             this.chart = new zc.PieChart(settings);
             hideMessage();
-            //this.pendingData = null;
         }
         @logExceptions()
         private updateSelection(args: ZoomCharts.Configuration.PieChartChartEventArguments, delay: number) {
