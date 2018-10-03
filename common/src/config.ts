@@ -29,5 +29,6 @@ module powerbi.extensibility.visual {
         expires_dts: 0, // set to number to actuall expire. not implemented
         version: null//"BETA v.0.3";
     };
+    export let visualMode:string = "free";
 }
 
