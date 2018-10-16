@@ -15,6 +15,8 @@ module powerbi.extensibility.visual {
         public customizationInformer: any = null;
         public viewport: any = null;
         constructor(options: VisualConstructorOptions) {
+            version = "v1.1.0.1";
+            releaseDate = "Oct 13, 2018";
             this.target = options.element;
             this.host = options.host;
             this.selectionManager = options.host.createSelectionManager();
