@@ -1,4 +1,4 @@
-
+/// <reference path="freehelpers.ts" />
 module powerbi.extensibility.visual {
     export function setupCustomizationInformer(visual:any){
         visual.customizationInformer = new customizationInformer(visual.target, visual, {

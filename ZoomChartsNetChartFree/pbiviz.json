@@ -4,7 +4,7 @@
     "displayName": "ZoomCharts Network Chart",
     "guid": "ZoomChartsNetChartFreeD1C58E3B59077E6D06A4CB9B0D4E2029A917",
     "visualClassName": "Visual",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "ZoomCharts Network Chart",
     "supportUrl": "https://zoomcharts.com/en/microsoft-power-bi-custom-visuals/",
     "gitHubUrl": "https://github.com/zoomcharts/powerbi/tree/master/ZoomChartsNetChartFree"
@@ -18,7 +18,7 @@
     "icon": "assets/icon.png"
   },
   "externalJS": [
-    "../common/zoomcharts/zoomcharts.js",
+    "../common/zoomcharts/netchart.js",
     "../common/src/lodash.min.js",
     "../common/src/globalize.js",
     "../common/src/globalize.culture.en-US.js",
