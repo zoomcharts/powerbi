@@ -79,6 +79,7 @@ module powerbi.extensibility.visual {
         }
     }
 
+
     export function updateScale(options: VisualUpdateOptions, chart) {
         //scale:
         let tempViewport: any = options.viewport;
@@ -112,6 +113,9 @@ module powerbi.extensibility.visual {
     }
     export function updateSize(visual, viewport, newViewMode?:any){
         let scale;
+        if (!visual.current_scale){
+            visual.current_scale = 1;
+        }
         if (typeof(viewport.scale) != "undefined"){
             scale = viewport.scale;
         } else {

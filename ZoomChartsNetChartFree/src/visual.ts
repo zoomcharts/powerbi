@@ -14,11 +14,10 @@ module powerbi.extensibility.visual {
         protected lastCategorySet: string = null;
         protected zoom: number = 1;
         protected customPropertiesFree: any = [];
-        public betalimitator: any = null;
         public customizationInformer: any = null;
         public viewport: any = null;
         public current_scale:any = 1;
-        public prev_pixel_ratio:any = 1;
+        public prev_pixel_ratio:any = null;
         public cached_color:any={};
         public cached_color_light:any={};
         public current_selection:any={};
@@ -53,24 +52,25 @@ module powerbi.extensibility.visual {
             if (visualMode == "free"){
                 setupCustomizationInformer(this);
             }
+
+            console.log("initiaing crate chart");
             this.createChart(window);
+
+            console.log("chart created", this.chart);
             
             hideMessage();
 
             
         }
         public updateTimeout:number = 0;
+
         @logExceptions()
-        protected createChart(zc:any){
+        protected createChart(zc:any, onBeforeCreate?: (settings:any)=>any ){
             // check if the visual is destroyed before chart is created.
             if (!this.target)
                 return;
 
             this.ZC = zc;
-
-            if(!this.pendingData.nodes.length) {
-                displayMessage(this.target, "Please, select at least one category for node grouping", "Incorrect data", false);        
-            }
 
             let chartContainer = document.createElement("div");
             chartContainer.className = "chart-container";
@@ -78,6 +78,7 @@ module powerbi.extensibility.visual {
             let self = this;
             self.zoom = 1;
             self.updateTimeout = null;
+
             let mode:ZoomCharts.Configuration.NetChartSettingsLayout = {
                 //mode: "hierarchy",
                 //nodeSpacing: 100
@@ -252,20 +253,27 @@ module powerbi.extensibility.visual {
                 layout: mode,
                 assetsUrlBase: "/"
             };
-            addFreeVersionLogo(defaultNetChartSettings);
+            if (visualMode == "free"){
+                addFreeVersionLogo(defaultNetChartSettings);
+            }
+            if (onBeforeCreate){
+                defaultNetChartSettings = onBeforeCreate(defaultNetChartSettings);
+            }
             this.chart = new zc.NetChart(defaultNetChartSettings);
-
-            this.pendingData = null;
         }
 
 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
-            updateSize(this, options.viewport);
-            this.customizationInformer.updateImage(options.viewport);
+            updateSize(this, options.viewport, options.viewMode);
+            if (visualMode == "free"){
+                this.customizationInformer.updateImage(options.viewport);
+            }
+            console.log("update ok?");
             if (options.type & VisualUpdateType.Data) {
-                
+                console.log("converting data");
                 let blob = Data.convert(this, this.host, this.target, options);
+                console.log("data conversion ok");
                 let classes = blob.classes;
                 let root:ZoomCharts.Configuration.NetChartDataObject = blob;
                 if (blob.format != undefined)

@@ -143,8 +143,6 @@ module powerbi.extensibility.visual {
             return res;
         }
 
-        public current_scale:any=1;
-        public prev_pixel_ratio:any;
         @logExceptions()
         public update(options: VisualUpdateOptions) {
             updateSize(this, options.viewport, options.viewMode);

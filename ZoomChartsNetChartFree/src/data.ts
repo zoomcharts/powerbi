@@ -16,17 +16,20 @@ module powerbi.extensibility.visual {
 
             let dataView = options.dataViews[0];
             if (!dataView) {
+                debugger
                 displayMessage(target, "Either the data loading is taking longer than usual or the data fields for the visual are not properly configured.", "Incorrect data", false);
                 return root;
             }
 
             if (typeof(dataView.categorical.categories) == "undefined"){
+                debugger
                 displayMessage(target, "Please, select at least one category for node grouping", "Incorrect data", false);
                 return root;
             }
 
             let categories = dataView.categorical.categories.length;
             if (categories < 1){
+                debugger
                 displayMessage(target, "Please, select at least one category for node grouping", "Incorrect data", false);
                 return root;
             }
@@ -57,6 +60,7 @@ module powerbi.extensibility.visual {
             }
 
             if (typeof(dataView.categorical.values) == "undefined"){
+                debugger
                 displayMessage(target, "Please, select measure to view the network", "Incorrect data", false);
                 return root;
             }
