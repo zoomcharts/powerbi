@@ -53,11 +53,8 @@ module powerbi.extensibility.visual {
                 setupCustomizationInformer(this);
             }
 
-            console.log("initiaing crate chart");
             this.createChart(window);
 
-            console.log("chart created", this.chart);
-            
             hideMessage();
 
             
@@ -269,11 +266,8 @@ module powerbi.extensibility.visual {
             if (visualMode == "free"){
                 this.customizationInformer.updateImage(options.viewport);
             }
-            console.log("update ok?");
             if (options.type & VisualUpdateType.Data) {
-                console.log("converting data");
                 let blob = Data.convert(this, this.host, this.target, options);
-                console.log("data conversion ok");
                 let classes = blob.classes;
                 let root:ZoomCharts.Configuration.NetChartDataObject = blob;
                 if (blob.format != undefined)
