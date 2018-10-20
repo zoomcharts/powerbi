@@ -63,7 +63,7 @@ module powerbi.extensibility.visual {
 
             let settings:any = {
                 container: chartContainer,
-                advanced: { themeCSSClass: "DVSL-flat" },
+                advanced: {themeCSSClass: "DVSL-flat" },
                 data:
                 [{
                     preloaded: this.pendingData,
@@ -244,7 +244,7 @@ module powerbi.extensibility.visual {
         public prev_pixel_ratio:any;
         @logExceptions()
         public update(options: VisualUpdateOptions) {
-            updateSize(this, options.viewport);
+            updateSize(this, options.viewport, options.viewMode);
             if (visualMode == "free"){
                 this.customizationInformer.updateImage(options.viewport);
             }
@@ -258,7 +258,6 @@ module powerbi.extensibility.visual {
                 this.customPropertiesFree = options.dataViews[0].metadata.objects;
                 
                 if (this.chart) {
-                    updateScale(options, this.chart);
                     let state = (<any>this.chart)._impl.scrolling.getState();
                     this.chart.replaceData(root);
                     if (this.lastCategorySet !== catStr)
@@ -272,6 +271,8 @@ module powerbi.extensibility.visual {
                 }
                 this.lastCategorySet = catStr;
             }
+            this.chart.updateSettings({advanced:{highDPI: 2}});
+            this.chart.updateSize();
         }
 
         @logExceptions()

@@ -290,6 +290,8 @@ module powerbi.extensibility.visual {
                     this.pendingData = root;
                 }
             }
+            this.chart.updateSettings({advanced:{highDPI: 2}});
+            this.chart.updateSize();
         }
 
         @logExceptions()

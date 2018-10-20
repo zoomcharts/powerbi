@@ -15,6 +15,7 @@
     "../common/src/config.ts",
     "../common/src/helpers.ts",
     "../common/src/freehelpers.ts",
+    "../common/src/piehelper.ts",
     "../common/src/piedata.ts",
     "src/visual.ts"
   ]

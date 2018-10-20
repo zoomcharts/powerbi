@@ -81,10 +81,12 @@ module powerbi.extensibility.visual {
 
 
     export function updateScale(options: VisualUpdateOptions, chart) {
-        //scale:
         let tempViewport: any = options.viewport;
         let tmpScale = 0;
         let scale: any = null;
+        if (isDebugVisual){
+            console.log("Viewport scale & pixel ratio", tempViewport.scale, window.devicePixelRatio);
+        }
         if (tempViewport.scale) {
             tmpScale = tempViewport.scale;
             if (tmpScale == 1) {
@@ -105,9 +107,12 @@ module powerbi.extensibility.visual {
         if (scale) {
             chart.replaceSettings({
                 advanced: {
-                    highDPI: scale
+                    highDPI: 2
                 }
             });
+        }
+        if (isDebugVisual){
+            console.log("Current visual scale", scale);
         }
         return scale;
     }

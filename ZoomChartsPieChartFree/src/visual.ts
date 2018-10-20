@@ -162,7 +162,6 @@ module powerbi.extensibility.visual {
 
                 if (this.chart) {
                     this.viewport = options.viewport;
-                    updateScale(options, this.chart);
 
                     this.chart.replaceData(root);
 
@@ -175,8 +174,8 @@ module powerbi.extensibility.visual {
                 }
                 this.lastCategorySet = catStr;
             }
-
-            
+            this.chart.updateSettings({advanced:{highDPI: 2}});
+            this.chart.updateSize();
         }
 
        // @logExceptions()
