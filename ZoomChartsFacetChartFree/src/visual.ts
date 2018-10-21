@@ -143,7 +143,7 @@ module powerbi.extensibility.visual {
             if (!values || !values.length)
                 return;
 
-            let series: ZoomCharts.Configuration.FacetChartSettingsSeriesColumns[] = [];
+            let series: Array<any> = [];
             for (let i = 0; i < values.length; i++) {
                 let column = values[i];
                 let istr = (i + 1).toFixed(0);
@@ -154,7 +154,9 @@ module powerbi.extensibility.visual {
                     }
 
                     let color = this.colors.getColor("zc-fc-color-" + istr);
-                    let s = <ZoomCharts.Configuration.FacetChartSettingsSeriesColumns>{
+                    /* in paid version series can be also line
+                     * <ZoomCharts.Configuration.FacetChartSettingsSeriesColumns>*/
+                    let s:any={
                         type: "columns",
                         id: "s" + istr,
                         name: secureString(column.source.displayName),
