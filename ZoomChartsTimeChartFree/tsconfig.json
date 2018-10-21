@@ -14,7 +14,8 @@
     "../common/src/powerbi-visuals-utils-formattingutils.d.ts",
     "../common/src/config.ts",
     "../common/src/helpers.ts",
-    "../common/src/loader.ts",
+    "../common/src/freehelpers.ts",
+    "../common/src/timehelper.ts",
     "src/data.ts",
     "src/visual.ts"
   ]

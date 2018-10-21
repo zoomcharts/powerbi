@@ -16,16 +16,9 @@ module powerbi.extensibility.visual {
             let ids: Array<visuals.ISelectionId>;
 
             let dataView = options.dataViews[0];
-            /*if (isDebugVisual) {
-                console.log(dataView);
-                if (dataView.tree){
-                    let c = dataView.tree.root.children;
-                    for (var x = 0; x < c.length; x++){
-                        console.log(c[x]);
-                    }
-                }
-            }*/
-            //debugger;
+            if (isDebugVisual) {
+                console.log("Data view", dataView);
+            }
             if (!dataView) {
                 displayMessage(target, "Either the data loading is taking longer than usual or the data fields for the visual are not properly configured.", "Incorrect data", false);
                 return {data: root, ids: ids };
@@ -42,7 +35,7 @@ module powerbi.extensibility.visual {
             }
 
             if (!dataView.categorical.categories[0].source.type.dateTime) {
-                displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type.", "Incorrect data", false);
+                displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type. If you have selected date hierarchy, please, change to 'Date'.", "Incorrect data", false);
                 return {data: root, ids:ids};
             }
 
