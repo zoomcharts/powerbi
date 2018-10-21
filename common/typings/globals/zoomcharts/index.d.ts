@@ -1,4 +1,4 @@
-/** TypeScript definition file for ZoomCharts 1.18.5-dev */
+/** TypeScript definition file for ZoomCharts 1.18.9-dev */
 
 declare module ZoomCharts.Configuration {
     /* tslint:disable */
@@ -1203,7 +1203,7 @@ declare module ZoomCharts.Configuration {
         /** Default column style. */
         style?: FacetChartSettingsSeriesColumnsStyle;
         /** force type to columns only */
-        type?: "columns";
+        //type?: "columns";
     }
     export interface FacetChartSettingsSeriesColumnsStyle extends LinearChartSettingsSeriesColumnsStyle {
         /** Set to `true` in order to display a "preview" of the value distribution in each column.
@@ -2142,6 +2142,8 @@ declare module ZoomCharts.Configuration {
         label?: string;
         length?: number;
         lineDash?: Array<number>;
+        lineDashBackgroundFillColor?: string;
+        lineDashShape?: "rectangle" | "triangle" | "hexagon" | "inverseTriangle" | "inverseHexagon" | "diamond";
         /** Specifies the width of the line rendered for this link. */
         radius?: number;
         shadowBlur?: number;
@@ -2286,7 +2288,10 @@ declare module ZoomCharts.Configuration {
         display?: string;
         /** Controls if node is draggable; Values: draggable false - node cannot be dragged; draggable true - node can be dragged; Default is `true`. */
         draggable?: boolean;
-        fillColor?: string;
+        fillColor?: string | CanvasGradient;
+        /** Fill gradient.
+        For example: [[0,"black"],[0.5,"red"],[1, "orange"]]. */
+        fillGradient?: GradientDefinition;
         image?: string;
         /** Specifies the image cropping method. Valid values are `false` (disable cropping), `true` (default cropping mode), `"crop"`, `"letterbox"` and `"fit"`. */
         imageCropping?: "fit" | boolean | "crop" | "letterbox";
@@ -2613,7 +2618,7 @@ declare module ZoomCharts.Configuration {
     }
     export interface LinearChartSettingsLegendMarker extends BaseSettingsLegendMarker {
         /** Specifies the shape for markers in the legend. If the value is `null` then the small icon representing the series is drawn. */
-        shape?: "square" | "rhombus" | "triangle" | "triangle2" | "circle";
+        shape?: "triangle" | "square" | "rhombus" | "triangle2" | "circle";
     }
     export interface LinearChartSettingsLocalization extends BaseSettingsLocalization {
         /** Text to show on the info popup when there is no data in the selected range. */
@@ -2713,6 +2718,8 @@ declare module ZoomCharts.Configuration {
         minHeight?: number;
         /** Padding for column. 0th element - left padding, 1st element - right padding. */
         padding?: [number, number];
+        /** Radius for top-left, top-right, bottom-right, bottom-left corner */
+        radius?: [number, number, number, number];
         /** Shadow blur effect range. */
         shadowBlur?: number;
     }
@@ -2772,6 +2779,9 @@ declare module ZoomCharts.Configuration {
         If specified fillGradientMode: "horizontal" or "vertical", then value denotes fraction of the column width and must be in interval from 0 to 1 - this feature is available for columns only
         For example: [[0,"black"],[0.5,"red"],[1, "orange"]]. */
         fillGradient?: GradientDefinition;
+        /** Fill gradient orientation for manual fill gradient mode. In use with fillGradient property.
+        "null" for default fillGradient mode, "vertical" for vertical gradient, "horizontal" for horizonal rendering" */
+        fillGradientMode?: "vertical" | "horizontal";
         /** Specifies the URL to the image that will be used as the repeated fill pattern for the series.
         
         When `fillPattern` is specified, `fillGradient` is ignored. If `fillColor` is specified together with `fillPattern`, it will be
@@ -2808,7 +2818,7 @@ declare module ZoomCharts.Configuration {
         /** The width of the outline for the marker shape. */
         lineWidth?: number;
         /** Specify the shape of markers on the line. */
-        shape?: "square" | "rhombus" | "triangle" | "triangle2" | "circle";
+        shape?: "triangle" | "square" | "rhombus" | "triangle2" | "circle";
         /** The width of the marker. In case when circle - interpreted as the diameter. */
         width?: number;
     }
@@ -3818,7 +3828,7 @@ declare module ZoomCharts.Configuration {
     }
     export interface PieChartSettingsLegendMarker extends BaseSettingsLegendMarker {
         /** Specifies the shape for color markers in the legend. */
-        shape?: "square" | "rhombus" | "triangle" | "triangle2" | "circle";
+        shape?: "triangle" | "square" | "rhombus" | "triangle2" | "circle";
     }
     export interface PieChartSettingsLocalization extends BaseSettingsLocalization {
         othersLabel?: string;
