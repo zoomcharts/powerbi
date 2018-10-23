@@ -4,7 +4,7 @@ module powerbi.extensibility.visual {
         protected chart: ZoomCharts.TimeChart;
         protected ZC:any;
         public host: IVisualHost;
-        protected dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 1, unit: "d", values: [] };
+        protected dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 1, dataLimitFrom: 0, dataLimitTo: 1, unit: "d", values: [] };
         protected dataIds: ISelectionId[] = [];
         protected dataSourceIdentity: string = "";
         protected pendingSettings: ZoomCharts.Configuration.TimeChartSettings = {};
@@ -17,6 +17,9 @@ module powerbi.extensibility.visual {
         protected customPropertiesFree: any = [];
         public customizationInformer: any = null;
         public viewport: any = null;
+        protected initialDisplayUnitSet: boolean = false;
+        protected currentProps: any;
+        protected hasMeasure:boolean=false;
 
         constructor(options: VisualConstructorOptions) {
             version = "v1.1.0.1";
@@ -153,6 +156,7 @@ module powerbi.extensibility.visual {
                 settings = onBeforeCreate(settings);
             }
             this.chart = new zc.TimeChart(settings);
+            hideMessage();
         }
         @logExceptions()
 
@@ -234,7 +238,8 @@ module powerbi.extensibility.visual {
                 settings.legend = this.setLegendState ? { enabled: series.length > 1 } : void 0;
             }
             if (this.chart) {
-                this.chart.updateSettings(settings);
+                this.chart.replaceSettings(settings);
+                this.chart.clearHistory();
             } else {
                 this.pendingSettings = settings;
             }
@@ -291,9 +296,21 @@ module powerbi.extensibility.visual {
             if (visualMode == "free"){
                 this.customizationInformer.updateImage(options.viewport);
             }
+            let map = {
+                "d": "day",
+                "M": "month",
+                "m": "minute",
+                "y": "year",
+                "s": "second",
+                "ms": "millisecond",
+                "h": "hour"
+            };
             if (options.type & VisualUpdateType.Data) {
+                this.chart.updateSize();
+                hideMessage();
                 this.createSeries(options);
                 let root = Data.convert(this, this.host, this.target, options);
+
                 let lastDataObj = this.dataObj;
                 let lastDataSource = this.dataSourceIdentity;
                 this.dataObj = root.data;
@@ -305,6 +322,7 @@ module powerbi.extensibility.visual {
                 this.customPropertiesFree = options.dataViews[0].metadata.objects;
 
                 if (this.chart) {
+
                     let sel = this.chart.selection();
                     this.chart.replaceSettings({
                         data: [{
@@ -322,6 +340,21 @@ module powerbi.extensibility.visual {
                     }
                     this.chart.selection(sel[0], sel[1]);
 
+                    if (root.isMeasure){
+                        let unit = "";
+                        if (typeof(map[root.data.unit]) != "undefined"){
+                            unit = map[root.data.unit];
+                        } else {
+                            unit = root.data.unit;
+                        }
+                        this.hasMeasure = true;
+                        this.chart.displayUnit("1 " + root.data.unit);
+                        this.chart.updateSettings({area:{displayUnits: [{unit: "1 " + root.data.unit, name: unit}]}});
+                    } else {
+                        this.hasMeasure = false;
+                    }
+
+
                     /*
                     if (lastDataObj && lastDataObj.dataLimitTo === 1) {
                         this.chart.time(<number>root.data.from, <number>root.data.to, false);
@@ -333,9 +366,21 @@ module powerbi.extensibility.visual {
                     }
                     */
                 }
+                
+                //it seems that updating navigation. properties here is too late and so
+                //a workaround needs to be used. Even so, sometimes after updating displayUnit,
+                //chart doesn't receive new property value, so we need to check when displayUnit
+                // is the one that we actually need. After desired value is set, don't do this
+                // anymore.
+                if(visualMode != "free" && !this.initialDisplayUnitSet) {
+                    this.chart.setDisplayPeriod("max", "newestData");
+                    this.chart.displayUnit(this.currentProps.displayUnits.initialDisplayUnit);
+                    if(this.chart.displayUnit() == this.currentProps.displayUnits.initialDisplayUnit) {
+                        this.initialDisplayUnitSet = true;
+                    }
+                }
             }
             this.chart.updateSettings({advanced:{highDPI: 2}});
-            this.chart.updateSize();
         }
 
         @logExceptions()

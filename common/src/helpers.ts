@@ -408,6 +408,10 @@ module powerbi.extensibility.visual {
                     let stars = e.target.getAttribute("stars");
                     href += stars;
                 }
+
+
+                let r = new RegExp("pbi/", "g");
+                href = href.replace(r, "pbi/" + ((!visualCurrentMode)?"view":"edit") +"/");
                 openURL(host, href);
                 return false;
             });
@@ -455,7 +459,6 @@ module powerbi.extensibility.visual {
                 } else {
                     removeCssClass(elem, "zc-info-window-toolbar-min");
                 }
-                rebuildFreemiumContent(elem, host);
             });
             let contentElement = this.freemiumMessageOverlay.getElementsByClassName("zc-info-window-content")[0];
             registerMessage(contentElement, (elem:HTMLElement, width:number, height:number)=>{
@@ -465,21 +468,13 @@ module powerbi.extensibility.visual {
             contentElement.addEventListener("scroll", (event)=>{event.stopPropagation();return true});
             var self = this;
             target.getElementsByClassName("zc-info-window-close")[0].addEventListener("click", ()=>{self.toggleFreemium(null, target, host);});
+        
+            clickify(target.getElementsByClassName("zc-linkify"), host);
 
         }
 
         addCssClass(this.freemiumMessageOverlay, "zc-info-window-visible");
 
-        rebuildFreemiumContent(this.freemiumMessageOverlay, host);
-
-    }
-    function rebuildFreemiumContent(target, host){
-        let content = target.innerHTML;
-        let r = new RegExp("pbi/(view/|edit/|)", "g");
-        content = content.replace(r, "pbi/" + ((!visualCurrentMode)?"view":"edit") +"/");
-        target.innerHTML = content;
-        
-        clickify(target.getElementsByClassName("zc-linkify"), host);
     }
     export function removeCssClass(elem:any, className:string){
         if (elem.className.indexOf(className) > -1){

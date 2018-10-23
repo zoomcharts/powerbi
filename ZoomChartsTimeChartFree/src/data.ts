@@ -1,5 +1,6 @@
 module powerbi.extensibility.visual {
     export class Data {
+        @logExceptions()
         public static convert(visual: Visual, host: IVisualHost, target: HTMLElement, options: VisualUpdateOptions) {
             if (isDebugVisual) {
                 console.log("Chart data update called", options);
@@ -15,33 +16,35 @@ module powerbi.extensibility.visual {
             };
             let ids: Array<visuals.ISelectionId>;
 
+            let empty = {data: root, ids:ids, isMeasure: null};
+
             let dataView = options.dataViews[0];
             if (isDebugVisual) {
                 console.log("Data view", dataView);
             }
             if (!dataView) {
                 displayMessage(target, "Either the data loading is taking longer than usual or the data fields for the visual are not properly configured.", "Incorrect data", false);
-                return {data: root, ids: ids };
+                return empty;
             }
 
             if (!dataView.categorical) {
                 displayMessage(target, "The visual did not receive categorical data.", "Incorrect data", false);
-                return {data: root, ids: ids };
+                return empty;
             }
 
             if (!dataView.categorical.categories) {
                 displayMessage(target, "Please select the `Date` field for the visual.", "Incorrect data", false);
-                return {data: root, ids: ids };
+                return empty;
             }
 
             if (!dataView.categorical.categories[0].source.type.dateTime) {
                 displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type. If you have selected date hierarchy, please, change to 'Date'.", "Incorrect data", false);
-                return {data: root, ids:ids};
+                return empty;
             }
 
             if (!dataView.categorical.values) {
                 displayMessage(target, "Please select at least one value field for the visual.", "Incorrect data", false);
-                return {data: root, ids: ids };
+                return empty;
             }
 
             hideMessage(target);
@@ -65,6 +68,15 @@ module powerbi.extensibility.visual {
             let hasMilliseconds = false;
 
             let convValues = new Array<[number[]]>(times.length);
+            let isMeasure = false;
+            for (let v = 0; v < dataView.metadata.columns.length; v++) {
+                let vc:any = dataView.metadata.columns[v];
+                if (typeof(vc.roles.Category) != "undefined") continue;
+                if (typeof(vc.expr.func) == "undefined"){
+                    isMeasure = true;
+                    break;
+                }
+            }
             for (let i = 0; i < times.length; i++) {
                 let x = new Array<number>(valueCat.length + 2);
                 x[x.length - 1] = i;
@@ -79,7 +91,7 @@ module powerbi.extensibility.visual {
 
                 if (isNaN(d.valueOf())) {
                     displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type.", "Incorrect data", false);
-                    return {data: root, ids:ids};
+                    return {data: root, ids:ids, isMeasure: isMeasure};
                 }
 
                 times[i] = d;
@@ -99,7 +111,7 @@ module powerbi.extensibility.visual {
                     let vvv = aValues.values[i];
                     if (vvv != null && typeof vvv !== "number") {
                         displayMessage(target, "Please select a numerical field as the value for the visual or change the aggregation of it to `Count`. The problematic value is `" + secureString(aValues.values[i]) + "` from the field `" + secureString(aValues.source.displayName) + "`", "Incorrect data", false);
-                        return {data: root, ids: ids };
+                        return {data: root, ids: ids, isMeasure: isMeasure };
                     }
 
                     x[v + 1] = <number>vvv;
@@ -127,7 +139,7 @@ module powerbi.extensibility.visual {
             if (isDebugVisual) {
                 console.log(root);
             }
-            return {data: root, ids: ids };
+            return {data: root, ids: ids, isMeasure: isMeasure };
         }
     }
 }
