@@ -9,8 +9,12 @@ module powerbi.extensibility.visual {
         "b7138acf049351817e151ea2580483fdcff289447cfc52908eb9b068855b43527db3c8ee52cd1";
      
     export let visualMode:string = "free";
+    export let visualType:string = "advanced-donut-chart";
+    export let visualName:string = "Advanced Donut Chart Visual";
 
     export let version:string = null;
     export let releaseDate:string = null;
+    
+    export let visualCurrentMode:number = 0;
 }
 

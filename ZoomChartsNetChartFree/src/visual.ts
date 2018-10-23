@@ -27,6 +27,8 @@ module powerbi.extensibility.visual {
 
             version = "v1.1.0.1";
             releaseDate = "Oct 16, 2018";
+            visualType = "advanced-net-chart";
+            visualName = "Advanced Network Chart Visual";
 
             this.target = options.element;
             this.host = options.host;

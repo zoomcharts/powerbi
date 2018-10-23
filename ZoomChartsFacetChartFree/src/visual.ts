@@ -20,6 +20,8 @@ module powerbi.extensibility.visual {
         constructor(options: VisualConstructorOptions) {
             version = "v1.1.1.0";
             releaseDate = "Oct 20, 2018";
+            visualType = "advanced-column-chart";
+            visualName = "Advanced Column Chart Visual";
             this.target = options.element;
             this.host = options.host;
             this.selectionManager = options.host.createSelectionManager();
