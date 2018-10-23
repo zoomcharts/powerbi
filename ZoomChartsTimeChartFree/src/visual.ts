@@ -227,11 +227,12 @@ module powerbi.extensibility.visual {
 
             let settings: ZoomCharts.Configuration.TimeChartSettings = {
                 series: series,
-                legend: this.setLegendState ? { enabled: series.length > 1 } : void 0,
+            };
+            if (visualMode == "free"){
+                settings.legend = this.setLegendState ? { enabled: series.length > 1 } : void 0;
             }
-
             if (this.chart) {
-                this.chart.replaceSettings(settings);
+                this.chart.updateSettings(settings);
             } else {
                 this.pendingSettings = settings;
             }
