@@ -21,7 +21,7 @@ module powerbi.extensibility.visual {
             let root: ZoomCharts.Configuration.PieChartDataObjectRoot = {
                 id: "",
                 subvalues: [],
-                extra: [],
+                extra: {},
                 valueArray: []
             };
 
@@ -98,17 +98,18 @@ module powerbi.extensibility.visual {
                                 expandable: expandable,
                                 fillColor: color.value
                             },
-                            extra: [ids[i]]
+                            extra: {s:[ids[i]]}
                         };
                         obj.extra.category = secureString(categories.source.queryName);
                         obj.extra.categoryName = secureString(categories.source.displayName);
+                        obj.extra.sortIndex = i;
                         //parent.value += <number>values[i] || 0;
                         //parent.valueArray.push(<number>values[i] || 0)
                         parent.subvalues.push(obj);
                         grouper[idVal] = obj;
                         allObjects.push(obj);
                     } else {
-                        obj.extra.push(ids[i]);
+                        obj.extra.s.push(ids[i]);
                         obj.value += <number>values[i] || 0;
                         obj.valueArray.push(<number>values[i] || 0);
                         //parent.value += <number>values[i] || 0;
@@ -141,7 +142,6 @@ module powerbi.extensibility.visual {
                     obj[k] = this.aggregateValue(dataView.categorical.values[v].source, obj[ka]);
                 }                
             }
-
             return root;
         }
 
@@ -185,7 +185,7 @@ module powerbi.extensibility.visual {
                         objectName: objectName,
                         displayName: secureString(v.name),
                         properties: { fill: { solid: { color: v.style.fillColor } } },
-                        selector: v.extra[0].getSelector()
+                        selector: v.extra.s[0].getSelector()
                     });
                 } else {
                     this.enumerateSlices(objectName, depth - 1, v, result, seenKeys);

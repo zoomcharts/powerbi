@@ -115,7 +115,7 @@ module powerbi.extensibility.visual {
                 if (selectedSlices.length) {
                     let sel: visuals.ISelectionId[] = [];
                     for (let i = 0; i < selectedSlices.length; i++) {
-                        sel = sel.concat(selectedSlices[i].extra);
+                        sel = sel.concat(selectedSlices[i].extra.s);
                     }
                     
                     let cursel = selman.getSelectionIds();
@@ -162,7 +162,6 @@ module powerbi.extensibility.visual {
 
                 if (this.chart) {
                     this.viewport = options.viewport;
-
                     this.chart.replaceData(root);
 
                     if (this.lastCategorySet !== catStr)
