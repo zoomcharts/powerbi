@@ -98,7 +98,7 @@ module powerbi.extensibility.visual {
                                 expandable: expandable,
                                 fillColor: color.value
                             },
-                            extra: {s:[ids[i]]}
+                            extra: {s:[ids[i]], index: i}
                         };
                         obj.extra.category = secureString(categories.source.queryName);
                         obj.extra.categoryName = secureString(categories.source.displayName);
