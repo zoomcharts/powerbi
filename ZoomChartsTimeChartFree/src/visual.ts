@@ -20,6 +20,7 @@ module powerbi.extensibility.visual {
         protected initialDisplayUnitSet: boolean = false;
         protected currentProps: any;
         protected hasMeasure:boolean=false;
+        protected currentDisplayUnits:any=[];
 
         constructor(options: VisualConstructorOptions) {
             version = "v1.1.0.1";
@@ -324,12 +325,6 @@ module powerbi.extensibility.visual {
                 if (this.chart) {
 
                     let sel = this.chart.selection();
-                    this.chart.replaceSettings({
-                        data: [{
-                            units: [root.data.unit],
-                            preloaded: root.data
-                        }]
-                    });
                     this.chart.replaceData(root.data);
                     if (this.dataSourceIdentity !== lastDataSource) {
                         let unit = new this.ZC.ZoomCharts.Internal.TimeChart.TimeStep(root.data.unit, 1);
@@ -340,7 +335,7 @@ module powerbi.extensibility.visual {
                     }
                     this.chart.selection(sel[0], sel[1]);
 
-                    if (root.isMeasure){
+                    if (root.isMeasure && !this.hasMeasure){
                         let unit = "";
                         if (typeof(map[root.data.unit]) != "undefined"){
                             unit = map[root.data.unit];
@@ -350,8 +345,27 @@ module powerbi.extensibility.visual {
                         this.hasMeasure = true;
                         this.chart.displayUnit("1 " + root.data.unit);
                         this.chart.updateSettings({area:{displayUnits: [{unit: "1 " + root.data.unit, name: unit}]}});
-                    } else {
+                    } else if (!root.isMeasure && this.hasMeasure){
                         this.hasMeasure = false;
+                        let du:any = null;
+                        if (visualMode == "free"){
+                            du = [
+                                { unit: "1 ms", name: "millisecond" },
+                                { unit: "1 s", name: "second" },
+                                { unit: "5 s", name: "5 seconds" },
+                                { unit: "1 m", name: "minute" },
+                                { unit: "5 m", name: "5 minutes" },
+                                { unit: "1 h", name: "hour" },
+                                { unit: "6 h", name: "6 hours" },
+                                { unit: "1 d", name: "day" },
+                                { unit: "1 M", name: "month" },
+                                { unit: "3 M", name: "quarter" },
+                                { unit: "1 y", name: "year" }
+                            ];
+                        } else {
+                            du = this.getSelectedDisplayUnits(this.currentProps);
+                        }
+                        this.chart.updateSettings({area: {displayUnits: du}});
                     }
 
 
@@ -382,7 +396,7 @@ module powerbi.extensibility.visual {
             }
             this.chart.updateSettings({advanced:{highDPI: 2}});
         }
-
+        public getSelectedDisplayUnits(props:any){}
         @logExceptions()
         public destroy(): void {
             this.target = null;
