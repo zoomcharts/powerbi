@@ -21,6 +21,7 @@ module powerbi.extensibility.visual {
         protected currentProps: any;
         protected hasMeasure:boolean=false;
         protected currentDisplayUnits:any=[];
+        private currentDu:any = [];
 
         constructor(options: VisualConstructorOptions) {
             version = "v1.1.0.1";
@@ -334,6 +335,12 @@ module powerbi.extensibility.visual {
                         this.chart.time(unit.roundTimeDown(<number>root.data.from), unit.roundTimeUp(<number>root.data.to), false);
                     }
                     this.chart.selection(sel[0], sel[1]);
+                    let du:any = null;
+                    let unitsChanged:boolean = false;
+                    du = this.getSelectedDisplayUnits(this.currentProps);
+                    if (du.length != this.currentDu.length){
+                        unitsChanged = true;
+                    }
 
                     if (root.isMeasure && !this.hasMeasure){
                         let unit = "";
@@ -345,9 +352,8 @@ module powerbi.extensibility.visual {
                         this.hasMeasure = true;
                         this.chart.displayUnit("1 " + root.data.unit);
                         this.chart.updateSettings({area:{displayUnits: [{unit: "1 " + root.data.unit, name: unit}]}});
-                    } else if (!root.isMeasure && this.hasMeasure){
+                    } else if (!root.isMeasure && (this.hasMeasure || unitsChanged)){
                         this.hasMeasure = false;
-                        let du:any = null;
                         if (visualMode == "free"){
                             du = [
                                 { unit: "1 ms", name: "millisecond" },
@@ -362,11 +368,10 @@ module powerbi.extensibility.visual {
                                 { unit: "3 M", name: "quarter" },
                                 { unit: "1 y", name: "year" }
                             ];
-                        } else {
-                            du = this.getSelectedDisplayUnits(this.currentProps);
                         }
                         this.chart.updateSettings({area: {displayUnits: du}});
                     }
+                    this.currentDu = du;
 
 
                     /*
