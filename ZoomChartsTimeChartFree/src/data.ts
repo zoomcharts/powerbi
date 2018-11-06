@@ -86,8 +86,8 @@ module powerbi.extensibility.visual {
                     /* skip nulls */
                     continue;
                 }
-
-                let d: Date = new Date(times[i]);
+            
+                let d: any =  (times[i] instanceof Date)?times[i]:new Date(times[i]);
 
                 if (isNaN(d.valueOf())) {
                     displayMessage(target, "Please select a Date/Time field for the visual. The currently selected field does not contain the correct data type.", "Incorrect data", false);
@@ -119,7 +119,6 @@ module powerbi.extensibility.visual {
 
                 root.values.push(x);
             }
-
             if (!hasMilliseconds && !hasSeconds && !hasMinutes && !hasHours) {
                 // normalize to UTC as the dates are given in the local timezone
                 let ii = 0;

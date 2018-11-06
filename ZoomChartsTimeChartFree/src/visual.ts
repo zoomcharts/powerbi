@@ -4,7 +4,7 @@ module powerbi.extensibility.visual {
         protected chart: ZoomCharts.TimeChart;
         protected ZC:any;
         public host: IVisualHost;
-        protected dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 1, dataLimitFrom: 0, dataLimitTo: 1, unit: "d", values: [] };
+        protected dataObj: ZoomCharts.Configuration.TimeChartDataObject = { from: 0, to: 1, dataLimitFrom: 0, dataLimitTo: 1, unit: "s", values: [] };
         protected dataIds: ISelectionId[] = [];
         protected dataSourceIdentity: string = "";
         protected pendingSettings: ZoomCharts.Configuration.TimeChartSettings = {};
@@ -326,6 +326,7 @@ module powerbi.extensibility.visual {
                 if (this.chart) {
 
                     let sel = this.chart.selection();
+                    this.chart.updateSettings({data: [{units: [root.data.unit]}]});
                     this.chart.replaceData(root.data);
                     if (this.dataSourceIdentity !== lastDataSource) {
                         let unit = new this.ZC.ZoomCharts.Internal.TimeChart.TimeStep(root.data.unit, 1);
