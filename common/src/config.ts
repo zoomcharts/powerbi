@@ -16,5 +16,7 @@ module powerbi.extensibility.visual {
     export let releaseDate:string = null;
     
     export let visualCurrentMode:number = 0;
+
+    export let licenseStatus:null | "expired" | "licensed" | "trial" | "trialExpired" | "invalidLicense" | "unlicensed" = null;
 }
 
