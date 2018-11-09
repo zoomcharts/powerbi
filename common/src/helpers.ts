@@ -484,6 +484,7 @@ module powerbi.extensibility.visual {
         addCssClass(this.freemiumMessageOverlay, "zc-info-window-visible");
 
     }
+    
     export function displayPaid(target:any, host:any, settings?: any){
         if (!this.paidMessageOverlay){
             this.paidMessageOverlay = document.createElement("div");
@@ -534,6 +535,51 @@ module powerbi.extensibility.visual {
 
     }
 
+    export function displayExpired(target:any, host:any, settings?: any){
+        if (!this.expiredMessageOverlay){
+            this.expiredMessageOverlay = document.createElement("div");
+            this.expiredMessageOverlay.className = "zc-info-window zc-info-window-sm zc-font-book";
+            this.expiredMessageOverlay.style.display = "";
+            let content:string = '<div class="zc-info-window-page">                <div class="zc-info-window-h1 zc-font-bold">                    Paid features are being used                </div>                <p>                  To use the paid features, you need to add a license key and hash in the Visualizations pane > formatting tab > License settings section.                </p>                <p><strong>Don`t have the license key?</strong></p>                <div>                  <a href="https://zoomcharts.com/en/pbi/buy-now/" class="zc-btn-pbi-primary">Buy now</a>                </div>              </div>              <div class="zc-info-window-footer zc-clear-after">                  <a href="https://zoomcharts.com/en/pbi/" class="zc-pbi-logo"></a>              </div>';
+            
+            let r = new RegExp("pbi\/", "g");
+            content = content.replace(r, "pbi" + "\/" + visualType + "\/" + version + "\/"); 
+            this.expiredMessageOverlay.innerHTML = content;
+            target.appendChild(this.expiredMessageOverlay);
+   
+            let tb = target.getElementsByClassName("DVSL-menu-container")[0];
+            registerMessage(this.expiredMessageOverlay, (elem:HTMLElement, width:number, height:number)=>{
+                elem.style.width = Math.round(width-30) + "px";
+                elem.style.maxHeight = Math.round(height - 47) + "px";
+                if (this.viewMode != 0){
+                    removeCssClass(elem, "zc-info-license-view");
+                    addCssClass(elem, "zc-info-license-edit");
+                } else {
+                    removeCssClass(elem, "zc-info-license-edit");
+                    addCssClass(elem, "zc-info-license-view");
+                }
+                if (tb.className.indexOf("narrow") > -1){
+                    addCssClass(elem, "zc-info-window-toolbar-min");
+                } else {
+                    removeCssClass(elem, "zc-info-window-toolbar-min");
+                }
+            });
+            let contentElement = this.expiredMessageOverlay.getElementsByClassName("zc-info-window-page")[0];
+            registerMessage(contentElement, (elem:HTMLElement, width:number, height:number)=>{
+                elem.style.maxHeight = Math.round(height - 47) + "px";
+            });
+            var self = this;
+        
+            clickify(target.getElementsByClassName("zc-btn-pbi-primary"), host);
+            clickify(target.getElementsByClassName("zc-pbi-logo"), host);
+
+        }
+
+        addCssClass(this.expiredMessageOverlay, "zc-info-window-visible");
+
+    }
+
+
     export function removeCssClass(elem:any, className:string){
         if (elem.className.indexOf(className) > -1){
             let r = new RegExp(" ?" + className);
@@ -556,6 +602,12 @@ module powerbi.extensibility.visual {
             removeCssClass(this.paidMessageOverlay, "zc-info-window-visible");
         }
     }
+    export function hideExpired(target?:any){
+        if (this.expiredMessageOverlay){
+            removeCssClass(this.expiredMessageOverlay, "zc-info-window-visible");
+        }
+    }
+
 
  
     export function displayMessage(target:any, message: string, title: string, settings?: boolean){
