@@ -135,7 +135,6 @@ module powerbi.extensibility.visual {
                             for (let x = 0; x < d.nodes.length; x++){
                                 nodeList.push(d.nodes[x].id);
                             }
-                            console.log(nodeList);
                             args.chart.scrollIntoView(nodeList);
                         }, 1000);
                     }
