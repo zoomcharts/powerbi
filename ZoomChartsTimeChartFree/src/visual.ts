@@ -394,7 +394,8 @@ module powerbi.extensibility.visual {
                 // anymore.
                 if(visualMode != "free" && !this.initialDisplayUnitSet) {
                     this.chart.displayUnit(this.currentProps.displayUnits.initialDisplayUnit, false);
-                    this.chart.setDisplayPeriod("max", "newestData", false);
+                    let self = this;
+                    setTimeout(()=>{this.chart.setDisplayPeriod("max", "newestData");}, 100);
                     this.initialDisplayUnitSet = true;
                 } else {
                     this.chart.setDisplayPeriod("max", "newestData");
