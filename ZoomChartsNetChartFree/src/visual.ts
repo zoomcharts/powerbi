@@ -22,6 +22,8 @@ module powerbi.extensibility.visual {
         public cached_color_light:any={};
         public current_selection:any={};
         public is_paid: boolean = false;
+        private prevClasses:any = [];
+        private classUpdateTimeout:any = null;
 
         private st:any=null; // scrollIntoView timeout
 
@@ -277,7 +279,7 @@ module powerbi.extensibility.visual {
             this.chart = new zc.NetChart(defaultNetChartSettings);
         }
 
-        
+
         @logExceptions()
         public update(options: VisualUpdateOptions) {
             updateSize(this, options.viewport, options.viewMode);
@@ -298,9 +300,19 @@ module powerbi.extensibility.visual {
                 if (this.chart) {
                     this.chart.updateSize();
 
-                    this.chart.updateSettings({style:{nodeClasses: classes}});
-                    
-                    this.chart.replaceData(root);
+                    if (this.classUpdateTimeout){
+                        clearTimeout(this.classUpdateTimeout);
+                    }
+
+                    if (!this.prevClasses || this.prevClasses.length < classes.length){
+                        this.chart.updateSettings({style:{nodeClasses: classes}});
+                        this.chart.replaceData(root);
+                    } else {
+                        this.chart.replaceData(root);
+                        let self = this;
+                        this.classUpdateTimeout = setTimeout(()=>{self.chart.updateSettings({style:{nodeClasses: classes}});}, 2000);
+                    }
+                    this.prevClasses = classes;
                     this.pendingData = root;
                 } else {
                     this.pendingClasses = classes;
