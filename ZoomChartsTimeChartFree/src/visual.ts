@@ -393,11 +393,11 @@ module powerbi.extensibility.visual {
                 // is the one that we actually need. After desired value is set, don't do this
                 // anymore.
                 if(visualMode != "free" && !this.initialDisplayUnitSet) {
+                    this.chart.displayUnit(this.currentProps.displayUnits.initialDisplayUnit, false);
+                    this.chart.setDisplayPeriod("max", "newestData", false);
+                    this.initialDisplayUnitSet = true;
+                } else {
                     this.chart.setDisplayPeriod("max", "newestData");
-                    this.chart.displayUnit(this.currentProps.displayUnits.initialDisplayUnit);
-                    if(this.chart.displayUnit() == this.currentProps.displayUnits.initialDisplayUnit) {
-                        this.initialDisplayUnitSet = true;
-                    }
                 }
             }
             this.chart.updateSettings({advanced:{highDPI: 2}});
