@@ -122,6 +122,20 @@ module powerbi.extensibility.visual {
                         this.current_selection = args.selection;
                         self.updateSelection(args, 200);
                         self.chart.updateStyle();
+                    },
+                    onDataUpdated: (e, args) => {
+                        if (self.st){
+                            clearTimeout(self.st);
+                        }
+                        self.st = setTimeout(()=>{
+                            let nodeList = [];
+                            var d = args.chart.exportData(true, false);
+                            for (let x = 0; x < d.nodes.length; x++){
+                                nodeList.push(d.nodes[x].id);
+                            }
+                            console.log(nodeList);
+                            args.chart.scrollIntoView(nodeList);
+                        }, 1000);
                     }
                 },
                 style: {
@@ -287,13 +301,6 @@ module powerbi.extensibility.visual {
                     this.chart.updateSettings({style:{nodeClasses: classes}});
                     
                     this.chart.replaceData(root);
-                    if (this.st) clearTimeout(this.st);
-                    let nodeList = [];
-                    for (let x = 0; x < root.nodes.length; x++){
-                        nodeList.push(root.nodes[x].id);
-                    }
-                    this.st=setTimeout(()=>{this.chart.scrollIntoView(nodeList)}, 1000);
-
                     this.pendingData = root;
                 } else {
                     this.pendingClasses = classes;
