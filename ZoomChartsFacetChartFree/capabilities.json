@@ -11,6 +11,9 @@
             "kind": "Measure"
         }
     ],
+    "drilldown": {
+        "roles": ["Category", "Values"]
+    },
     "dataViewMappings": [
         {
             "conditions": [
