@@ -632,8 +632,8 @@ module powerbi.extensibility.visual {
             registerMessage(this.infoMessageOverlay);
         }
 
-        this.infoMessageTitle.innerHTML = title;
-        this.infoMessageBody.innerHTML = message;
+        this.infoMessageTitle.innerText = title;
+        this.infoMessageBody.innerText = message;
 
         this.infoMessageOverlay.style.display = "block";
     }
