@@ -392,13 +392,11 @@ module powerbi.extensibility.visual {
                 //chart doesn't receive new property value, so we need to check when displayUnit
                 // is the one that we actually need. After desired value is set, don't do this
                 // anymore.
-                if(visualMode != "free" && !this.initialDisplayUnitSet) {
+                if(!this.initialDisplayUnitSet) {
                     this.chart.displayUnit(this.currentProps.displayUnits.initialDisplayUnit, false);
                     let self = this;
                     setTimeout(()=>{this.chart.setDisplayPeriod("max", "newestData");}, 100);
                     this.initialDisplayUnitSet = true;
-                } else {
-                    this.chart.setDisplayPeriod("max", "newestData");
                 }
             }
             this.chart.updateSettings({advanced:{highDPI: 2}});
