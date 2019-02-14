@@ -303,7 +303,7 @@ module powerbi.extensibility.visual {
                         clearTimeout(this.classUpdateTimeout);
                     }
 
-                    if (!this.prevClasses || this.prevClasses.length < classes.length){
+                    if (!this.prevClasses || this.prevClasses.length <= classes.length){
                         this.chart.updateSettings({style:{nodeClasses: classes}});
                         this.chart.replaceData(root);
                     } else {
