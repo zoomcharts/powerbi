@@ -166,7 +166,7 @@ module powerbi.extensibility.visual {
                     },
                     nodeStyleFunction: (n) => {
                         let name = n.data.extra.name;
-                        n.label = null;
+                        n.label = "";//null;
 						n.radius = n.data.extra.radius;
 
                         n.lineColor = null;
