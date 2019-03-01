@@ -14,6 +14,9 @@ module powerbi.extensibility.visual {
         protected customPropertiesFree: any = [];
         public customizationInformer: any = null;
         public viewport: any = null;
+        public current_scale: any = 1;
+        public prev_pixel_ratio: any = null;
+
         constructor(options: VisualConstructorOptions) {
             version = "v1.1.0.1";
             releaseDate = "Oct 13, 2018";

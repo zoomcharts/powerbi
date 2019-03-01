@@ -127,86 +127,71 @@ module powerbi.extensibility.visual {
         }
         return scale;
     }
-    export function updateSize(visual, viewport, newViewMode?:any){
-        let scale;
-        if (!visual.current_scale){
-            visual.current_scale = 1;
+
+    export function updateSize(visual, viewport, newViewMode?:any) {
+        let _thisVisual: any = visual;
+        let scale: number = 0;
+        let marginTop: number = 0;
+        let marginLeft: number = 0;
+        let transform: string = "scale3d(1, 1, 1)";
+        let height: number = viewport.height;
+        let width: number = viewport.width;
+        let nh: number = height;
+        let nw: number = width;
+        let chartContainer: any = _thisVisual.target.getElementsByClassName("chart-container")[0];
+
+        if (!_thisVisual.current_scale) {
+            _thisVisual.current_scale = 1;
         }
-        if (typeof(viewport.scale) != "undefined"){
+
+        if (typeof(viewport.scale) != "undefined") {
             scale = viewport.scale;
         } else {
-            scale = visual.current_scale;
+            scale = _thisVisual.current_scale;
         }
+
         visualCurrentMode = newViewMode;
 
-        if (!visual.prev_pixel_ratio){
-            visual.prev_pixel_ratio = window.devicePixelRatio;
+        if (!_thisVisual.prev_pixel_ratio) {
+            _thisVisual.prev_pixel_ratio = window.devicePixelRatio;
         }
-        if (window.devicePixelRatio != visual.prev_pixel_ratio){
-            visual.prev_pixel_ratio = window.devicePixelRatio;
-            visual.current_scale = 1;
+        if (window.devicePixelRatio != _thisVisual.prev_pixel_ratio) {
+            _thisVisual.prev_pixel_ratio = window.devicePixelRatio;
+            _thisVisual.current_scale = 1;
         }
-        visual.prev_pixel_ratio = 2;
-        if (scale){
-            scale = visual.current_scale = scale;
-        } else {
-            scale = visual.current_scale;
-        }
-        let height = viewport.height;
-        let width = viewport.width;
-        let nh:any = height;
-        let nw:any = width;
 
-        
-        if (isDebugVisual){
+        _thisVisual.prev_pixel_ratio = 2;
+
+        if (scale) {
+            scale = _thisVisual.current_scale = scale;
+        } else {
+            scale = _thisVisual.current_scale;
+        }
+
+        if (isDebugVisual) {
             console.log("Scale, width, height", scale, width, height);
         }
-        if (window.devicePixelRatio == 2){
-            if (scale > 1){
-                scale = scale;// * window.devicePixelRatio;
-                visual.target.style.height =(nh=Math.round(height * scale )) +"px";
-                visual.target.style.width = (nw=Math.round(width * scale)) +"px";
-                visual.target.style.marginTop = -Math.round((height - height * 1/scale)/2)*scale+"px";
-                visual.target.style.marginLeft= -Math.round((width - width *1/scale)/2)*scale +"px"; 
-                let t:any;
-                visual.target.style.transform = t="scale3d(" + 1/scale + "," + 1/scale + ",1)";
-            } else {
-                visual.target.style.height = height + "px";
-                visual.target.style.width = width + "px";
-                visual.target.style.marginTop = 0;
-                visual.target.style.marginLeft = 0;
-                visual.target.style.transform ="scale3d(" + 1 + "," + 1 + ",1)";
-            }
-        } else {
-            if (scale > 1){
-                visual.target.style.height =(nh=Math.round(height * scale )) +"px";
-                visual.target.style.width = (nw=Math.round(width * scale)) +"px";
-                visual.target.style.marginTop = -Math.round((height - height * 1/scale)/2*scale)+"px";
-                visual.target.style.marginLeft= -Math.round((width - width *1/scale)/2*scale)+"px"; 
-                let t:any;
-                visual.target.style.transform = t="scale3d(" + 1/scale + "," + 1/scale + ",1)";
-            } else if(scale <= 1) {
-                visual.target.style.height = height + "px";
-                visual.target.style.width = width + "px";
-                visual.target.style.marginTop = 0;
-                visual.target.style.marginLeft = 0;
-                visual.target.style.transform ="scale3d(" + 1 + "," + 1 + ",1)";
-            } 
-        }
-        if (!chartContainer){
-            chartContainer = visual.target.getElementsByClassName("chart-container")[0];
-        }
-        
-        chartContainer.style.height = nh + "px";
 
-        outerSize = [Math.round(nw),Math.round(nh)];
+        if (scale > 1) {
+            nh = Math.round((height * scale));
+            nw = Math.round((width * scale));
+            marginTop = -Math.round((height - height * 1 / scale) / 2 * scale);
+            marginLeft = -Math.round((width - width * 1 / scale) / 2 * scale);
+            transform = "scale3d(" + (1 / scale) + "," + (1 / scale) + ",1)";
+        }
+
+        chartContainer.style.height = nh +"px";
+        chartContainer.style.width = nw +"px";
+        chartContainer.style.marginTop = marginTop + "px";
+        chartContainer.style.marginLeft = marginLeft + "px";
+        chartContainer.style.transform = transform;
+
+        outerSize = [Math.round(nw), Math.round(nh)];
 
         this.viewMode = newViewMode;
-
-        visual.chart.updateSize();
+        _thisVisual.chart.updateSize();
 
         updateOverlays();
-
     }
     export function updateOverlays(dom?:any){
         if (messageOverlays){
