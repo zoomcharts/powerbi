@@ -16,8 +16,7 @@ module powerbi.extensibility.visual {
         public betalimitator: any = null;
         public customizationInformer: any = null;
         public viewport: any = null;
-        public current_scale: any = 1;
-        public prev_pixel_ratio: any = null;
+        public currentScale: any = 1;
 
         constructor(options: VisualConstructorOptions) {
             version = "v1.1.1.0";

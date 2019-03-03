@@ -16,8 +16,7 @@ module powerbi.extensibility.visual {
         protected customPropertiesFree: any = [];
         public customizationInformer: any = null;
         public viewport: any = null;
-        public current_scale: any = 1;
-        public prev_pixel_ratio: any = null;
+        public currentScale: any = 1;
         public cached_color:any={};
         public cached_color_light:any={};
         public current_selection:any={};

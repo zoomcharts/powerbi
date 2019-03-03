@@ -22,8 +22,7 @@ module powerbi.extensibility.visual {
         protected hasMeasure:boolean=false;
         protected currentDisplayUnits:any=[];
         private currentDu:any = [];
-        public current_scale: any = 1;
-        public prev_pixel_ratio: any = null;
+        public currentScale: any = 1;
 
         constructor(options: VisualConstructorOptions) {
             version = "v1.1.0.1";
