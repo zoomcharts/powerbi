@@ -130,12 +130,13 @@ module powerbi.extensibility.visual {
 
     export function updateSize(visual, viewport, newViewMode?:any) {
         let _thisVisual: any = visual;
-        let viewportHeight: number = Math.round(viewport.height) - (isMobileTabletDevice() ? 8 : 0);
+        let viewportHeight: number = Math.round(viewport.height);
         let viewportWidth: number = Math.round(viewport.width);
 
         let scale: number = 1;
-        let marginTop: number = 0;
-        let marginLeft: number = 0;
+        let posTop: number = 0;
+        let posLeft: number = 0;
+        let posType: string = "fixed"; // don't use any other 'position' property
         let transform: string = "scale3d(1, 1, 1)";
         let nh: number = viewportHeight;
         let nw: number = viewportWidth;
@@ -164,20 +165,28 @@ module powerbi.extensibility.visual {
         }
 
         if (scale > 1) {
-            nh = Math.round((viewportHeight * scale));
-            nw = Math.round((viewportWidth * scale));
-            marginTop = -Math.round((viewportHeight - viewportHeight * 1 / scale) / 2 * scale);
-            marginLeft = -Math.round((viewportWidth - viewportWidth * 1 / scale) / 2 * scale);
+            nh = Math.round(viewportHeight * scale);
+            nw = Math.round(viewportWidth * scale);
+            posTop = -Math.round((viewportHeight - viewportHeight * 1 / scale) / 2 * scale);
+            posLeft = -Math.round((viewportWidth - viewportWidth * 1 / scale) / 2 * scale);
             transform = "scale3d(" + (1 / scale) + "," + (1 / scale) + ",1)";
         }
 
-        chartContainer.style.height = nh + "px";
-        chartContainer.style.width = nw + "px";
-        chartContainer.style.minHeight = nh + "px";
-        chartContainer.style.minWidth = nw + "px";
-        chartContainer.style.marginTop = marginTop + "px";
-        chartContainer.style.marginLeft = marginLeft + "px";
-        chartContainer.style.transform = transform;
+        // workaround for width and height on outer div, i.e., "#sandbox-host",
+        // workaround consists of 'position', 'top' and 'left' css properties
+        _thisVisual.target.style.position = posType;
+        _thisVisual.target.style.top = posTop + "px";
+        _thisVisual.target.style.left = posLeft + "px";
+        _thisVisual.target.style.transform = transform;
+
+        // outer and inner div's need to be set with css properties 'minHeight' and 'minWidth'
+        _thisVisual.target.style.minHeight = chartContainer.style.height = (nh + "px");
+        _thisVisual.target.style.minWidth = (nw + "px");
+
+        if (isMobileTabletDevice()) {
+            // note! both 'minHeight' and 'height' should be set for 'chart-container'
+            chartContainer.style.minHeight = chartContainer.style.height = ((nh - 6) + "px");
+        }
 
         outerSize = [nw, nh];
 

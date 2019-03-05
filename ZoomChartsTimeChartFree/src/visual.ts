@@ -25,8 +25,8 @@ module powerbi.extensibility.visual {
         public currentScale: any = 1;
 
         constructor(options: VisualConstructorOptions) {
-            version = "v1.1.0.1";
-            releaseDate = "Oct 21, 2018";
+            version = "v1.1.1.2";
+            releaseDate = "Mar 5, 2019";
             visualType = "advanced-time-chart";
             visualName = "Advanced Timeline Chart Visual";
             this.target = options.element;

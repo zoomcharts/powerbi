@@ -19,8 +19,8 @@ module powerbi.extensibility.visual {
         public currentScale: any = 1;
 
         constructor(options: VisualConstructorOptions) {
-            version = "v1.1.1.0";
-            releaseDate = "Oct 20, 2018";
+            version = "v1.1.1.2";
+            releaseDate = "Mar 5, 2019";
             visualType = "advanced-column-chart";
             visualName = "Advanced Column Chart Visual";
             this.target = options.element;
