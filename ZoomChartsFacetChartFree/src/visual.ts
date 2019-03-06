@@ -7,6 +7,8 @@ module powerbi.extensibility.visual {
         protected pendingData: ZoomCharts.Configuration.PieChartDataObjectRoot = { subvalues: [] };
         protected pendingSettings: ZoomCharts.Configuration.FacetChartSettings = {};
         protected updateTimer: number;
+        protected primaryAxisFormatString: string = "\$#,0;(\$#,0);\$#,0";
+        protected secondaryAxisFormatString: string = "\$#,0;(\$#,0);\$#,0";
         protected colors: IColorPalette;
         protected selectionManager: ISelectionManager;
         protected setLegendState = true;
@@ -19,8 +21,8 @@ module powerbi.extensibility.visual {
         public currentScale: any = 1;
 
         constructor(options: VisualConstructorOptions) {
-            version = "v1.1.1.2";
-            releaseDate = "Mar 5, 2019";
+            version = "v1.2.0.0";
+            releaseDate = "Mar 6, 2019";
             visualType = "advanced-column-chart";
             visualName = "Advanced Column Chart Visual";
             this.target = options.element;
@@ -188,6 +190,8 @@ module powerbi.extensibility.visual {
                     return x;
                 });
             }
+
+            setAxisFormatting(series, this);
 
             this.series = series;
 

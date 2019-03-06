@@ -228,6 +228,22 @@ module powerbi.extensibility.visual {
         return isCorrectDevice;
     }
 
+    export function setAxisFormatting(seriesConfig: any, visual: any) {
+        let previousElement: string = "";
+        if (seriesConfig) {
+            seriesConfig.forEach(function(seriesElement) {
+                if (previousElement !== seriesElement.valueAxis) {
+                    if (seriesElement.valueAxis === "primary") {
+                        visual.primaryAxisFormatString = seriesElement.extra.format;
+                    } else if (seriesElement.valueAxis === "secondary") {
+                        visual.secondaryAxisFormatString = seriesElement.extra.format;
+                    }
+                    previousElement = seriesElement.valueAxis;
+                }
+            });
+        }
+    }
+
     export function createDataSourceIdentity(dataView: DataView): string {
         if (!dataView || !dataView.metadata || !dataView.metadata.columns.length)
             return "";

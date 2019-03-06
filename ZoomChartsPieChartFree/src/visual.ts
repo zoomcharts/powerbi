@@ -17,8 +17,8 @@ module powerbi.extensibility.visual {
         public currentScale: any = 1;
 
         constructor(options: VisualConstructorOptions) {
-            version = "v1.1.1.2";
-            releaseDate = "Mar 5, 2019";
+            version = "v1.2.0.0";
+            releaseDate = "Mar 6, 2019";
             visualType = "advanced-donut-chart";
             visualName = "Advanced Donut Chart Visual";
             this.target = options.element;
