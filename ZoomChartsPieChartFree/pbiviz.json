@@ -1,7 +1,7 @@
 {
   "visual": {
-    "name": "ZoomChartsPieChartFree",
-    "displayName": "Drill-Down Donut Chart by ZoomCharts",
+    "name": "ZoomCharts_Free_Donut_Visual",
+    "displayName": "ZoomCharts Free Donut Visual",
     "guid": "ZoomChartsPieChartFree33C9F325D337408C98D4E1D4E1EAD703",
     "visualClassName": "Visual",
     "version": "1.2.0",

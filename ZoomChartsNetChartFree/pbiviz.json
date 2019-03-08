@@ -1,7 +1,7 @@
 {
   "visual": {
-    "name": "ZoomChartsNetChartFree",
-    "displayName": "ZoomCharts Network Chart",
+    "name": "ZoomCharts_Free_Network_Visual",
+    "displayName": "ZoomCharts Free Network Visual",
     "guid": "ZoomChartsNetChartFreeD1C58E3B59077E6D06A4CB9B0D4E2029A917",
     "visualClassName": "Visual",
     "version": "1.2.0",

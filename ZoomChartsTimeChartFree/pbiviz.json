@@ -1,7 +1,7 @@
 {
   "visual": {
-    "name": "ZoomChartsTimeChartFree",
-    "displayName": "Dril-Down Column Chart for time-based data by ZoomCharts",
+    "name": "ZoomCharts Free TimeSeries Visual",
+    "displayName": "ZoomCharts Free TimeSeries Visual",
     "guid": "ZoomChartsTimeChartFree33C9F325D337408C98D4E1D4E1EAD705",
     "visualClassName": "Visual",
     "version": "1.2.0",

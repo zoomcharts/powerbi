@@ -1,7 +1,7 @@
 {
   "visual": {
-    "name": "ZoomChartsFacetChartFree",
-    "displayName": "Drill-Down Column Chart by ZoomCharts",
+    "name": "ZoomCharts_Free_Combo_Visual",
+    "displayName": "ZoomCharts Free Combo Visual",
     "guid": "ZoomChartsFacetChartFree33C9F325D337408C98D4E1D4E1EAD704",
     "visualClassName": "Visual",
     "version": "1.2.0",
