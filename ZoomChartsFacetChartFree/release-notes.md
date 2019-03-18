@@ -2,6 +2,15 @@
 
 =========================== Changelog ===========================
 
+Version 1.2.0 (2019-03-18)
+
+* Removed fourth version number. On app source it should be only 
+  three numbers, when packaging visual internally fourth number 
+  should be added and after packaging removed, but release-notes.md
+  shoul still be updated with three and four version numbers.
+
+-----------------------------------------------------------------
+
 Version 1.2.0.1 (2019-03-08)
 
 * Issue Number: BS-183.
