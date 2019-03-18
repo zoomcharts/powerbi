@@ -45,21 +45,22 @@ module powerbi.extensibility.visual {
                 displayMessage(target, "Please select at least one value field for the visual.", "Incorrect data", false);
                 return root;
             }         
-            
+
             hideMessage(target);
 
             const formatter = powerbi.extensibility.utils.formatting.formattingService;
             let values = dataView.categorical.values[0].highlights || dataView.categorical.values[0].values;
 
             let catCount = dataView.categorical.categories.length;
-            let ids: Array<visuals.ISelectionId> = new Array(values.length);
+            let ids: Array<Object> = new Array(values.length);
             let parentObjects: Array<ZoomCharts.Configuration.PieChartDataObject> = new Array(values.length);
             let grouper: ZoomCharts.Dictionary<ZoomCharts.Configuration.PieChartDataObject>;
             let allObjects: Array<ZoomCharts.Configuration.PieChartDataObject> = [];
             for (let i = 0; i < values.length; i++) {
                 parentObjects[i] = <any>root;
-                ids[i] = host.createSelectionIdBuilder().withCategory(dataView.categorical.categories[0], i).createSelectionId();
             }
+
+            ids = Data.generateSelectionIds(visual, values, dataView.categorical.categories);
 
             if (catCount > 0) {
                 root.name = secureString(dataView.categorical.categories[0].source.displayName);
@@ -98,7 +99,7 @@ module powerbi.extensibility.visual {
                                 expandable: expandable,
                                 fillColor: color.value
                             },
-                            extra: {s:[ids[i]], index: i}
+                            extra: { s: [ids[i][idVal]], index: i }
                         };
                         obj.extra.category = secureString(categories.source.queryName);
                         obj.extra.categoryName = secureString(categories.source.displayName);
@@ -109,7 +110,7 @@ module powerbi.extensibility.visual {
                         grouper[idVal] = obj;
                         allObjects.push(obj);
                     } else {
-                        obj.extra.s.push(ids[i]);
+                        obj.extra.s.push(ids[i][idVal]);
                         obj.value += <number>values[i] || 0;
                         obj.valueArray.push(<number>values[i] || 0);
                         //parent.value += <number>values[i] || 0;
@@ -191,6 +192,52 @@ module powerbi.extensibility.visual {
                     this.enumerateSlices(objectName, depth - 1, v, result, seenKeys);
                 }
             }
+        }
+
+        public static generateSelectionIds(visual, values, categories) {
+            const formatter = powerbi.extensibility.utils.formatting.formattingService;
+            let ids: Array<Object> = new Array(values.length);
+            for (let i = 0; i < values.length; i++) {
+                // build drill-down paths for each value
+                let drillPath: Array<string> = [""];
+                let cats = {};
+                for (let j = 0; j < categories.length; j++) {
+                    let catValue: string = formatter.formatValue(categories[j].values[i], categories[j].source.format);
+
+                    // workaround, because 'drillPath' can't be directly set
+                    drillPath.push(drillPath[drillPath.length - 1] + "\ufdd0" + catValue);
+                    let path: string = drillPath.join('|');
+                    // workaround end
+
+                    let selectedSlice = null;
+                    let selected = false;
+                    let offset = 0;
+                    if (visual.selectedSlicesInfo.length) {
+                        let selectedSlice = visual.selectedSlicesInfo.find((elem) => {
+                            return elem.sliceId === drillPath[drillPath.length - 1]
+                        });
+
+                        if (typeof(selectedSlice) !== "undefined") {
+                            selected = selectedSlice.selected;
+                            offset = selectedSlice.offset;
+                        }
+                    }
+
+                    let categoryInfo: ICategoryInfo = {
+                        path: path.split("|"),
+                        name: "\ufdd0" + catValue,
+                        selected: selected,
+                        offset: offset
+                    };
+
+                    cats[drillPath[drillPath.length - 1]] = visual.host.createSelectionIdBuilder()
+                        .withCategory(categories[0], i)
+                        .withMeasure(JSON.stringify(categoryInfo))
+                        .createSelectionId();
+                    ids[i] = cats;
+                }
+            }
+            return ids;
         }
     }
     

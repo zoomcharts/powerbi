@@ -689,4 +689,11 @@ module powerbi.extensibility.visual {
         }
         return true;
     }
+
+    export interface ICategoryInfo {
+        path: Array<string>;
+        name: string;
+        selected: boolean;
+        offset: number;
+    }
 }
