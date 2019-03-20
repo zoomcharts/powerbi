@@ -354,7 +354,8 @@ module powerbi.extensibility.visual {
             if (cached) {
                 color = cached.color;
                 for (let id of category.identity) {
-                    if (id.key === cached.identity) {
+                    // using 'indentityIndex' property, because key property was removed from API 2.1.0
+                    if (id["identityIndex"] === cached.identity) {
                         // the color seems to be reset
                         color = null;
                         cachedCategoryColors[localId] = null;
@@ -365,7 +366,7 @@ module powerbi.extensibility.visual {
         } else {
             cachedCategoryColors[localId] = {
                 color: color,
-                identity: category.identity[foundRowIndex].key,
+                identity: category.identity[foundRowIndex]["identityIndex"],
             };
         }
 

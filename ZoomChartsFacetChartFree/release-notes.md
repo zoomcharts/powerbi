@@ -2,6 +2,12 @@
 
 =========================== Changelog ===========================
 
+Version 1.3.0 (2019-03-20)
+
+* Updated to API 2.3.0.
+
+-----------------------------------------------------------------
+
 Version 1.2.0 (2019-03-18)
 
 * Removed fourth version number. On app source it should be only 

@@ -15,49 +15,16 @@ module powerbi.extensibility.visual {
         public customizationInformer: any = null;
         public viewport: any = null;
         public currentScale: any = 1;
-        private options: VisualUpdateOptions = null;
-        public selectedSlicesInfo:any = [];
 
         constructor(options: VisualConstructorOptions) {
-            version = "v1.2.0";
-            releaseDate = "Mar 18, 2019";
+            version = "v1.3.0";
+            releaseDate = "Mar 20, 2019";
             visualType = "advanced-donut-chart";
             visualName = "Advanced Donut Chart Visual";
             this.target = options.element;
             this.host = options.host;
             this.selectionManager = options.host.createSelectionManager();
             this.formatter = powerbi.extensibility.utils.formatting.valueFormatter.create({format: this.formatString});
-            this.selectedSlicesInfo = [];
-
-            this.selectionManager.registerOnSelectCallback(
-                (selectionIds: ISelectionId[]) => {
-                    let selectionsLength: number = selectionIds.length;
-                    if (selectionsLength) {
-                        // we only need one of the ids to be present to call setPie()
-                        let selection = JSON.parse(selectionIds[0]["selector"].metadata);
-                        if (selection) {
-                            let currentDrillLevel = selection.path.slice(0, selection.path.length - 1);
-                            let chart = this.chart.setPie(currentDrillLevel, selection.offset);
-
-                            let selections = [];
-                            for (let i = 0; i < selectionsLength; i++) {
-                                let meta = JSON.parse(selectionIds[i]["selector"].metadata);
-                                if (meta.selected && selections.indexOf(meta.path[meta.path.length - 1]) === - 1) {
-                                    selections.push(meta.path[meta.path.length - 1]);
-                                }
-                            }
-                            chart.selection([]);
-                            chart.selection(selections);
-                        }
-                    } else {
-                        // when nothing selected this should be initial state or 
-                        // when report has been opened
-
-                        // need to fix [duplicate values will occur]
-                        //this.chart.setPie([""], 0);
-                    }
-                }
-            );
 
             // workaround for the host not calling `destroy()` when the visual is reloaded:
             if ((<any>this.target).__zc_visual) {
@@ -120,11 +87,7 @@ module powerbi.extensibility.visual {
                         if ((e.ctrlKey || e.shiftKey) && args.clickSlice && args.clickSlice.id === null)
                             e.preventDefault();
                     },
-                    onSelectionChange: (e, args) => {
-                        console.log("onSelectionChange called");
-                        console.log("onSelectionChange args", args);
-                        this.updateSelection(args, 200);
-                    },
+                    onSelectionChange: (e, args) => this.updateSelection(args, 200),
                     onChartUpdate: (e, args) => {
                         if (args.origin === "user" && args.pie.id !== this.lastChartUpdatePieId) {
                             this.lastChartUpdatePieId = args.pie.id;
@@ -146,7 +109,6 @@ module powerbi.extensibility.visual {
         private updateSelection(args: ZoomCharts.Configuration.PieChartChartEventArguments, delay: number) {
             if (this.updateTimer) window.clearTimeout(this.updateTimer);
 
-            this.selectedSlicesInfo = [];
             let selman = this.selectionManager;
             let selectedSlices = (args.selection || []).map(o => o.data);
             if (!selectedSlices.length && args.pie.id) {
@@ -154,24 +116,9 @@ module powerbi.extensibility.visual {
             }
             window.setTimeout(() => {
                 if (selectedSlices.length) {
-                    // need to fix [performance issues here]
-                    let newSelectionIds;
-                    for (let i = 0; i < selectedSlices.length; i++) {
-                        let sliceSelectionInfo = {
-                            sliceId: selectedSlices[i].id,
-                            selected: (args.selection.length && args.selection[i].selected ? true : false),
-                            offset: this.chart.getPieOffset()
-                        }
-                        this.selectedSlicesInfo.push(sliceSelectionInfo);
-                    }
-                    let values = this.options.dataViews[0].categorical.values[0].highlights || this.options.dataViews[0].categorical.values[0].values;
-                    let categories = this.options.dataViews[0].categorical.categories;
-                    newSelectionIds = Data.generateSelectionIds(this, values, categories);
-
                     let sel: visuals.ISelectionId[] = [];
                     for (let i = 0; i < selectedSlices.length; i++) {
-                        let found = newSelectionIds.filter(obj => obj[selectedSlices[i].id]);
-                        sel = sel.concat(found[0][selectedSlices[i].id]);
+                        sel = sel.concat(selectedSlices[i].extra.s);
                     }
 
                     let cursel = selman.getSelectionIds();
@@ -201,7 +148,6 @@ module powerbi.extensibility.visual {
 
         @logExceptions()
         public update(options: VisualUpdateOptions) {
-            this.options = options;
             updateSize(this, options.viewport, options.viewMode);
             if (visualMode == "free"){
                 this.customizationInformer.updateImage(options.viewport);

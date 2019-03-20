@@ -27,8 +27,8 @@ module powerbi.extensibility.visual {
         private st:any=null; // scrollIntoView timeout
 
         constructor(options: VisualConstructorOptions) {
-            version = "v1.2.0";
-            releaseDate = "Mar 18, 2019";
+            version = "v1.3.0";
+            releaseDate = "Mar 20, 2019";
             visualType = "advanced-net-chart";
             visualName = "Advanced Network Chart Visual";
 
