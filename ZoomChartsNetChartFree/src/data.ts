@@ -16,23 +16,27 @@ module powerbi.extensibility.visual {
 
             let dataView = options.dataViews[0];
             if (!dataView) {
-                debugger
                 displayMessage(target, "Either the data loading is taking longer than usual or the data fields for the visual are not properly configured.", "Incorrect data", false);
                 return root;
             }
 
-            if (typeof(dataView.categorical.categories) == "undefined"){
-                debugger
+            if (typeof(dataView.categorical.categories) == "undefined") {
                 displayMessage(target, "Please, select at least one category for node grouping", "Incorrect data", false);
                 return root;
             }
 
             let categories = dataView.categorical.categories.length;
-            if (categories < 1){
-                debugger
+            if (categories < 1) {
                 displayMessage(target, "Please, select at least one category for node grouping", "Incorrect data", false);
                 return root;
             }
+
+            if (typeof(dataView.categorical.values) == "undefined") {
+                displayMessage(target, "Please, select measure to view the network", "Incorrect data", false);
+                return root;
+            }
+            hideMessage(target);
+
             let values = dataView.categorical.categories[0].values.length;
 
             let nodeMap = [];
@@ -48,7 +52,7 @@ module powerbi.extensibility.visual {
                 "53a8c2",
                 "778183"
             ];
-            for (let y = 0; y < categories; y++){
+            for (let y = 0; y < categories; y++) {
                 nodeMap[y] = {};
                 root.classes.push({
                     className: "l" + y,
@@ -59,20 +63,14 @@ module powerbi.extensibility.visual {
                 });
             }
 
-            if (typeof(dataView.categorical.values) == "undefined"){
-                debugger
-                displayMessage(target, "Please, select measure to view the network", "Incorrect data", false);
-                return root;
-            }
-            hideMessage(target);
             let format = dataView.categorical.values[0].source.format;
             root.format = format;
-            for (let x = 0; x < values; x++){
+            for (let x = 0; x < values; x++) {
                 let value;
-                if (typeof(dataView.categorical.values) != "undefined"){
+                if (typeof(dataView.categorical.values) != "undefined") {
                     value = dataView.categorical.values[0].values[x];
                 }
-                for (let y = 0; y < categories; y++){
+                for (let y = 0; y < categories; y++) {
                     let cat = dataView.categorical.categories[y]; 
                     let v = cat.values[x]; // name of the "category item"
                     let nodeId = y + ":" + v;
@@ -93,11 +91,11 @@ module powerbi.extensibility.visual {
                     }
                     nodeMap[y][nodeId].selectionIds.push(sid);
 
-                    if (y > 0){
-                        let f = (y-1) + ":" + dataView.categorical.categories[y-1].values[x];
+                    if (y > 0) {
+                        let f = (y - 1) + ":" + dataView.categorical.categories[y - 1].values[x];
                         let t = nodeId;
                         let lid = f + "-" + t;
-                        if (linkMap.indexOf(lid) < 0){
+                        if (linkMap.indexOf(lid) < 0) {
                             linkMap.push(lid);
                             root.links.push({
                                 id: lid,
@@ -106,10 +104,10 @@ module powerbi.extensibility.visual {
                             });
                         }
                     }
-                    if (y == categories - 1){
+                    if (y == categories - 1) {
                         // update the values for the "Branch"
-                        for (let z = 0; z <= y; z++){
-                            nodeMap[z][z+":"+dataView.categorical.categories[z].values[x]].value += value;
+                        for (let z = 0; z <= y; z++) {
+                            nodeMap[z][z + ":" + dataView.categorical.categories[z].values[x]].value += value;
                         }
                     }
                 }
@@ -117,7 +115,7 @@ module powerbi.extensibility.visual {
             let min = 1.0e12;
             let max = -min;
 
-			function compare(a,b) {
+			function compare(a, b) {
                 min = Math.min(min, a.extra.value);
                 min = Math.min(min, b.extra.value);
                 max = Math.max(max, a.extra.value);
@@ -132,17 +130,17 @@ module powerbi.extensibility.visual {
             let mode = "dynamic";
             let base = 21;
             let max_gain = 300;
-            if (mode == "group"){
+            if (mode == "group") {
                 let steps = 6;
                 let step = 50;
                 let nodes_in_step = Math.round(root.nodes.length / steps);
-                for (let x = 0; x < root.nodes.length; x++){
-                    root.nodes[x].extra.radius = Math.floor(x / nodes_in_step)*step + base;
+                for (let x = 0; x < root.nodes.length; x++) {
+                    root.nodes[x].extra.radius = Math.floor(x / nodes_in_step) * step + base;
                 }
-            } else if (mode == "dynamic"){
+            } else if (mode == "dynamic") {
                 let range = max-min;
-                for (let x = 0; x < root.nodes.length; x++){
-                    root.nodes[x].extra.radius = base + (root.nodes[x].extra.value-min)/max * max_gain;
+                for (let x = 0; x < root.nodes.length; x++) {
+                    root.nodes[x].extra.radius = base + (root.nodes[x].extra.value - min)/max * max_gain;
                 }
             }
             return root;

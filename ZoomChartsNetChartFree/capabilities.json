@@ -7,7 +7,7 @@
         },
         {
             "displayName": "Measure",
-            "name": "Size",
+            "name": "nodeValue",
             "kind": "Measure"
         }
     ],
@@ -15,31 +15,19 @@
         {
             "conditions": [
                 {
-                    "Nodes": {
-                        "min": 1,
-                        "max": 6
-                    }
+                    "Nodes": { "min": 1, "max": 6 },
+                    "nodeValue": { "max": 1 }
                 }
             ],
             "categorical": {
                 "categories": {
-                    "for": {
-                        "in": "Nodes"
-                    },
-                    "dataReductionAlgorithm": {
-                        "top": {
-                            "count": 100000
-                        }
-                    }
+                    "for": { "in": "Nodes" },
+                    "dataReductionAlgorithm": { "top": { "count": 100000 } }
                 },
                 "values": {
                     "select": [
-                        { "for": { "in": "Size" } },
-                        {
-                            "bind": {
-                                "to": "Nodes"
-                            }
-                        }
+                        { "for": { "in": "nodeValue" } },
+                        { "bind": { "to": "Nodes" } }
                     ]
                 }
             }

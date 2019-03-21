@@ -344,7 +344,6 @@ module powerbi.extensibility.visual {
                         if (typeof(selectedSlices[i].extra.selectionIds) == "undefined")
                             continue;
                         let sid = selectedSlices[i].extra.selectionIds;
-                        let slen = sid.length;
                         sel = sel.concat(sid);
                     }
 
