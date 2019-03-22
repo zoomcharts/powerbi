@@ -2,6 +2,13 @@
 
 =========================== Changelog ===========================
 
+Version 1.3.0 (2019-03-21)
+
+* Fixing message output, renaming capabilities, adding/removing
+  spaces/newlines.
+
+-----------------------------------------------------------------
+
 Version 1.3.0 (2019-03-20)
 
 * Updated to API 2.3.0.
